@@ -17,7 +17,7 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:textColor="@android:color/white"
-        android:textSize="80dp"
+        android:textSize="80sp"
         android:textStyle="bold"/>
 
 </RelativeLayout>
