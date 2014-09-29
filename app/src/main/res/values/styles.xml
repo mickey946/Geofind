@@ -7,15 +7,17 @@
     </style>
 
     <!-- Google Games main screen buttons. -->
-    <style name="GoogleGamesButton" parent="@android:Widget.ImageButton">
-        <item name="android:layout_width">@dimen/google_games_size</item>
-        <item name="android:layout_height">@dimen/google_games_size</item>
+    <style name="GoogleGamesButton" parent="android:Widget.Holo.Button.Borderless">
+        <item name="android:layout_width">@dimen/google_games_button_size</item>
+        <item name="android:layout_height">@dimen/google_games_button_size</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:adjustViewBounds">true</item>
+        <item name="android:layout_marginLeft">@dimen/google_games_button_margin</item>
+        <item name="android:layout_marginRight">@dimen/google_games_button_margin</item>
     </style>
 
     <!-- Main screen main buttons. -->
-    <style name="MainBottomButton" parent="android:Widget.Button">
+    <style name="MainBottomButton" parent="android:Widget.Holo.Light.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">.50</item>

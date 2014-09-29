@@ -5,6 +5,7 @@
 
     <dimen name="logo_text_size">80sp</dimen>
 
-    <dimen name="google_games_size">50dp</dimen>
+    <dimen name="google_games_button_size">35dp</dimen>
+    <dimen name="google_games_button_margin">4dp</dimen>
     <dimen name="main_screen_text_size">30sp</dimen>
 </resources>
