@@ -80,7 +80,8 @@
         <Button
             style="@style/MainBottomButton"
             android:drawableTop="@drawable/ic_action_search"
-            android:text="@string/main_screen_play_hunt" />
+            android:text="@string/main_screen_play_hunt"
+            android:onClick="openHuntList" />
 
         <Button
             style="@style/MainBottomButton"
