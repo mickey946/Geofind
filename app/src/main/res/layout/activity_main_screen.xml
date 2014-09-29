@@ -1,0 +1,79 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@android:color/holo_green_dark"
+    tools:context="com.geofind.geofind.MainScreenActivity">
+
+    <TextView
+        android:id="@+id/MainScreenLogo"
+        android:text="@string/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white"
+        android:textSize="80sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/MainScreenGoogleGamesButtons"
+        android:layout_below="@id/MainScreenLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:id="@+id/MainScreenGoogleGames"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/games_controller_white" />
+
+        <ImageButton
+            android:id="@+id/MainScreenGoogleGamesAchievements"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/games_achievements_white" />
+
+        <ImageButton
+            android:id="@+id/MainScreenGoogleGamesLeaderBoards"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/games_leaderboards_white" />
+
+        <ImageButton
+            android:id="@+id/MainScreenGoogleGamesGifts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/games_gifts_white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_below="@id/MainScreenGoogleGamesButtons"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".50"
+            android:drawableTop="@drawable/ic_action_search"
+            android:text="@string/main_screen_play_hunt"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".50"
+            android:drawableTop="@drawable/ic_action_new"
+            android:text="@string/main_screen_create_hunt"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>
