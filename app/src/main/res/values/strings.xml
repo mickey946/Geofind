@@ -5,7 +5,9 @@
 
     <string name="action_settings">Settings</string>
 
+    <string name="main_screen_intro">Some inspirational bullshit with a picture of boobs.</string>
     <string name="main_screen_play_hunt">Play a Hunt</string>
     <string name="main_screen_create_hunt">Create a Hunt</string>
+
 
 </resources>

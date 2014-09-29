@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -15,8 +15,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:gravity="top"
         android:textColor="@android:color/white"
-        android:textSize="80sp"
+        android:textSize="@dimen/logo_text_size"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -24,43 +25,74 @@
         android:layout_below="@id/MainScreenLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal">
 
         <ImageButton
             android:id="@+id/MainScreenGoogleGames"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/games_controller_white" />
+            android:layout_width="@dimen/google_games_size"
+            android:layout_height="@dimen/google_games_size"
+            android:src="@drawable/games_controller_white"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true" />
 
         <ImageButton
             android:id="@+id/MainScreenGoogleGamesAchievements"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/games_achievements_white" />
+            android:layout_width="@dimen/google_games_size"
+            android:layout_height="@dimen/google_games_size"
+            android:src="@drawable/games_achievements_white"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true" />
 
         <ImageButton
             android:id="@+id/MainScreenGoogleGamesLeaderBoards"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/games_leaderboards_white" />
+            android:layout_width="@dimen/google_games_size"
+            android:layout_height="@dimen/google_games_size"
+            android:src="@drawable/games_leaderboards_white"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true" />
 
         <ImageButton
             android:id="@+id/MainScreenGoogleGamesGifts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/games_gifts_white" />
+            android:layout_width="@dimen/google_games_size"
+            android:layout_height="@dimen/google_games_size"
+            android:src="@drawable/games_gifts_white"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/MainScreenIntroText"
         android:layout_below="@id/MainScreenGoogleGamesButtons"
+        android:layout_above="@+id/MainScreenMainButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/main_screen_text_size"
+            android:text="@string/main_screen_intro" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/MainScreenMainButtons"
+        android:layout_below="@id/MainScreenMainButtons"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom">
 
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".50"
+            android:layout_weight=".5"
             android:drawableTop="@drawable/ic_action_search"
             android:text="@string/main_screen_play_hunt"
             android:textColor="@android:color/white" />

@@ -2,4 +2,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="logo_text_size">80sp</dimen>
+
+    <dimen name="google_games_size">50dp</dimen>
+    <dimen name="main_screen_text_size">30sp</dimen>
 </resources>
