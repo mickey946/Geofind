@@ -10,7 +10,7 @@
     tools:context=".MainScreenActivity">
 
     <TextView
-        android:id="@+id/MainScreenLogo"
+        android:id="@+id/main_screen_logo"
         android:text="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,39 +21,39 @@
         android:textStyle="bold" />
 
     <LinearLayout
-        android:id="@+id/MainScreenGoogleGamesButtons"
-        android:layout_below="@id/MainScreenLogo"
+        android:id="@+id/main_screen_google_play_games_buttons"
+        android:layout_below="@id/main_screen_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal">
 
         <ImageButton
-            style="@style/GoogleGamesButton"
+            style="@style/google_play_games_button"
             android:id="@+id/MainScreenGoogleGames"
             android:src="@drawable/games_controller_white" />
 
         <ImageButton
-            style="@style/GoogleGamesButton"
+            style="@style/google_play_games_button"
             android:id="@+id/MainScreenGoogleGamesAchievements"
             android:src="@drawable/games_achievements_white" />
 
         <ImageButton
-            style="@style/GoogleGamesButton"
+            style="@style/google_play_games_button"
             android:id="@+id/MainScreenGoogleGamesLeaderBoards"
             android:src="@drawable/games_leaderboards_white" />
 
         <ImageButton
-            style="@style/GoogleGamesButton"
-            android:id="@+id/MainScreenGoogleGamesGifts"
+            style="@style/google_play_games_button"
+            android:id="@+id/main_screen_google_games_gifts"
             android:src="@drawable/games_gifts_white" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/MainScreenIntroText"
-        android:layout_below="@id/MainScreenGoogleGamesButtons"
-        android:layout_above="@+id/MainScreenMainButtons"
+        android:id="@+id/main_screen_intro_text"
+        android:layout_below="@id/main_screen_google_play_games_buttons"
+        android:layout_above="@+id/main_screen_main_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -70,21 +70,21 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/MainScreenMainButtons"
-        android:layout_below="@id/MainScreenMainButtons"
+        android:id="@+id/main_screen_main_buttons"
+        android:layout_below="@id/main_screen_main_buttons"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="bottom">
 
         <Button
-            style="@style/MainBottomButton"
+            style="@style/main_bottom_button"
             android:drawableTop="@drawable/ic_action_search"
             android:text="@string/main_screen_play_hunt"
             android:onClick="openHuntList" />
 
         <Button
-            style="@style/MainBottomButton"
+            style="@style/main_bottom_button"
             android:drawableTop="@drawable/ic_action_new"
             android:text="@string/main_screen_create_hunt" />
 

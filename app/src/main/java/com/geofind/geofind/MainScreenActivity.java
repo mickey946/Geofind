@@ -26,5 +26,5 @@ public class MainScreenActivity extends Activity {
 
     //TODO: Create new Hunt button
 
-    //TODO: All of Google Games buttons
+    //TODO: All of Google Play Games buttons
 }
