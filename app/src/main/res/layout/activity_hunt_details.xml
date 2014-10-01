@@ -2,8 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context="com.geofind.geofind.HuntDetailsActivity">
 
     <ScrollView
@@ -14,6 +12,8 @@
 
         <!--Linear layout to wrap into scroll view-->
         <LinearLayout
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -32,7 +32,7 @@
 
                         <TextView
                             style="@style/hunt_details_title"
-                            android:id="@+id/hunt_details_list_title"
+                            android:id="@+id/hunt_details_title"
                             android:text="Title" />
 
                         <TextView
@@ -96,30 +96,30 @@
                             android:text="@string/hunt_details_distances" />
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <TextView
-                                style="@style/hunt_details"
+                                style="@style/hunt_details_right"
                                 android:text="@string/hunt_details_total_distance" />
 
                             <TextView
                                 style="@style/hunt_details"
                                 android:id="@+id/hunt_details_total_distance"
-                                android:gravity="right" />
+                                android:gravity="right"
+                                android:text="Number" />
 
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@android:color/darker_gray"
+                                style="@style/hunt_details_right"
+                                android:layout_width="wrap_content"
                                 android:text="@string/hunt_details_distance_from_user" />
 
                             <TextView

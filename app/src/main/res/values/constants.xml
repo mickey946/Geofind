@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="splash_screen_timeout">3000</integer>
+    <string name="intent_hunt_extra">HUNT</string>
 </resources>

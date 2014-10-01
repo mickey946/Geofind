@@ -60,6 +60,10 @@
         <item name="android:textColor">@android:color/darker_gray</item>
     </style>
 
+    <style name="hunt_details_right" parent="hunt_details">
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
     <style name="card_view">
         <item name="android:paddingTop">@dimen/item_hunt_list_vertical_margin</item>
         <item name="android:layout_width">fill_parent</item>

@@ -1,9 +1,11 @@
 package com.geofind.geofind;
 
+import java.io.Serializable;
+
 /**
  * Created by mickey on 01/10/14.
  */
-public class Hunt {
+public class Hunt implements Serializable {
 
     /**
      * Title of the hunt.
