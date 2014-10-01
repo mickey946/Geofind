@@ -1,6 +1,5 @@
 package com.geofind.geofind;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,11 +22,9 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     /**
      * The activity from which the list was created.
      */
-    private static Context context;
 
-    public HuntListAdapter(Hunt[] hunts, Context context) {
+    public HuntListAdapter(Hunt[] hunts) {
         this.hunts = hunts;
-        this.context = context;
     }
 
     // Create new views (invoked by the layout manager)
@@ -78,7 +75,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         @Override
         public void onClick(View v) {
             Intent i = new Intent(v.getContext(), HuntDetailsActivity.class);
-            context.startActivity(i);
+            v.getContext().startActivity(i);
             Toast.makeText(v.getContext(), "position = " + getPosition(), Toast.LENGTH_SHORT).show();
         }
     }
