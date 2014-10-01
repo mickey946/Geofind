@@ -33,7 +33,7 @@ public class HuntListActivity extends Activity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // create an adapter
-        HuntListAdapter adapter = new HuntListAdapter(hunts);
+        HuntListAdapter adapter = new HuntListAdapter(hunts, this);
 
         // set adapter
         recyclerView.setAdapter(adapter);

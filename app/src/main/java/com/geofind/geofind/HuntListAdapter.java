@@ -1,11 +1,14 @@
 package com.geofind.geofind;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by mickey on 01/10/14.
@@ -17,8 +20,14 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
      */
     private Hunt[] hunts;
 
-    public HuntListAdapter(Hunt[] hunts) {
+    /**
+     * The activity from which the list was created.
+     */
+    private static Context context;
+
+    public HuntListAdapter(Hunt[] hunts, Context context) {
         this.hunts = hunts;
+        this.context = context;
     }
 
     // Create new views (invoked by the layout manager)
@@ -47,7 +56,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     }
 
     // inner class to hold a reference to each item of RecyclerView
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView textViewTitle;
         public TextView textViewTotalDistance;
         public RatingBar ratingBar;
@@ -55,11 +64,22 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
         public ViewHolder(View itemView) {
             super(itemView);
-            textViewTitle = (TextView) itemView.findViewById(R.id.item_hunt_list_title);
+
+            // set an on click listener to make the cards clickable
+            itemView.setOnClickListener(this);
+
+            textViewTitle = (TextView) itemView.findViewById(R.id.hunt_details_list_title);
             textViewTotalDistance = (TextView)
                     itemView.findViewById(R.id.item_hunt_list_total_distance);
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_hunt_list_rating);
-            textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
+            textViewDescription = (TextView) itemView.findViewById(R.id.hunt_details_description);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), HuntDetailsActivity.class);
+            context.startActivity(i);
+            Toast.makeText(v.getContext(), "position = " + getPosition(), Toast.LENGTH_SHORT).show();
         }
     }
 }
