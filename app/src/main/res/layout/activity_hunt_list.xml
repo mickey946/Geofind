@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,13 +6,96 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.geofind.geofind.HuntListActivity">
+    tools:context="com.geofind.geofind.HuntListActivity"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/recyclerView"
+    <!--<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/recyclerView"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--tools:context=".HuntListActivity" />-->
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".HuntListActivity" />
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="@dimen/cardview_default_radius"
+        android:clickable="true">
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout style="@style/item_list_hunt_inner_layout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/item_hunt_list_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Title"
+                            android:textSize="@dimen/item_hunt_list_title_size" />
+
+                        <TextView
+                            android:id="@+id/item_hunt_list_total_distance"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:text="Total Distance" />
+
+                    </LinearLayout>
+
+                    <RatingBar
+                        android:id="@+id/item_hunt_list_rating"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/item_hunt_list_description"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/item_hunt_list_description_top_padding"
+                        android:textColor="@android:color/darker_gray"
+                        android:singleLine="true"
+                        android:text="Description" />
+
+                </LinearLayout>
+            </FrameLayout>
+
+            <!--TODO replace this with a map-->
+            <ImageView
+                android:id="@+id/item_hunt_list_map_preview"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/item_hunt_list_map_height"
+                android:src="@drawable/sample_map"
+                android:scaleType="centerCrop" />
+
+            <Button
+                style="@android:style/Widget.Holo.Button.Borderless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center"
+                android:text="@string/item_hunt_list_start_hunt"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
+                android:drawableLeft="@drawable/ic_action_send_now"
+                android:onClick="null" />
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>
