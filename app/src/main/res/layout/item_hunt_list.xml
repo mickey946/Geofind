@@ -2,26 +2,24 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/item_hunt_list_vertical_margin">
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="@dimen/cardview_default_radius"
-        android:clickable="true">
+        card_view:cardCornerRadius="@dimen/cardview_default_radius">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <FrameLayout style="@style/item_list_hunt_inner_layout">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
@@ -80,8 +78,7 @@
                 android:text="@string/item_hunt_list_start_hunt"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
-                android:drawableLeft="@drawable/ic_action_send_now"
-                android:onClick="null" />
+                android:drawableLeft="@drawable/ic_action_send_now" />
 
         </LinearLayout>
     </android.support.v7.widget.CardView>
