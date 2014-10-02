@@ -24,6 +24,12 @@
         <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
     </style>
 
+    <style name="padding_top_left_right">
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+    </style>
+
     <!-- Google Games main screen buttons. -->
     <style name="google_play_games_button" parent="android:Widget.Holo.Button.Borderless">
         <item name="android:layout_width">@dimen/google_play_games_button_size</item>

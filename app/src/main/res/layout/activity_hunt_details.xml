@@ -58,12 +58,18 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <FrameLayout style="@style/item_list_hunt_inner_layout">
+                        <LinearLayout
+                            style="@style/item_list_hunt_inner_layout"
+                            android:orientation="vertical">
 
                             <TextView
                                 style="@style/hunt_details_title"
                                 android:text="@string/hunt_details_map" />
-                        </FrameLayout>
+
+                            <TextView
+                                style="@style/hunt_details"
+                                android:text="@string/hunt_details_map_description" />
+                        </LinearLayout>
 
                         <!--TODO change this to a MapView-->
                         <ImageView

@@ -11,6 +11,7 @@
     <string name="item_hunt_list_start_hunt">Start Hunt</string>
     <string name="title_activity_hunt_details">Hunt Details</string>
     <string name="hunt_details_map">Overview Map</string>
+    <string name="hunt_details_map_description">Get to the start point before playing.</string>
     <string name="hunt_details_distances">Distances</string>
     <string name="hunt_details_total_distance">Total distance: </string>
     <string name="hunt_details_distance_from_user">Distance from start point: </string>
