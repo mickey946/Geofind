@@ -2,91 +2,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+
     android:background="@android:color/holo_green_dark"
     tools:context=".MainScreenActivity">
 
     <TextView
+        style="@style/padding_top_bottom_left_right"
         android:id="@+id/main_screen_logo"
-        android:text="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:gravity="top"
+        android:text="@string/app_name"
         android:textColor="@android:color/white"
         android:textSize="@dimen/logo_text_size"
         android:textStyle="bold" />
 
     <LinearLayout
-        android:id="@+id/main_screen_google_play_games_buttons"
-        android:layout_below="@id/main_screen_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal">
-
-        <ImageButton
-            style="@style/google_play_games_button"
-            android:id="@+id/MainScreenGoogleGames"
-            android:src="@drawable/games_controller_white" />
-
-        <ImageButton
-            style="@style/google_play_games_button"
-            android:id="@+id/MainScreenGoogleGamesAchievements"
-            android:src="@drawable/games_achievements_white" />
-
-        <ImageButton
-            style="@style/google_play_games_button"
-            android:id="@+id/MainScreenGoogleGamesLeaderBoards"
-            android:src="@drawable/games_leaderboards_white" />
-
-        <ImageButton
-            style="@style/google_play_games_button"
-            android:id="@+id/main_screen_google_games_gifts"
-            android:src="@drawable/games_gifts_white" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/main_screen_intro_text"
-        android:layout_below="@id/main_screen_google_play_games_buttons"
-        android:layout_above="@+id/main_screen_main_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/main_screen_text_size"
-            android:text="@string/main_screen_intro" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/main_screen_main_buttons"
-        android:layout_below="@id/main_screen_main_buttons"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:gravity="bottom">
+        android:gravity="bottom"
+        android:orientation="vertical">
 
         <Button
-            style="@style/main_bottom_button"
-            android:drawableTop="@drawable/ic_action_search"
-            android:text="@string/main_screen_play_hunt"
-            android:onClick="openHuntList" />
+            style="@style/main_bottom_button_half"
+            android:drawableTop="@drawable/ic_action_play"
+            android:onClick="openHuntList"
+            android:text="@string/main_screen_play_hunt" />
 
         <Button
-            style="@style/main_bottom_button"
+            style="@style/main_bottom_button_half"
             android:drawableTop="@drawable/ic_action_new"
             android:text="@string/main_screen_create_hunt" />
+
+        <Button
+            style="@style/main_bottom_button"
+            android:drawableTop="@drawable/games_controller_white_small"
+            android:text="@string/main_screen_google_play_games" />
+
+        <Button
+            style="@style/main_bottom_button"
+            android:drawableTop="@drawable/ic_action_settings"
+            android:onClick="openHuntList"
+            android:text="@string/action_settings" />
 
     </LinearLayout>
 
