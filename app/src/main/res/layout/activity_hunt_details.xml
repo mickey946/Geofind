@@ -125,7 +125,8 @@
                             <TextView
                                 style="@style/hunt_details"
                                 android:id="@+id/hunt_details_distance_from_user"
-                                android:gravity="right" />
+                                android:gravity="right"
+                                android:text="Number" />
 
                         </LinearLayout>
 

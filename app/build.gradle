@@ -23,4 +23,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:cardview-v7:21.+' // this will load the CardView
     compile 'com.android.support:recyclerview-v7:+' // this will load the RecyclerView
+
+    // this will load SlidingUpPanel
+    repositories {
+        mavenCentral()
+    }
+    compile 'com.sothree.slidinguppanel:library:+'
 }
