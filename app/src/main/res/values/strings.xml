@@ -16,5 +16,7 @@
     <string name="hunt_details_distance_from_user">Distance from start point: </string>
     <string name="hunt_details_rating">Rating</string>
     <string name="hunt_details_comments_reviews">Comments and Reviews</string>
+    <string name="title_activity_hunt">HuntActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

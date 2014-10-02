@@ -73,6 +73,7 @@
 
             <Button
                 style="@android:style/Widget.Holo.Button.Borderless"
+                android:id="@+id/item_hunt_list_start_hunt_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start|center"

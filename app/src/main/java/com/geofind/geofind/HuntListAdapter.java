@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -36,10 +37,20 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        // put the values of the hunt in all of the views
         viewHolder.textViewTitle.setText(hunts[i].getTitle());
         viewHolder.textViewTotalDistance.setText(hunts[i].getTotalDistance().toString());
         viewHolder.ratingBar.setRating(hunts[i].getRating());
         viewHolder.textViewDescription.setText(hunts[i].getDescription());
+
+        // set a listener to the button to start the hunt
+        viewHolder.startHuntButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), HuntActivity.class);
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -53,6 +64,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         public TextView textViewTotalDistance;
         public RatingBar ratingBar;
         public TextView textViewDescription;
+        public Button startHuntButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -60,11 +72,13 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             // set an on click listener to make the cards clickable
             itemView.setOnClickListener(this);
 
+            // get the views from the layout
             textViewTitle = (TextView) itemView.findViewById(R.id.item_hunt_list_title);
             textViewTotalDistance = (TextView)
                     itemView.findViewById(R.id.item_hunt_list_total_distance);
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_hunt_list_rating);
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
+            startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
         }
 
         @Override
