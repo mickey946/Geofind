@@ -7,12 +7,21 @@
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
+    <!--Font styles-->
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <!--Padding-->
+    <style name="padding_top_bottom_left_right">
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
     </style>
 
     <!-- Google Games main screen buttons. -->
@@ -27,10 +36,13 @@
 
     <!-- Main screen main buttons. -->
     <style name="main_bottom_button" parent="android:Widget.Holo.Light.Button">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">.50</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">70dp</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="main_bottom_button_half" parent="main_bottom_button">
+        <item name="android:layout_weight">.50</item>
     </style>
 
     <!--Inner padding in a cardview-->

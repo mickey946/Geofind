@@ -6,6 +6,7 @@
     <string name="main_screen_intro">Some inspirational bullshit with a picture of boobs.</string>
     <string name="main_screen_play_hunt">Play a Hunt</string>
     <string name="main_screen_create_hunt">Create a Hunt</string>
+    <string name="main_screen_google_play_games">Achievements</string>
     <string name="title_activity_hunt_list">Choose a hunt</string>
     <string name="item_hunt_list_start_hunt">Start Hunt</string>
     <string name="title_activity_hunt_details">Hunt Details</string>
