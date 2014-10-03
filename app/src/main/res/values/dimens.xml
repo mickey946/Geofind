@@ -18,5 +18,6 @@
 
     <dimen name="hunt_details_map_height">150dp</dimen>
 
+    <dimen name="sliding_up_panel_closed_height">68dp</dimen>
 
 </resources>

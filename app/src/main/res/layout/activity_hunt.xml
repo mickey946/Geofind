@@ -10,9 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
-        sothree:panelHeight="68dp"
+    sothree:panelHeight="@dimen/sliding_up_panel_closed_height"
         sothree:shadowHeight="4dp"
         sothree:paralaxOffset="100dp"
+    sothree:fadeColor="@android:color/transparent"
         sothree:dragView="@+id/dragView">
 
         <!-- MAIN CONTENT -->
@@ -22,7 +23,7 @@
             android:paddingTop="?android:attr/actionBarSize"
             android:background="@drawable/sample_map">
 
-            <!--TODO add a MapView here-->
+            <!--TODO add a MapView here and remove the background-->
 
         </LinearLayout>
 
@@ -38,7 +39,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="68dp"
+                android:layout_height="@dimen/sliding_up_panel_closed_height"
                 android:orientation="horizontal">
 
                 <TextView
