@@ -146,10 +146,10 @@ public class HuntActivity extends FragmentActivity {
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
         Hint[] hints = {
-                new Hint("Hint1", "Description1"),
-                new Hint("Hint2", "Description2"),
-                new Hint("Hint3", "Description3"),
-                new Hint("Hint4", "Description4")
+                new Hint("Hint1", "Description1", Hint.State.SOLVED),
+                new Hint("Hint2", "Description2", Hint.State.SOLVED),
+                new Hint("Hint3", "Description3", Hint.State.REVEALED),
+                new Hint("Hint4", "Description4", Hint.State.UNREVEALED)
         };
 
         // Create an adapter that when requested, will return a fragment representing an object in

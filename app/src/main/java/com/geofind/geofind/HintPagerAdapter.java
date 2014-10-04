@@ -1,5 +1,6 @@
 package com.geofind.geofind;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 
 /**
@@ -60,6 +63,41 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                  @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.item_hint_swipe_view, container, false);
+
+            // get the related hint
+            Bundle bundle = getArguments();
+            Hint hint = (Hint) bundle.getSerializable(TAG);
+
+            // put hint details in the view
+            TextView hintTitleTextView = (TextView) view.findViewById(R.id.item_hint_title);
+            hintTitleTextView.setText(hint.getTitle());
+
+            TextView hintDescriptionTextView = (TextView)
+                    view.findViewById(R.id.item_hint_description);
+            hintDescriptionTextView.setText(hint.getDescription());
+
+            Button revealButton = (Button) view.findViewById(R.id.item_hint_reveal_button);
+            Drawable drawable;
+            switch (hint.getState()) {
+                case REVEALED:
+                    drawable = getResources().getDrawable(R.drawable.ic_action_cancel);
+                    revealButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+                    revealButton.setText(getResources().getText(R.string.item_hint_revealed));
+                    revealButton.setEnabled(false);
+                    break;
+                case UNREVEALED:
+                    drawable = getResources().getDrawable(R.drawable.ic_action_place);
+                    revealButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+                    revealButton.setText(getResources().getText(R.string.item_hint_reveal));
+                    break;
+                case SOLVED:
+                    drawable = getResources().getDrawable(R.drawable.ic_action_accept);
+                    revealButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+                    revealButton.setText(getResources().getText(R.string.item_hint_solved));
+                    revealButton.setEnabled(false);
+                    break;
+            }
+
             return view;
         }
     }
