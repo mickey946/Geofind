@@ -19,5 +19,9 @@
     <dimen name="hunt_details_map_height">150dp</dimen>
 
     <dimen name="sliding_up_panel_closed_height">68dp</dimen>
+    <dimen name="sliding_up_panel_divider_width">0.5dp</dimen>
+    <dimen name="sliding_up_panel_divider_height">45dp</dimen>
+    <dimen name="activity_hunt_reveal_width">100dp</dimen>
+    <dimen name="activity_hunt_reveal_padding">8dp</dimen>
 
 </resources>

@@ -71,6 +71,10 @@
         <item name="android:fontFamily">"sans-serif-light"</item>
     </style>
 
+    <style name="hunt_activity_hint_title" parent="hunt_details_title">
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
     <!--Details-->
     <style name="hunt_details">
         <item name="android:layout_width">fill_parent</item>
