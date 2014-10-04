@@ -1,6 +1,7 @@
 package com.geofind.geofind;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,9 +17,20 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
 public class HuntActivity extends Activity {
+    /**
+     * The tag used for debugger log.
+     */
     private static final String TAG = "HuntActivity";
 
-    private SlidingUpPanelLayout mLayout;
+    /**
+     * The sliding up panel layout.
+     */
+    private SlidingUpPanelLayout slindingUpPanel;
+
+    /**
+     * The hunt on which the activity displays the details.
+     */
+    private Hunt hunt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,12 +38,22 @@ public class HuntActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_hunt);
 
-        mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        mLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+        // retrieve the hunt from the intent that started the activity
+        Intent intent = getIntent();
+
+        if (intent != null) {
+            hunt = (Hunt) intent.getExtras().getSerializable(
+                    getResources().getString(R.string.intent_hunt_extra));
+            setTitle(hunt.getTitle());
+        }
+
+        // set up the sliding up panel with listeners
+        slindingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        slindingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
                 Log.i(TAG, "onPanelSlide, offset " + slideOffset);
-                setActionBarTranslation(mLayout.getCurrentParalaxOffset());
+                setActionBarTranslation(slindingUpPanel.getCurrentParalaxOffset());
             }
 
             @Override
@@ -122,8 +144,15 @@ public class HuntActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (mLayout != null && mLayout.isPanelExpanded() || mLayout.isPanelAnchored()) {
-            mLayout.collapsePanel(); // collapse the panel if opened (on back press)
+        boolean isAnchored = false;
+        try {
+            isAnchored = slindingUpPanel.isPanelAnchored();
+        } catch (Exception e) {
+            super.onBackPressed(); // error occurred, act like nothing happened
+        }
+
+        if (slindingUpPanel != null && slindingUpPanel.isPanelExpanded() || isAnchored) {
+            slindingUpPanel.collapsePanel(); // collapse the panel if opened (on back press)
         } else {
             super.onBackPressed(); // if the panel is collapsed, proceed as usual
         }

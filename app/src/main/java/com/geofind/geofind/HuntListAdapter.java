@@ -36,7 +36,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(ViewHolder viewHolder, final int i) {
         // put the values of the hunt in all of the views
         viewHolder.textViewTitle.setText(hunts[i].getTitle());
         viewHolder.textViewTotalDistance.setText(hunts[i].getTotalDistance().toString());
@@ -48,6 +48,12 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), HuntActivity.class);
+
+                // pass the hunt itself to the HuntDetailActivity
+                intent.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
+                        hunts[i]);
+
+                // start the activity
                 v.getContext().startActivity(intent);
             }
         });
@@ -84,14 +90,14 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         @Override
         public void onClick(View v) {
             // create intent to open the hunt details
-            Intent i = new Intent(v.getContext(), HuntDetailsActivity.class);
+            Intent intent = new Intent(v.getContext(), HuntDetailsActivity.class);
 
             // pass the hunt itself to the HuntDetailActivity
-            i.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
+            intent.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
                     hunts[getPosition()]);
 
             // start the activity
-            v.getContext().startActivity(i);
+            v.getContext().startActivity(intent);
         }
     }
 }

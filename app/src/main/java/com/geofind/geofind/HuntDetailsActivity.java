@@ -70,6 +70,10 @@ public class HuntDetailsActivity extends Activity {
                 return true;
             case R.id.action_start_hunt:
                 Intent intent = new Intent(this, HuntActivity.class);
+
+                // pass the hunt itself to the HuntDetailActivity
+                intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+
                 startActivity(intent);
                 return true;
             default:
