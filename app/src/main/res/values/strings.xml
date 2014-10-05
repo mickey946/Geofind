@@ -2,7 +2,43 @@
 <resources>
 
     <string name="app_name">Geofind</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="main_screen_intro">Some inspirational bullshit with a picture of boobs.</string>
+    <string name="main_screen_play_hunt">Play a Hunt</string>
+    <string name="main_screen_create_hunt">Create a Hunt</string>
+    <string name="main_screen_google_play_games">Achievements</string>
+    <string name="title_activity_hunt_list">Choose a hunt</string>
+    <string name="item_hunt_list_start_hunt">Start Hunt</string>
+    <string name="title_activity_hunt_details">Hunt Details</string>
+    <string name="hunt_details_map">Overview Map</string>
+    <string name="hunt_details_map_description">Get to the start point before playing. Click on the
+        map to navigate there.</string>
+    <string name="hunt_details_distances">Distances</string>
+    <string name="hunt_details_total_distance">Total distance: </string>
+    <string name="hunt_details_distance_from_user">Distance from start point: </string>
+    <string name="hunt_details_rating">Rating</string>
+    <string name="hunt_details_comments_reviews">Comments and Reviews</string>
+    <string name="item_hint_reveal">Reveal</string>
+    <string name="item_hint_revealed">Revealed</string>
+    <string name="item_hint_solved">Solved</string>
+    <string name="item_hint_text">Hint Text</string>
+    <string name="item_hint_picture">Hint Picture</string>
+    <string name="item_hint_picture_details">Click on the picture to enlarge.</string>
+    <string name="item_hint_video">Hint Video</string>
+    <string name="item_hint_sound">Hint Sound</string>
+    <string name="coming_soon">Coming soon!</string>
+    <string name="title_activity_hunt_finish">HuntFinishActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="hunt_finish_title">Finished Hunt!</string>
+    <string name="hunt_finish_description">Good job, you have finished this hunt! Feel free to review and share it with your friends.</string>
+    <string name="hunt_finish_statistics_title">Statistics</string>
+    <string name="hunt_finish_total_points">Total number of points:</string>
+    <string name="hunt_finish_solved_points">Solved points:</string>
+    <string name="hunt_finish_total_time">Total time:</string>
+    <string name="hunt_finish_rate_and_review_title">Rate and Review</string>
+    <string name="hunt_finish_review_title">Title</string>
+    <string name="hunt_finish_review">Review</string>
+    <string name="hunt_finish_submit_review">Submit review</string>
+    <string name="action_share">Share</string>
 
 </resources>
