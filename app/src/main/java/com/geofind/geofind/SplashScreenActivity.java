@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 
 public class SplashScreenActivity extends Activity {
@@ -23,6 +24,7 @@ public class SplashScreenActivity extends Activity {
 
         _mapManager = new MapManager(this, mapFragment, tvLocation);
 
+        _mapManager.drawCircle(new LatLng(31.76831,35.21371),50);
 
     }
 

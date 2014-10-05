@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -20,6 +21,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -35,6 +37,7 @@ public class MapManager implements LocationListener {
     private MapFragment _mapFragment;
     private GoogleMap _mMap;
     private Activity _activity;
+
 
 
     protected MarkerOptions markerOptions;
@@ -69,18 +72,7 @@ public class MapManager implements LocationListener {
                 Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG);
         }
         _mMap.setMyLocationEnabled(true);
-        LocationManager locationManager = (LocationManager) _activity.getSystemService(Context.LOCATION_SERVICE);
-
-        Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, true);
-        Location location = locationManager.getLastKnownLocation(provider);
-
-        if (location != null) {
-            Toast.makeText(_activity, "got new location", Toast.LENGTH_LONG);
-            onLocationChanged(location);
-        }
-
-        locationManager.requestLocationUpdates(provider, 200, 0, this);
+        FocusOnCurrentLocation();
 
         _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -96,6 +88,28 @@ public class MapManager implements LocationListener {
                 //mMap.addMarker(markerOptions);
             }
         });
+    }
+
+    //Single time focus
+    public void FocusOnCurrentLocation(){
+        FocusOnCurrentLocation(-1,-1);
+    }
+
+    // focus and keep tracking
+    public void FocusOnCurrentLocation(long minTime, float minDistance) {
+        LocationManager locationManager = (LocationManager) _activity.getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        String provider = locationManager.getBestProvider(criteria, true);
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        if (location != null) {
+            Toast.makeText(_activity, "got new location", Toast.LENGTH_LONG);
+            onLocationChanged(location);
+        }
+
+        if (minTime>=0 && minDistance >= 0)
+            locationManager.requestLocationUpdates(provider, minTime, minDistance, this);
     }
 
     @Override
@@ -126,6 +140,39 @@ public class MapManager implements LocationListener {
     @Override
     public void onProviderDisabled(String s) {
 
+    }
+
+    public void drawCircle (LatLng position, float radius){
+        // Instantiating CircleOptions to draw a circle around the marker
+        CircleOptions circleOptions = new CircleOptions();
+
+        // Specifying the center of the circle
+        circleOptions.center(position);
+
+        // Radius of the circle
+        circleOptions.radius(radius);
+
+        // Border color of the circle
+        circleOptions.strokeColor(Color.BLACK);
+
+        // Fill color of the circle
+        // 0x represents, this is an hexadecimal code
+        // 55 represents percentage of transparency. For 100% transparency, specify 00.
+        // For 0% transparency ( ie, opaque ) , specify ff
+        // The remaining 6 characters(00ff00) specify the fill color
+        circleOptions.fillColor(0x5500ff00);
+
+        // Border width of the circle
+        circleOptions.strokeWidth(2);
+
+        // Adding the circle to the GoogleMap
+        _mMap.addCircle(circleOptions);
+
+        Location l = new Location(LocationManager.PASSIVE_PROVIDER);
+        l.setLatitude(position.latitude);
+        l.setLongitude(position.longitude);
+
+        onLocationChanged(l);
     }
 
     private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
