@@ -15,7 +15,7 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo.NoActionBar">
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -27,7 +27,7 @@
             android:name=".HuntListActivity"
             android:label="@string/title_activity_hunt_list"
             android:parentActivityName=".MainScreenActivity">
-            <meta-data
+        <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.MainScreenActivity" />
         </activity>
@@ -35,14 +35,22 @@
             android:name=".HuntDetailsActivity"
             android:label="@string/title_activity_hunt_details"
             android:parentActivityName=".HuntListActivity">
-            <meta-data
+        <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.HuntListActivity" />
         </activity>
         <activity android:name=".HuntActivity">
-        <meta-data
+            <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.HuntDetailsActivity" />
+        </activity>
+        <activity
+            android:name=".HuntFinishActivity"
+            android:label="@string/title_activity_hunt_finish"
+            android:parentActivityName=".MainScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.geofind.geofind.MainScreenActivity" />
         </activity>
     </application>
 

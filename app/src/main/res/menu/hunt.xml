@@ -6,4 +6,10 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_temp_finish"
+        android:title="Temporary finish"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

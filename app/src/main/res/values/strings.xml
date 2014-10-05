@@ -27,5 +27,18 @@
     <string name="item_hint_video">Hint Video</string>
     <string name="item_hint_sound">Hint Sound</string>
     <string name="coming_soon">Coming soon!</string>
+    <string name="title_activity_hunt_finish">HuntFinishActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="hunt_finish_title">Finished Hunt!</string>
+    <string name="hunt_finish_description">Good job, you have finished this hunt! Feel free to review and share it with your friends.</string>
+    <string name="hunt_finish_statistics_title">Statistics</string>
+    <string name="hunt_finish_total_points">Total number of points:</string>
+    <string name="hunt_finish_solved_points">Solved points:</string>
+    <string name="hunt_finish_total_time">Total time:</string>
+    <string name="hunt_finish_rate_and_review_title">Rate and Review</string>
+    <string name="hunt_finish_review_title">Title</string>
+    <string name="hunt_finish_review">Review</string>
+    <string name="hunt_finish_submit_review">Submit review</string>
+    <string name="action_share">Share</string>
 
 </resources>
