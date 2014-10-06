@@ -23,6 +23,10 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         this.hints = hints;
     }
 
+    public int getSize() {
+        return hints.size();
+    }
+
     public void addHint(Hint hint) {
         hints.add(hint);
         this.notifyDataSetChanged();

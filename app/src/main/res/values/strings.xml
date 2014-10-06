@@ -55,5 +55,15 @@
     <string name="hint_list_empty">No points yet. Click on the \'plus\' button to add a point.</string>
     <string name="hint_list_add_point">Add a point</string>
     <string name="create_hunt_create_points">Create Points</string>
+    <string name="title_activity_create_hint">Create a Point</string>
+    <string name="create_hint_title">Adding a Point</string>
+    <string name="create_hint_details">In this section you are required to edit a point in your hunt. Each point must have a title, hint text and of course a real world coordinate. Additionally, you can add to your point a picture, sound or video hints.</string>
+    <string name="create_hint_hint_text_hint">Hint text</string>
+    <string name="create_hint_pick_point_title">Pick a Point</string>
+    <string name="create_hint_pick_point_description">Click on the map to choose a point.</string>
+    <string name="create_hint_add_hint">Add Point</string>
+    <string name="create_hint_select_picture">Select a Picture</string>
+    <string name="create_hint_select_picture_details">Click on the button below to add a picture</string>
+    <string name="create_hint_fields_error">One or more fields are missing or illegal!</string>
 
 </resources>

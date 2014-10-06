@@ -3,4 +3,6 @@
     <integer name="splash_screen_timeout">3000</integer>
     <integer name="sliding_up_panel_anchor_delay">500</integer>
     <string name="intent_hunt_extra">HUNT</string>
+    <string name="intent_hint_extra">HINT</string>
+    <integer name="intent_hint_result">1</integer>
 </resources>
