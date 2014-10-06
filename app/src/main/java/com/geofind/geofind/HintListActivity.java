@@ -27,6 +27,7 @@ public class HintListActivity extends Activity {
 
         // find the retained fragment on activity restarts
         FragmentManager fragmentManager = getFragmentManager();
+        //noinspection unchecked
         retainedFragment = (RetainedFragment<ArrayList<Hint>>) fragmentManager.findFragmentByTag(
                 getResources().getString(R.string.hint_list_retained_fragment));
 
@@ -47,7 +48,7 @@ public class HintListActivity extends Activity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // create an adapter and set it's data
-        adapter = new HintListAdapter();
+        adapter = new HintListAdapter(this);
         adapter.setHints(retainedFragment.getData());
 
         // set adapter
@@ -120,6 +121,8 @@ public class HintListActivity extends Activity {
 
         // Check which request we're responding to
         if (requestCode == getResources().getInteger(R.integer.intent_hint_result)) {
+            // the user added a new hint
+
             // Make sure the request was successful
             if (resultCode == RESULT_OK) { // The user created a point
                 Bundle bundle = data.getExtras();
@@ -127,6 +130,20 @@ public class HintListActivity extends Activity {
                     Hint hint = (Hint) bundle.getSerializable(getString(R.string.intent_hint_extra));
                     if (hint != null) {
                         addHint(hint);
+                    }
+                }
+            }
+        } else if (requestCode == getResources().getInteger(R.integer.intent_hint_edit_extra)) {
+            // the user edited an existing hint
+
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) { // The user created a point
+                Bundle bundle = data.getExtras();
+                if (bundle != null) {
+                    Hint hint = (Hint) bundle.getSerializable(getString(R.string.intent_hint_extra));
+                    Integer i = bundle.getInt(getString(R.string.intent_hint_index_extra));
+                    if (hint != null) {
+                        adapter.setHint(i, hint);
                     }
                 }
             }

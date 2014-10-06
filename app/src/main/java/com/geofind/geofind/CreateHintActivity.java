@@ -21,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 
@@ -29,6 +28,8 @@ public class CreateHintActivity extends Activity {
 
     private TextView hintTitleTextView;
     private TextView hintTextTextView;
+    private Hint hint = null;
+    private Integer i = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,20 @@ public class CreateHintActivity extends Activity {
 
         hintTitleTextView = (TextView) findViewById(R.id.create_hint_title);
         hintTextTextView = (TextView) findViewById(R.id.create_hint_description);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                hint = (Hint) bundle.getSerializable(
+                        getResources().getString(R.string.intent_hint_extra));
+                i = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
+                if (hint != null) { // the user is editing and existing hint
+                    hintTitleTextView.setText(hint.getTitle());
+                    hintTextTextView.setText(hint.getDescription());
+                }
+            }
+        }
     }
 
 
@@ -66,8 +81,15 @@ public class CreateHintActivity extends Activity {
      * @return whether the user filled all the required fields or not
      */
     public boolean checkInput() {
-        return !hintTitleTextView.getText().toString().trim().equals("")
+        boolean legal = !hintTitleTextView.getText().toString().trim().equals("")
                 && !hintTextTextView.getText().toString().trim().equals("");
+
+        if (!legal) {
+            Toast.makeText(this, getString(R.string.create_hint_fields_error),
+                    Toast.LENGTH_LONG).show();
+        }
+
+        return legal;
     }
 
     /**
@@ -75,21 +97,20 @@ public class CreateHintActivity extends Activity {
      * activity.
      */
     public void submitHint() {
-        // check if the user filled all required fields
-        if (checkInput()) { // all fields are legal
+        if (checkInput()) { // check if the user filled all required fields
             Hint hint = new Hint(hintTitleTextView.getText().toString(),
                     hintTextTextView.getText().toString());
 
-            // send away the hint
+            // send away the hint (and it's index, if present)
             Intent intent = new Intent();
             intent.putExtra(getString(R.string.intent_hint_extra), hint);
+            intent.putExtra(getString(R.string.intent_hint_index_extra), i);
             setResult(RESULT_OK, intent);
 
-            //close this Activity...
+            //close this Activity
             finish();
-        } else { // one or more fields are not legal
-            Toast.makeText(this, getString(R.string.create_hint_fields_error),
-                    Toast.LENGTH_LONG).show();
+        } else {
+            // do not exit
         }
     }
 

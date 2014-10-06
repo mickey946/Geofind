@@ -1,5 +1,8 @@
 package com.geofind.geofind;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +17,11 @@ import java.util.ArrayList;
 public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHolder> {
 
     private ArrayList<Hint> hints;
+    private Context context;
 
-    public HintListAdapter() {
+    public HintListAdapter(Context context) {
         hints = new ArrayList<Hint>();
+        this.context = context;
     }
 
     public int getSize() {
@@ -37,6 +42,11 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         this.notifyDataSetChanged();
     }
 
+    public void setHint(int i, Hint hint) {
+        hints.set(i, hint);
+        this.notifyDataSetChanged();
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -50,8 +60,12 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        // bind the context activity to the view holder
+        viewHolder.context = context;
+
         // assign the hint to it's ViewHolder
         viewHolder.hint = hints.get(i);
+        viewHolder.i = i;
 
         // put the values of the hunt in all of the views
         viewHolder.hintTitleTextView.setText(hints.get(i).getTitle());
@@ -64,17 +78,31 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
     }
 
     // inner class to hold a reference to each item of RecyclerView
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public Hint hint;
+        public Integer i;
         public TextView hintTitleTextView;
         public TextView hintTextTextView;
+        public Context context;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
+            // set an on click listener to make the cards clickable
+            itemView.setOnClickListener(this);
+
             // get the views from the layout
             hintTitleTextView = (TextView) itemView.findViewById(R.id.item_hint_list_title);
             hintTextTextView = (TextView) itemView.findViewById(R.id.item_hint_list_text);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(view.getContext(), CreateHintActivity.class);
+            intent.putExtra(view.getResources().getString(R.string.intent_hint_extra), hint);
+            intent.putExtra(view.getResources().getString(R.string.intent_hint_index_extra), i);
+            ((Activity) context).startActivityForResult(intent,
+                    view.getResources().getInteger(R.integer.intent_hint_edit_extra));
         }
     }
 }

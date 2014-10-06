@@ -57,6 +57,8 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
                 v.getContext().startActivity(intent);
             }
         });
+
+
     }
 
     @Override
@@ -85,6 +87,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_hunt_list_rating);
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
             startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
+
         }
 
         @Override
