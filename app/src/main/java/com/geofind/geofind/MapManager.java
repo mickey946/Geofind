@@ -112,6 +112,20 @@ public class MapManager implements LocationListener {
             locationManager.requestLocationUpdates(provider, minTime, minDistance, this);
     }
 
+    public void ShowMyLocationButton (boolean show){
+        _mMap.getUiSettings().setMyLocationButtonEnabled(show);
+    }
+
+    public void ShowZoomButton (boolean show){
+        _mMap.getUiSettings().setZoomControlsEnabled(show);
+    }
+
+    public void setStaticMapMode (){
+        _mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        _mMap.getUiSettings().setRotateGesturesEnabled(false);
+
+    }
+
     @Override
     public void onLocationChanged(Location location) {
 

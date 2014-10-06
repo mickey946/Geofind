@@ -42,6 +42,9 @@ public class HuntDetailsActivity extends Activity {
             MapFragment mapFragment =
                     (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_details_map_preview);
             _mapManager = new MapManager(this, mapFragment);
+            _mapManager.ShowMyLocationButton(false);
+
+            _mapManager.drawCircle(hunt.getCenterPosition(),hunt.getRadius());
 
             // hunt total distance
             TextView totalDistanceTextView = (TextView)
