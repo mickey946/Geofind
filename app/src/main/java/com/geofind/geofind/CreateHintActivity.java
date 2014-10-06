@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,6 +75,25 @@ public class CreateHintActivity extends Activity {
         } else { // one or more fields are not legal
             Toast.makeText(this, getString(R.string.create_hint_fields_error),
                     Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void openPointPicker(View view) {
+        Intent intent = new Intent(this, PickPointActivity.class);
+        startActivityForResult(intent, getResources().getInteger(R.integer.intent_point_result));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Check which request we're responding to
+        if (requestCode == getResources().getInteger(R.integer.intent_point_result)) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) { // The user picked a point
+                Bundle bundle = data.getExtras();
+                // TODO add the coordinates to the Hint object and display it on the map
+            }
         }
     }
 }

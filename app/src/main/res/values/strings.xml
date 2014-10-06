@@ -65,5 +65,7 @@
     <string name="create_hint_select_picture">Select a Picture</string>
     <string name="create_hint_select_picture_details">Click on the button below to add a picture</string>
     <string name="create_hint_fields_error">One or more fields are missing or illegal!</string>
+    <string name="title_activity_pick_point">Pick a Point</string>
+    <string name="action_pick_point">Pick a Point</string>
 
 </resources>
