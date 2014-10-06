@@ -42,13 +42,13 @@
                             android:paddingBottom="@dimen/activity_vertical_margin" />
 
                         <EditText
-                            android:id="@+id/hunt_finish_review_title"
+                            android:id="@+id/create_hunt_title"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/create_hunt_title_hint" />
 
                         <EditText
-                            android:id="@+id/hunt_finish_review"
+                            android:id="@+id/create_hunt_description"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:minHeight="@dimen/hunt_finish_review_text_view_min_height"
@@ -88,12 +88,14 @@
 
                         <Button
                             style="@android:style/Widget.Holo.Button.Borderless"
+                            android:id="@+id/create_hunt_create_points_button"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="Create Points"
+                            android:text="@string/create_hunt_create_points"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/item_hunt_list_start_hunt_text_size" />
+                            android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
+                            android:onClick="openHintCreation" />
 
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

@@ -17,6 +17,11 @@ public class Hint implements Serializable {
     // TODO add picture, recording and video
 
 
+    public Hint(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
     public Hint(String title, String description, State state) {
         this.title = title;
         this.description = description;

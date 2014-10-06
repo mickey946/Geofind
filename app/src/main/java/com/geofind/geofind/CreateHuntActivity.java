@@ -1,9 +1,11 @@
 package com.geofind.geofind;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class CreateHuntActivity extends Activity {
@@ -32,5 +34,10 @@ public class CreateHuntActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openHintCreation(View view) {
+        Intent intent = new Intent(this, HintListActivity.class);
+        startActivity(intent);
     }
 }
