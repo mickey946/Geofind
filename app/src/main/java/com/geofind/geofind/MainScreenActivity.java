@@ -24,7 +24,10 @@ public class MainScreenActivity extends Activity {
         startActivity(intent);
     }
 
-    //TODO: Create new Hunt button
+    public void openHuntCreation(View view) {
+        Intent intent = new Intent(this, CreateHuntActivity.class);
+        startActivity(intent);
+    }
 
     //TODO: All of Google Play Games buttons
 }

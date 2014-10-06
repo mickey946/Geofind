@@ -35,6 +35,7 @@
         <Button
             style="@style/main_bottom_button_half"
             android:drawableTop="@drawable/ic_action_new"
+            android:onClick="openHuntCreation"
             android:text="@string/main_screen_create_hunt" />
 
         <Button
