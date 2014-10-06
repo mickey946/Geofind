@@ -9,4 +9,5 @@
     <integer name="intent_point_result">2</integer>
     <integer name="intent_picture_result">3</integer>
     <integer name="intent_hints_result">4</integer>
+    <string name="hint_list_retained_fragment">HINTS</string>
 </resources>

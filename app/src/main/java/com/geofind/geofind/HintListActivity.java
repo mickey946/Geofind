@@ -1,6 +1,7 @@
 package com.geofind.geofind;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -11,15 +12,33 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 public class HintListActivity extends Activity {
 
-    HintListAdapter adapter;
+    private RetainedFragment<ArrayList<Hint>> retainedFragment;
+    private HintListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hint_list);
+
+        // find the retained fragment on activity restarts
+        FragmentManager fragmentManager = getFragmentManager();
+        retainedFragment = (RetainedFragment<ArrayList<Hint>>) fragmentManager.findFragmentByTag(
+                getResources().getString(R.string.hint_list_retained_fragment));
+
+        // create the fragment and data the first time
+        if (retainedFragment == null) {
+            retainedFragment = new RetainedFragment<ArrayList<Hint>>();
+            fragmentManager.beginTransaction().add(retainedFragment,
+                    getResources().getString(R.string.hint_list_retained_fragment)).commit();
+
+            // create new list
+            retainedFragment.setData(new ArrayList<Hint>());
+        }
 
         // get a reference to recyclerView
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -27,8 +46,9 @@ public class HintListActivity extends Activity {
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // create an adapter
+        // create an adapter and set it's data
         adapter = new HintListAdapter();
+        adapter.setHints(retainedFragment.getData());
 
         // set adapter
         recyclerView.setAdapter(adapter);
@@ -111,5 +131,15 @@ public class HintListActivity extends Activity {
                 }
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        retainedFragment.setData(adapter.getHints());
+        super.onDestroy();
+    }
+
+    public void clearData() {
+        retainedFragment.setData(null);
     }
 }

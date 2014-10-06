@@ -27,6 +27,11 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         return hints;
     }
 
+    public void setHints(ArrayList<Hint> hints) {
+        this.hints = hints;
+        this.notifyDataSetChanged();
+    }
+
     public void addHint(Hint hint) {
         hints.add(hint);
         this.notifyDataSetChanged();
@@ -45,6 +50,9 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        // assign the hint to it's ViewHolder
+        viewHolder.hint = hints.get(i);
+
         // put the values of the hunt in all of the views
         viewHolder.hintTitleTextView.setText(hints.get(i).getTitle());
         viewHolder.hintTextTextView.setText(hints.get(i).getDescription());
@@ -57,6 +65,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
     // inner class to hold a reference to each item of RecyclerView
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public Hint hint;
         public TextView hintTitleTextView;
         public TextView hintTextTextView;
 
