@@ -1,8 +1,95 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
         <!-- Customize your theme here. -->
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+    </style>
+
+    <!--Font styles-->
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <!--Padding-->
+    <style name="padding_top_bottom_left_right">
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <style name="padding_top_left_right">
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <!-- Google Games main screen buttons. -->
+    <style name="google_play_games_button" parent="android:Widget.Holo.Button.Borderless">
+        <item name="android:layout_width">@dimen/google_play_games_button_size</item>
+        <item name="android:layout_height">@dimen/google_play_games_button_size</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:layout_marginLeft">@dimen/google_play_games_button_margin</item>
+        <item name="android:layout_marginRight">@dimen/google_play_games_button_margin</item>
+    </style>
+
+    <!-- Main screen main buttons. -->
+    <style name="main_bottom_button" parent="android:Widget.Holo.Light.Button">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">70dp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="main_bottom_button_half" parent="main_bottom_button">
+        <item name="android:layout_weight">.50</item>
+    </style>
+
+    <!--Inner padding in a cardview-->
+    <style name="item_list_hunt_inner_layout">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">fill_parent</item>
+        <!--<item name="android:paddingStart">@dimen/activity_horizontal_margin</item>-->
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <!--Titles-->
+    <style name="hunt_details_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/item_hunt_list_title_bottom_padding</item>
+        <item name="android:textSize">@dimen/item_hunt_list_title_size</item>
+        <item name="android:fontFamily">"sans-serif-light"</item>
+    </style>
+
+    <style name="hunt_activity_hint_title" parent="hunt_details_title">
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <!--Details-->
+    <style name="hunt_details">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+    </style>
+
+    <style name="hunt_details_right" parent="hunt_details">
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="card_view">
+        <item name="android:paddingTop">@dimen/item_hunt_list_vertical_margin</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

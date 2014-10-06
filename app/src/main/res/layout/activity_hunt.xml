@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_hunt"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.geofind.geofind.HuntActivity"
+    android:windowActionBarOverlay="true">
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:panelHeight="@dimen/sliding_up_panel_closed_height"
+        sothree:shadowHeight="4dp"
+        sothree:paralaxOffset="100dp"
+        sothree:fadeColor="@android:color/transparent"
+        sothree:dragView="@+id/dragView">
+
+        <!-- MAIN CONTENT -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="?android:attr/actionBarSize"
+            android:background="@drawable/sample_map">
+
+            <!--TODO add a MapView here and remove the background-->
+
+        </LinearLayout>
+
+        <!-- SLIDING LAYOUT -->
+        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+</RelativeLayout>
