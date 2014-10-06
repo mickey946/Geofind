@@ -39,11 +39,8 @@ public class HuntDetailsActivity extends Activity {
             TextView descriptionTextView = (TextView) findViewById(R.id.hunt_details_description);
             descriptionTextView.setText(hunt.getDescription());
 
-            MapFragment mapFragment = ((MapFragment) getFragmentManager
-                    ().findFragmentById(R.id.hunt_details_map_preview));
-//            TextView tvLocation = (TextView) findViewById
-//                    (R.id.tv_location);
-
+            MapFragment mapFragment =
+                    (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_details_map_preview);
             _mapManager = new MapManager(this, mapFragment);
 
             // hunt total distance
