@@ -6,9 +6,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+
+import java.util.ArrayList;
 
 
 public class CreateHuntActivity extends Activity {
+
+    ArrayList<Hint> hints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,8 @@ public class CreateHuntActivity extends Activity {
 
     public void openHintCreation(View view) {
         Intent intent = new Intent(this, HintListActivity.class);
+        // put existing hints (if any)
+        intent.putExtra(getString(R.string.intent_hints_extra), hints);
         startActivityForResult(intent, getResources().getInteger(R.integer.intent_hints_result));
     }
 
@@ -51,9 +58,15 @@ public class CreateHuntActivity extends Activity {
             if (resultCode == RESULT_OK) { // The user created a list of hints
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
-                    Hint[] hints = (Hint[])
+                    hints = (ArrayList<Hint>)
                             bundle.getSerializable(getString(R.string.intent_hints_extra));
-                    // TODO do something with those points
+                    if (hints != null) {
+                        Button createHintsButton = (Button)
+                                findViewById(R.id.create_hunt_create_points_button);
+                        createHintsButton.setText(getString(R.string.hunt_create_edit_button));
+                    }
+
+                    // TODO do something with those hints (points)
                 }
             }
         }

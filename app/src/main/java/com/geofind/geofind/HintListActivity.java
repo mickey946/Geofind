@@ -36,8 +36,23 @@ public class HintListActivity extends Activity {
             retainedFragment = new RetainedFragment<ArrayList<Hint>>();
             fragmentManager.beginTransaction().add(retainedFragment,
                     getResources().getString(R.string.hint_list_retained_fragment)).commit();
+        }
 
-            // create new list
+        // get previously created hints and display them (if any)
+        ArrayList<Hint> hints = null;
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                //noinspection unchecked
+                hints = (ArrayList<Hint>)
+                        bundle.getSerializable(getString(R.string.intent_hints_extra));
+            }
+        }
+
+        if (hints != null) { // retain previously created hints
+            retainedFragment.setData(hints);
+        } else { // create new list
             retainedFragment.setData(new ArrayList<Hint>());
         }
 
@@ -85,24 +100,30 @@ public class HintListActivity extends Activity {
                 return true;
 
             case R.id.action_submit_points:
-                if (adapter.getSize() < 2) { // not enough points
-                    Toast.makeText(this, getString(R.string.hint_list_not_enough_points_error),
-                            Toast.LENGTH_LONG).show();
-                    return true;
-                }
-
-                // send away the hints
-                intent = new Intent();
-                intent.putExtra(getString(R.string.intent_hints_extra), adapter.getHints());
-                setResult(RESULT_OK, intent);
-
-                // TODO save the hints locally to get to them later
-
-                finish();
+                submitPoints();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Submit points to the CreateHuntActivity.
+     */
+    public void submitPoints() {
+        if (adapter.getSize() < 2) { // not enough points
+            Toast.makeText(this, getString(R.string.hint_list_not_enough_points_error),
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // send away the hints
+        Intent intent = new Intent();
+        intent.putExtra(getString(R.string.intent_hints_extra), adapter.getHints());
+        setResult(RESULT_OK, intent);
+
+        finish();
     }
 
     /**
@@ -156,7 +177,9 @@ public class HintListActivity extends Activity {
         super.onDestroy();
     }
 
-    public void clearData() {
-        retainedFragment.setData(null);
+    @Override
+    public void onBackPressed() {
+        // TODO warn user about loss of data and prompt to save
+        super.onBackPressed();
     }
 }

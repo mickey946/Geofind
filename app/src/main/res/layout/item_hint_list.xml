@@ -24,19 +24,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="fill_parent"
+                    <TextView
+                        android:id="@+id/item_hint_list_title"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/item_hint_list_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hint Title"
-                            android:textSize="@dimen/item_hunt_list_title_size" />
-
-                    </LinearLayout>
+                        android:text="Hint Title"
+                        android:textSize="@dimen/item_hunt_list_title_size" />
 
                     <TextView
                         android:id="@+id/item_hint_list_text"
