@@ -146,7 +146,7 @@
 
                         <ImageView
                             android:visibility="gone"
-                            android:id="@+id/item_hint_picture"
+                            android:id="@+id/create_hint_image"
                             android:layout_width="fill_parent"
                             android:layout_height="@dimen/hunt_details_map_height"
                             android:scaleType="centerCrop" />
@@ -159,7 +159,8 @@
                             android:gravity="center"
                             android:text="@string/create_hint_select_picture"
                             android:textColor="@android:color/black"
-                            android:textSize="@dimen/item_hunt_list_start_hunt_text_size" />
+                            android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
+                            android:onClick="openImageSelection" />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>

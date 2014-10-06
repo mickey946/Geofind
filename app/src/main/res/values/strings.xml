@@ -67,5 +67,7 @@
     <string name="create_hint_fields_error">One or more fields are missing or illegal!</string>
     <string name="title_activity_pick_point">Pick a Point</string>
     <string name="action_pick_point">Pick a Point</string>
+    <string name="create_hint_file_manager_error">No file manager available.</string>
+    <string name="create_hint_kitkat_file_error">Error loading file.</string>
 
 </resources>

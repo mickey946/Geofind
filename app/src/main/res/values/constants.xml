@@ -6,4 +6,5 @@
     <string name="intent_hint_extra">HINT</string>
     <integer name="intent_hint_result">1</integer>
     <integer name="intent_point_result">2</integer>
+    <integer name="intent_picture_result">3</integer>
 </resources>

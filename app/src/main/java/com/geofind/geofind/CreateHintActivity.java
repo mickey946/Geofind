@@ -2,12 +2,27 @@ package com.geofind.geofind;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.util.List;
 
 
 public class CreateHintActivity extends Activity {
@@ -94,6 +109,75 @@ public class CreateHintActivity extends Activity {
                 Bundle bundle = data.getExtras();
                 // TODO add the coordinates to the Hint object and display it on the map
             }
+        } else if (requestCode == getResources().getInteger(R.integer.intent_picture_result)) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) { // The user picked a picture
+                ImageView imageView = (ImageView) findViewById(R.id.create_hint_image);
+
+                Uri selectedImageUri = data.getData();
+
+                if (Build.VERSION.SDK_INT < 19) { // doesn't work on KitKat (issued bug)
+                    String selectedImagePath = getPath(selectedImageUri);
+                    // set the image as Hint Picture drawable
+                    imageView.setImageDrawable(Drawable.createFromPath(selectedImagePath));
+                } else {
+                    ParcelFileDescriptor parcelFileDescriptor;
+                    try {
+                        // set the image as Hint Picture drawable
+                        parcelFileDescriptor =
+                                getContentResolver().openFileDescriptor(selectedImageUri, "r");
+                        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                        imageView.setImageBitmap(bitmap);
+                        parcelFileDescriptor.close();
+
+                    } catch (Exception e) {
+                        Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                // show the image in the hint activity
+                imageView.setVisibility(View.VISIBLE);
+
+                // TODO add the picture to the Hint object
+            }
+        }
+    }
+
+    public void openImageSelection(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+
+        // Verify the intent resolves
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+
+        // Start an activity if it's safe
+        if (activities.size() > 0) {
+            startActivityForResult(intent,
+                    getResources().getInteger(R.integer.intent_picture_result));
+        } else { // No file manager available
+            Toast.makeText(this, getString(R.string.create_hint_file_manager_error),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Helper to retrieve the path of an image URI.
+     */
+    private String getPath(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(column_index);
+            cursor.close();
+            return path;
+        } else {
+            return uri.getPath();
         }
     }
 }
