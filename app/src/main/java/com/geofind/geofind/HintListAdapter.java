@@ -19,12 +19,12 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         hints = new ArrayList<Hint>();
     }
 
-    public HintListAdapter(ArrayList<Hint> hints) {
-        this.hints = hints;
-    }
-
     public int getSize() {
         return hints.size();
+    }
+
+    public ArrayList<Hint> getHints() {
+        return hints;
     }
 
     public void addHint(Hint hint) {

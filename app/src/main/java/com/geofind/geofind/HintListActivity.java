@@ -9,8 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import java.util.ArrayList;
+import android.widget.Toast;
 
 
 public class HintListActivity extends Activity {
@@ -56,11 +55,30 @@ public class HintListActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent intent;
         switch (id) {
             case R.id.action_add_point:
-                Intent intent = new Intent(this, CreateHintActivity.class);
-                startActivityForResult(intent, getResources().getInteger(R.integer.intent_hint_result));
+                intent = new Intent(this, CreateHintActivity.class);
+                startActivityForResult(intent,
+                        getResources().getInteger(R.integer.intent_hint_result));
                 return true;
+
+            case R.id.action_submit_points:
+                if (adapter.getSize() < 2) { // not enough points
+                    Toast.makeText(this, getString(R.string.hint_list_not_enough_points_error),
+                            Toast.LENGTH_LONG).show();
+                    return true;
+                }
+
+                // send away the hints
+                intent = new Intent();
+                intent.putExtra(getString(R.string.intent_hints_extra), adapter.getHints());
+                setResult(RESULT_OK, intent);
+
+                // TODO save the hints locally to get to them later
+
+                finish();
+
             default:
                 return super.onOptionsItemSelected(item);
         }

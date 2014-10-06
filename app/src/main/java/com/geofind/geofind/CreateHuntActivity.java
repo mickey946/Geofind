@@ -38,6 +38,24 @@ public class CreateHuntActivity extends Activity {
 
     public void openHintCreation(View view) {
         Intent intent = new Intent(this, HintListActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, getResources().getInteger(R.integer.intent_hints_result));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Check which request we're responding to
+        if (requestCode == getResources().getInteger(R.integer.intent_hints_result)) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) { // The user created a list of hints
+                Bundle bundle = data.getExtras();
+                if (bundle != null) {
+                    Hint[] hints = (Hint[])
+                            bundle.getSerializable(getString(R.string.intent_hints_extra));
+                    // TODO do something with those points
+                }
+            }
+        }
     }
 }

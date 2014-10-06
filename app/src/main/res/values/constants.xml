@@ -4,7 +4,9 @@
     <integer name="sliding_up_panel_anchor_delay">500</integer>
     <string name="intent_hunt_extra">HUNT</string>
     <string name="intent_hint_extra">HINT</string>
+    <string name="intent_hints_extra">HINTS</string>
     <integer name="intent_hint_result">1</integer>
     <integer name="intent_point_result">2</integer>
     <integer name="intent_picture_result">3</integer>
+    <integer name="intent_hints_result">4</integer>
 </resources>

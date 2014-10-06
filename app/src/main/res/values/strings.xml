@@ -69,5 +69,6 @@
     <string name="action_pick_point">Pick a Point</string>
     <string name="create_hint_file_manager_error">No file manager available.</string>
     <string name="create_hint_kitkat_file_error">Error loading file.</string>
+    <string name="hint_list_not_enough_points_error">A hunt must have at least 2 points!</string>
 
 </resources>
