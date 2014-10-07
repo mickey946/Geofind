@@ -22,7 +22,14 @@ import java.util.ArrayList;
  */
 public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHolder> {
 
+    /**
+     * The hints to display.
+     */
     private ArrayList<Hint> hints;
+
+    /**
+     * The host activity.
+     */
     private Context context;
 
     public HintListAdapter(Context context) {
@@ -30,24 +37,46 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         this.context = context;
     }
 
+    /**
+     * Get the length of the list of the hints.
+     *
+     * @return The length of the list of the hints.
+     */
     public int getSize() {
         return hints.size();
     }
 
+    /**
+     * Get the hints list.
+     * @return ArrayList of hints.
+     */
     public ArrayList<Hint> getHints() {
         return hints;
     }
 
+    /**
+     * Set the current hint ArrayList.
+     * @param hints The list hint to display.
+     */
     public void setHints(ArrayList<Hint> hints) {
         this.hints = hints;
         this.notifyDataSetChanged();
     }
 
+    /**
+     * Add a new hint at the end of the list.
+     * @param hint The new hint to add.
+     */
     public void addHint(Hint hint) {
         hints.add(hint);
         this.notifyDataSetChanged();
     }
 
+    /**
+     * Set the hint in the given index (used as editing).
+     * @param i The index on which we replace (edit) the hint.
+     * @param hint The new hint we put in the adapter.
+     */
     public void setHint(int i, Hint hint) {
         hints.set(i, hint);
         this.notifyDataSetChanged();
@@ -107,12 +136,17 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             hintTextTextView = (TextView) itemView.findViewById(R.id.item_hint_list_text);
         }
 
+        /**
+         * Delete the hint from the adapter.
+         */
         public void deleteHint() {
             hints.remove(hint);
             HintListAdapter.this.notifyDataSetChanged();
         }
 
         public void editHint() {
+            // send away the Hint and it's index to the CreateHintActivity. It would later end in
+            // HintListActivity as a result intent.
             Intent intent = new Intent(context, CreateHintActivity.class);
             intent.putExtra(context.getResources().getString(R.string.intent_hint_extra), hint);
             intent.putExtra(context.getResources().getString(R.string.intent_hint_index_extra),
@@ -137,7 +171,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             }
 
             // Start the CAB using the ActionMode.Callback defined above
-            actionMode = ((Activity) context).startActionMode(mActionModeCallback);
+            actionMode = ((Activity) context).startActionMode(actionModeCallback);
             view.setSelected(true);
             return true;
         }
@@ -157,8 +191,8 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             return false;
         }
 
-        // on long click, show the action mode bar
-        private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        // on long click, show the contextual action bar
+        private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
 
             // Called when the action mode is created; startActionMode() was called
             @Override
@@ -182,9 +216,11 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
                 switch (item.getItemId()) {
                     case R.id.action_edit_point:
                         editHint();
+                        finish();
                         return true;
                     case R.id.action_discard_point:
                         deleteHint();
+                        finish();
                         return true;
                     default:
                         return false;
@@ -195,6 +231,15 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 actionMode = null;
+            }
+
+            /**
+             * Close the contextual action bar.
+             */
+            private void finish() {
+                if (actionMode != null) {
+                    ((ActionMode) actionMode).finish();
+                }
             }
         };
     }
