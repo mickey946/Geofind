@@ -65,6 +65,7 @@
         <activity
             android:name=".HintListActivity"
             android:label="@string/title_activity_hint_list"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:parentActivityName=".CreateHuntActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
