@@ -151,15 +151,12 @@
                             android:layout_height="@dimen/hunt_details_map_height"
                             android:scaleType="centerCrop" />
 
+                        <View style="@style/bottom_card_button_separator" />
+
                         <Button
-                            style="@android:style/Widget.Holo.Button.Borderless"
+                            style="@style/bottom_card_button"
                             android:id="@+id/create_hunt_create_points_button"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
                             android:text="@string/create_hint_select_picture"
-                            android:textColor="@android:color/black"
-                            android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
                             android:onClick="openImageSelection" />
                     </LinearLayout>
 

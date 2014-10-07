@@ -86,16 +86,13 @@
 
                         </LinearLayout>
 
+                        <View style="@style/bottom_card_button_separator" />
+
                         <Button
-                            style="@android:style/Widget.Holo.Button.Borderless"
+                            style="@style/bottom_card_button"
                             android:id="@+id/create_hunt_create_points_button"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/create_hunt_create_points"
-                            android:textColor="@android:color/black"
-                            android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
-                            android:onClick="openHintCreation" />
+                            android:onClick="openHintCreation"
+                            android:text="@string/create_hunt_create_points" />
 
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
