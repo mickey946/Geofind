@@ -76,5 +76,7 @@
     <string name="hint_list_data_loss_warning_positive">OK</string>
     <string name="hint_list_data_loss_warning_negative">Cancel</string>
     <string name="hint_list_data_loss_warning_no_save">You have less then one point and your changes will be lost! You have to create at least on more point to save.</string>
+    <string name="action_edit_point">Edit Point</string>
+    <string name="action_discard_point">Discard Point</string>
 
 </resources>

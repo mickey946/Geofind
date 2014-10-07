@@ -73,17 +73,15 @@
         </activity>
         <activity
             android:name=".CreateHintActivity"
-            android:label="@string/title_activity_create_hint"
-            android:parentActivityName=".HintListActivity">
+            android:label="@string/title_activity_create_hint">
         <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.HintListActivity" />
         </activity>
         <activity
             android:name=".PickPointActivity"
-            android:label="@string/title_activity_pick_point"
-            android:parentActivityName=".CreateHintActivity">
-            <meta-data
+            android:label="@string/title_activity_pick_point">
+        <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.CreateHintActivity" />
         </activity>

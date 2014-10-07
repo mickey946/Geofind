@@ -29,7 +29,7 @@ public class CreateHintActivity extends Activity {
     private TextView hintTitleTextView;
     private TextView hintTextTextView;
     private Hint hint = null;
-    private Integer i = null;
+    private Integer index = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class CreateHintActivity extends Activity {
             if (bundle != null) {
                 hint = (Hint) bundle.getSerializable(
                         getResources().getString(R.string.intent_hint_extra));
-                i = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
+                index = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
                 if (hint != null) { // the user is editing and existing hint
                     hintTitleTextView.setText(hint.getTitle());
                     hintTextTextView.setText(hint.getDescription());
@@ -104,7 +104,7 @@ public class CreateHintActivity extends Activity {
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();
             intent.putExtra(getString(R.string.intent_hint_extra), hint);
-            intent.putExtra(getString(R.string.intent_hint_index_extra), i);
+            intent.putExtra(getString(R.string.intent_hint_index_extra), index);
             setResult(RESULT_OK, intent);
 
             //close this Activity

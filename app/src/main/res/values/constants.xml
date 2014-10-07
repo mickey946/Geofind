@@ -13,4 +13,7 @@
     <integer name="intent_hint_edit_extra">5</integer>
     <string name="hint_list_retained_fragment">HINTS</string>
     <color name="bottom_card_button_separator_color">#D3D3D3</color>
+    <color name="colorPressedHighlight">@android:color/holo_blue_light</color>
+    <color name="colorLongPressedHighlight">@android:color/holo_blue_bright</color>
+    <color name="colorUnpressedHighlight">@android:color/background_light</color>
 </resources>
