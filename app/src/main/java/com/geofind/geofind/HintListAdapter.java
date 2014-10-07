@@ -171,6 +171,8 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             }
 
             // Start the CAB using the ActionMode.Callback defined above
+            cardView.setBackgroundColor(
+                    context.getResources().getColor(R.color.colorLongPressedHighlight));
             actionMode = ((Activity) context).startActionMode(actionModeCallback);
             view.setSelected(true);
             return true;
@@ -178,6 +180,10 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+            if (actionMode != null) {
+                return false;
+            }
+
             // set click background
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 cardView.setBackgroundColor(
@@ -230,6 +236,10 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             // Called when the user exits the action mode
             @Override
             public void onDestroyActionMode(ActionMode mode) {
+                // reset the highlight
+                cardView.setBackgroundColor(
+                        context.getResources().getColor(R.color.colorUnpressedHighlight));
+
                 actionMode = null;
             }
 
