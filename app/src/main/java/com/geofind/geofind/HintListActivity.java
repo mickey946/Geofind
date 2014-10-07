@@ -1,7 +1,9 @@
 package com.geofind.geofind;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -179,7 +181,48 @@ public class HintListActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        // TODO warn user about loss of data and prompt to save
-        super.onBackPressed();
+        // warn the user about loss of data
+
+        // instantiate an AlertDialog.Builder with its constructor
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // chain together various setter methods to set the dialog characteristics
+        builder.setMessage(getString(R.string.hint_list_data_loss_warning))
+                .setTitle(getString(R.string.hint_list_data_loss_warning_title));
+
+        if (adapter.getSize() < 2) { // we do not save changes on less then 2 points
+            builder.setMessage(getString(R.string.hint_list_data_loss_warning_no_save));
+        }
+
+        // set icon
+        builder.setIcon(getResources().getDrawable(R.drawable.ic_action_warning));
+
+        // set positive button
+        builder.setPositiveButton(getString(R.string.hint_list_data_loss_warning_positive),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                        if (adapter.getSize() < 2) { // the user will add at least one point
+                            return;
+                        }
+
+                        submitPoints(); // save the changes
+                        HintListActivity.super.onBackPressed();
+                    }
+                });
+
+        // set negative button
+        builder.setNegativeButton(getString(R.string.hint_list_data_loss_warning_negative),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        HintListActivity.super.onBackPressed(); // don't save the changes
+                    }
+                });
+
+        // get the AlertDialog from create()
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
     }
 }

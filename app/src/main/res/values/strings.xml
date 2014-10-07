@@ -71,5 +71,10 @@
     <string name="create_hint_kitkat_file_error">Error loading file.</string>
     <string name="hint_list_not_enough_points_error">A hunt must have at least 2 points!</string>
     <string name="hunt_create_edit_button">Edit your Points</string>
+    <string name="hint_list_data_loss_warning">Your changes will be lost! Do you want to save them?</string>
+    <string name="hint_list_data_loss_warning_title">Unsaved Changes</string>
+    <string name="hint_list_data_loss_warning_positive">OK</string>
+    <string name="hint_list_data_loss_warning_negative">Cancel</string>
+    <string name="hint_list_data_loss_warning_no_save">You have less then one point and your changes will be lost! You have to create at least on more point to save.</string>
 
 </resources>
