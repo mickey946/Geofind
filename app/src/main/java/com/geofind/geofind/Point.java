@@ -5,6 +5,11 @@ import android.location.LocationManager;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 /**
  * Created by Ilia Merin on 08/10/2014.
  */
@@ -12,10 +17,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 //// Tzafrir you can add here what you need for Parse too.
 
-public class Point {
+public class Point implements Serializable{
 
-    private final double _latitude;
-    private final double _longitude;
+    private  double _latitude;
+    private  double _longitude;
+
 
     Point(double latitude, double longitude){
         _latitude = latitude;
@@ -50,5 +56,18 @@ public class Point {
         l.setLatitude(_latitude);
         l.setLongitude(_longitude);
         return  l;
+    }
+
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeDouble(_latitude);
+        out.writeDouble(_longitude);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        _latitude = in.readDouble();
+        _longitude = in.readDouble();
     }
 }
