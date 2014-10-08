@@ -229,7 +229,6 @@ public class HuntActivity extends FragmentActivity {
             if (hint != null) { // for ultra safety
                 if (hint.getState() != Hint.State.UNREVEALED) {
                     Point point = hint.getLocation();
-                    Log.d("WHAT", "HEY");
                     // TODO use the point to focus
                 }
             }
