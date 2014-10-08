@@ -99,7 +99,7 @@ public class CreateHintActivity extends Activity {
     public void submitHint() {
         if (checkInput()) { // check if the user filled all required fields
             Hint hint = new Hint(hintTitleTextView.getText().toString(),
-                    hintTextTextView.getText().toString());
+                    hintTextTextView.getText().toString(), new Point(0,0) ); //TODO change to real point
 
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();

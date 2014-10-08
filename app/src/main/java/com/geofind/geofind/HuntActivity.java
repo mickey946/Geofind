@@ -16,12 +16,15 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.maps.MapFragment;
 import com.nineoldandroids.view.animation.AnimatorProxy;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
 public class HuntActivity extends FragmentActivity {
 
+    public static final int MIN_UPDATE_TIME = 00; //TODO decide the correct values
+    public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
      * each object in a collection. We use a {@link android.support.v4.app.FragmentStatePagerAdapter}
@@ -56,6 +59,11 @@ public class HuntActivity extends FragmentActivity {
      */
     private Hunt hunt;
 
+    /**
+     * The map manager controller
+     */
+    private MapManager mapManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +75,7 @@ public class HuntActivity extends FragmentActivity {
         setUpSlidingUpPanel();
 
         setUpPagerView();
+
     }
 
     /**
@@ -146,10 +155,10 @@ public class HuntActivity extends FragmentActivity {
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
         Hint[] hints = {
-                new Hint("Hint1", "Description1", Hint.State.SOLVED),
-                new Hint("Hint2", "Description2", Hint.State.SOLVED),
-                new Hint("Hint3", "Description3", Hint.State.REVEALED),
-                new Hint("Hint4", "Description4", Hint.State.UNREVEALED)
+                new Hint("Hint1", "Description1",new Point(31.66831,35.11371) , Hint.State.SOLVED),
+                new Hint("Hint2", "Description2",new Point(31.86831,35.21371), Hint.State.SOLVED),
+                new Hint("Hint3", "Description3",new Point(31.56831,35.11371), Hint.State.REVEALED),
+                new Hint("Hint4", "Description4",new Point(31.76831,35.21371), Hint.State.UNREVEALED)
         };
 
         // Create an adapter that when requested, will return a fragment representing an object in
@@ -161,6 +170,18 @@ public class HuntActivity extends FragmentActivity {
         // Set up the ViewPager, attaching the adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(hintPagerAdapter);
+
+        MapFragment mapFragment =
+                (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
+        mapManager = new MapManager(this,mapFragment);
+        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
+
+        for (Hint hint : hints){
+            if (hint.getState() != Hint.State.UNREVEALED) {
+                mapManager.setMarker(hint.getLocation().toLocation(), hint.getTitle(), hint.getState());
+            }
+        }
+
     }
 
     @Override

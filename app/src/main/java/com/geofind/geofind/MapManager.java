@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
@@ -12,7 +13,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +21,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -72,7 +73,51 @@ public class MapManager implements LocationListener {
                 Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG);
         }
         _mMap.setMyLocationEnabled(true);
-        FocusOnCurrentLocation();
+        focusOnCurrentLocation();
+
+
+    }
+
+    //Single time focus
+    public void focusOnCurrentLocation(){
+        focusOnCurrentLocation(-1, -1);
+    }
+
+    // focus and keep tracking
+    public void focusOnCurrentLocation(long minTime, float minDistance) {
+
+        LocationManager locationManager = (LocationManager) _activity.getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        String provider = locationManager.getBestProvider(criteria,true);
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        if (location != null){
+            onLocationChanged(location);
+        }
+
+        if (minTime>=0 && minDistance>=0)
+            locationManager.requestLocationUpdates(provider,minTime,minDistance,this);
+
+    }
+
+    public void showMyLocationButton(boolean show){
+        _mMap.getUiSettings().setMyLocationButtonEnabled(show);
+    }
+
+    public void showZoomButton(boolean show){
+        _mMap.getUiSettings().setZoomControlsEnabled(show);
+    }
+
+    public void setStaticMapMode (){
+        _mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        _mMap.getUiSettings().setAllGesturesEnabled(false);
+
+
+
+    }
+
+    public void enableMarkers(final boolean onlyOne){
 
         _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -82,7 +127,7 @@ public class MapManager implements LocationListener {
                 markerOptions.position(latLng);
                 markerOptions.title("lat: " + latLng.latitude + " lng: " + latLng.longitude);
 
-                new ReverseGeocodingTask(_activity.getBaseContext()).execute(latLng);
+                new ReverseGeocodingTask(_activity.getBaseContext(),onlyOne).execute(latLng);
                 //   mMap.clear();
                 //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 //mMap.addMarker(markerOptions);
@@ -90,40 +135,15 @@ public class MapManager implements LocationListener {
         });
     }
 
-    //Single time focus
-    public void FocusOnCurrentLocation(){
-        FocusOnCurrentLocation(-1,-1);
-    }
+    public void setMarker(Location location, String title,Hint.State state){
 
-    // focus and keep tracking
-    public void FocusOnCurrentLocation(long minTime, float minDistance) {
-        LocationManager locationManager = (LocationManager) _activity.getSystemService(Context.LOCATION_SERVICE);
 
-        Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, true);
-        Location location = locationManager.getLastKnownLocation(provider);
-
-        if (location != null) {
-            Toast.makeText(_activity, "got new location", Toast.LENGTH_LONG);
-            onLocationChanged(location);
-        }
-
-        if (minTime>=0 && minDistance >= 0)
-            locationManager.requestLocationUpdates(provider, minTime, minDistance, this);
-    }
-
-    public void ShowMyLocationButton (boolean show){
-        _mMap.getUiSettings().setMyLocationButtonEnabled(show);
-    }
-
-    public void ShowZoomButton (boolean show){
-        _mMap.getUiSettings().setZoomControlsEnabled(show);
-    }
-
-    public void setStaticMapMode (){
-        _mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        _mMap.getUiSettings().setRotateGesturesEnabled(false);
-
+        _mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(location.getLatitude(),location.getLongitude()))
+                .title(title)
+                .icon(BitmapDescriptorFactory.
+                        defaultMarker(state == Hint.State.REVEALED ?
+                                BitmapDescriptorFactory.HUE_RED : BitmapDescriptorFactory.HUE_GREEN)));
     }
 
     @Override
@@ -191,10 +211,12 @@ public class MapManager implements LocationListener {
 
     private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
         Context mContext;
+        boolean mOnlyOne;
 
-        public ReverseGeocodingTask(Context context) {
+        public ReverseGeocodingTask(Context context, boolean onlyOne) {
             super();
             mContext = context;
+            mOnlyOne = onlyOne;
         }
 
         @Override
@@ -226,6 +248,9 @@ public class MapManager implements LocationListener {
         @Override
         protected void onPostExecute(String addressText) {
             markerOptions.title(addressText);
+            if (mOnlyOne){
+                _mMap.clear();
+            }
             _mMap.addMarker(markerOptions);
             Toast.makeText(mContext, "Created " + addressText, Toast.LENGTH_LONG);
         }
