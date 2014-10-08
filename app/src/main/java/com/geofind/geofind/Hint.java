@@ -14,12 +14,13 @@ public class Hint implements Serializable {
     private String description;
     private State state;
 
+    // TODO add a Point field
     // TODO add picture, recording and video
-
 
     public Hint(String title, String description) {
         this.title = title;
         this.description = description;
+        this.state = State.UNREVEALED; // a default state for a hint
     }
 
     public Hint(String title, String description, State state) {
