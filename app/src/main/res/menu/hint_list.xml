@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.geofind.geofind.HintListActivity">
+
+    <item
+        android:id="@+id/action_add_point"
+        android:title="@string/hint_list_add_point"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_action_new"
+        android:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_submit_points"
+        android:title="@string/action_add_points"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_action_accept"
+        android:showAsAction="ifRoom" />
+
+</menu>

@@ -1,12 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.geofind.geofind.HuntFinishActivity">
+    tools:context="com.geofind.geofind.PickPointActivity">
 
     <item
-        android:id="@+id/action_share"
-        android:title="@string/action_share"
-        android:icon="@android:drawable/ic_menu_share"
+        android:id="@+id/action_pick_point"
+        android:title="@string/action_pick_point"
         android:orderInCategory="100"
+        android:icon="@drawable/ic_action_accept"
         android:showAsAction="ifRoom" />
 
 </menu>
