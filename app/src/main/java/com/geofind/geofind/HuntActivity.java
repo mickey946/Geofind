@@ -64,6 +64,16 @@ public class HuntActivity extends FragmentActivity {
      */
     private MapManager mapManager;
 
+    /**
+     * The displayed hints.
+     */
+    private Hint[] hints = {// TODO retrieve the hints on the fly using the hunt
+            new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED),
+            new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED),
+            new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED),
+            new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED)
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +86,7 @@ public class HuntActivity extends FragmentActivity {
 
         setUpPagerView();
 
+        setUpMap();
     }
 
     /**
@@ -153,14 +164,6 @@ public class HuntActivity extends FragmentActivity {
      * Set up the pager view.
      */
     private void setUpPagerView() {
-        // TODO retrieve the hints on the fly using the hunt
-        Hint[] hints = {
-                new Hint("Hint1", "Description1",new Point(31.66831,35.11371) , Hint.State.SOLVED),
-                new Hint("Hint2", "Description2",new Point(31.86831,35.21371), Hint.State.SOLVED),
-                new Hint("Hint3", "Description3",new Point(31.56831,35.11371), Hint.State.REVEALED),
-                new Hint("Hint4", "Description4",new Point(31.76831,35.21371), Hint.State.UNREVEALED)
-        };
-
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
         // ViewPager and its adapters use support library fragments, so we must use
@@ -170,18 +173,22 @@ public class HuntActivity extends FragmentActivity {
         // Set up the ViewPager, attaching the adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(hintPagerAdapter);
+    }
 
+    /**
+     * Set up the map view.
+     */
+    private void setUpMap() {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
-        mapManager = new MapManager(this,mapFragment);
+        mapManager = new MapManager(this, mapFragment);
         mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
 
-        for (Hint hint : hints){
+        for (Hint hint : hints) {
             if (hint.getState() != Hint.State.UNREVEALED) {
                 mapManager.setMarker(hint.getLocation().toLocation(), hint.getTitle(), hint.getState());
             }
         }
-
     }
 
     @Override
