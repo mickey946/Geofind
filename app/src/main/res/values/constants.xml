@@ -3,4 +3,17 @@
     <integer name="splash_screen_timeout">3000</integer>
     <integer name="sliding_up_panel_anchor_delay">500</integer>
     <string name="intent_hunt_extra">HUNT</string>
+    <string name="intent_hint_extra">HINT</string>
+    <string name="intent_hint_index_extra">HINT_INDEX</string>
+    <string name="intent_hints_extra">HINTS</string>
+    <integer name="intent_hint_result">1</integer>
+    <integer name="intent_point_result">2</integer>
+    <integer name="intent_picture_result">3</integer>
+    <integer name="intent_hints_result">4</integer>
+    <integer name="intent_hint_edit_extra">5</integer>
+    <string name="hint_list_retained_fragment">HINTS</string>
+    <color name="bottom_card_button_separator_color">#D3D3D3</color>
+    <color name="colorPressedHighlight">@android:color/holo_blue_light</color>
+    <color name="colorLongPressedHighlight">@android:color/holo_blue_bright</color>
+    <color name="colorUnpressedHighlight">@android:color/background_light</color>
 </resources>
