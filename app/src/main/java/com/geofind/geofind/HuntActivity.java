@@ -235,6 +235,17 @@ public class HuntActivity extends FragmentActivity {
         }
     }
 
+    // TODO call this when the user is clicking on a pin on a map
+
+    /**
+     * Slide to the point page at the given index.
+     *
+     * @param index The index of the point in the adapter.
+     */
+    private void slideToHintPage(int index) {
+        viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
