@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -23,8 +24,9 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class HuntActivity extends FragmentActivity {
 
-    public static final int MIN_UPDATE_TIME = 00; //TODO decide the correct values
+    public static final int MIN_UPDATE_TIME = 0; //TODO decide the correct values
     public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
      * each object in a collection. We use a {@link android.support.v4.app.FragmentStatePagerAdapter}
@@ -64,6 +66,16 @@ public class HuntActivity extends FragmentActivity {
      */
     private MapManager mapManager;
 
+    /**
+     * The displayed hints.
+     */
+    private Hint[] hints = {// TODO retrieve the hints on the fly using the hunt
+            new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED),
+            new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED),
+            new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED),
+            new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED)
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,10 +84,11 @@ public class HuntActivity extends FragmentActivity {
 
         setUpHunt();
 
-        setUpSlidingUpPanel();
-
         setUpPagerView();
 
+        setUpSlidingUpPanel();
+
+        setUpMap();
     }
 
     /**
@@ -106,18 +119,24 @@ public class HuntActivity extends FragmentActivity {
 
             @Override
             public void onPanelExpanded(View panel) {
+                // when the panel is expanded the map is not visible, so there is nothing to show
                 Log.i(TAG, "onPanelExpanded");
             }
 
             @Override
             public void onPanelCollapsed(View panel) {
+                // when the panel had collapsed, the user would like to see the map rather than the
+                // point
                 Log.i(TAG, "onPanelCollapsed");
-
             }
 
             @Override
             public void onPanelAnchored(View panel) {
+                // when the user anchors the panel, he sees both the hint and both the map, so it's
+                // good to assume that he wants to focus on the point (if it is visible)
                 Log.i(TAG, "onPanelAnchored");
+
+                focusOnPoint(viewPager.getCurrentItem());
             }
 
             @Override
@@ -153,14 +172,6 @@ public class HuntActivity extends FragmentActivity {
      * Set up the pager view.
      */
     private void setUpPagerView() {
-        // TODO retrieve the hints on the fly using the hunt
-        Hint[] hints = {
-                new Hint("Hint1", "Description1",new Point(31.66831,35.11371) , Hint.State.SOLVED),
-                new Hint("Hint2", "Description2",new Point(31.86831,35.21371), Hint.State.SOLVED),
-                new Hint("Hint3", "Description3",new Point(31.56831,35.11371), Hint.State.REVEALED),
-                new Hint("Hint4", "Description4",new Point(31.76831,35.21371), Hint.State.UNREVEALED)
-        };
-
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
         // ViewPager and its adapters use support library fragments, so we must use
@@ -171,17 +182,68 @@ public class HuntActivity extends FragmentActivity {
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(hintPagerAdapter);
 
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+                // not useful for now, ignore
+            }
+
+            @Override
+            public void onPageSelected(int index) {
+                focusOnPoint(index);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+                // not useful for now, ignore
+            }
+        });
+    }
+
+    /**
+     * Set up the map view.
+     */
+    private void setUpMap() {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
-        mapManager = new MapManager(this,mapFragment);
+        mapManager = new MapManager(this, mapFragment);
         mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
 
-        for (Hint hint : hints){
+        for (Hint hint : hints) {
             if (hint.getState() != Hint.State.UNREVEALED) {
                 mapManager.setMarker(hint.getLocation().toLocation(), hint.getTitle(), hint.getState());
             }
         }
+    }
 
+    /**
+     * Focus on a point on a map.
+     *
+     * @param index The index of the point in the adapter.
+     */
+    private void focusOnPoint(int index) {
+        Fragment fragment = hintPagerAdapter.getItem(index);
+        Bundle bundle = fragment.getArguments();
+        if (bundle != null) { // for extra safety
+            Hint hint = (Hint) bundle.getSerializable(HintPagerAdapter.HintFragment.TAG);
+            if (hint != null) { // for ultra safety
+                if (hint.getState() != Hint.State.UNREVEALED) {
+                    Point point = hint.getLocation();
+                    // TODO use the point to focus
+                }
+            }
+        }
+    }
+
+    // TODO call this when the user is clicking on a pin on a map
+
+    /**
+     * Slide to the point page at the given index.
+     *
+     * @param index The index of the point in the adapter.
+     */
+    private void slideToHintPage(int index) {
+        viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
     }
 
     @Override
