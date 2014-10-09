@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,11 +43,20 @@ public class MapManager implements LocationListener {
     protected MarkerOptions markerOptions;
     private MarkerCallback _markerCallback;
     private HashMap<Marker,Integer> _markerMap;
+    private GeoAutoComplete _geoComplete;
+
 
     public MapManager(Activity activity, MapFragment map, TextView tvLocation) {
         _activity = activity;
         _tvLocation = tvLocation;
         _mapFragment = map;
+        initMap();
+    }
+
+    public MapManager(Activity activity, MapFragment map, AutoCompleteTextView atvLocation){
+        _mapFragment = map;
+        _activity = activity;
+        _geoComplete = new GeoAutoComplete(this,activity,atvLocation);
         initMap();
     }
 
@@ -56,6 +66,8 @@ public class MapManager implements LocationListener {
         _activity = activity;
         initMap();
     }
+
+
 
     private void initMap() {
 
@@ -77,6 +89,7 @@ public class MapManager implements LocationListener {
 
 
     }
+
 
 
     public void setMarkerCallback(MarkerCallback markerCallback){
@@ -152,11 +165,23 @@ public class MapManager implements LocationListener {
         });
     }
 
-    public void setMarker(Location location, String title,Hint.State state){
+
+    public void displayFoundLocation (LatLng location){
+        Marker marker = _mMap.addMarker(new MarkerOptions()
+                .position(location));
+
+
+        _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+        _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+
+    }
+
+    public void setMarker(LatLng location, String title,Hint.State state){
 
 
         Marker marker = _mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                .position(location)
                 .title(title)
                 .icon(BitmapDescriptorFactory.
                         defaultMarker(state == Hint.State.REVEALED ?
@@ -268,7 +293,9 @@ public class MapManager implements LocationListener {
         @Override
         protected void onPostExecute(String addressText) {
             markerOptions.title(addressText);
-            _tvLocation.setText(addressText);
+            if(_tvLocation != null) {
+                _tvLocation.setText(addressText);
+}
             if (mOnlyOne){
                 _mMap.clear();
             }
@@ -276,5 +303,6 @@ public class MapManager implements LocationListener {
             Toast.makeText(mContext, "Created " + addressText, Toast.LENGTH_LONG);
         }
     }
+
 
 }
