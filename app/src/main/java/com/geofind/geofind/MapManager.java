@@ -248,6 +248,7 @@ public class MapManager implements LocationListener {
         @Override
         protected void onPostExecute(String addressText) {
             markerOptions.title(addressText);
+            _tvLocation.setText(addressText);
             if (mOnlyOne){
                 _mMap.clear();
             }
