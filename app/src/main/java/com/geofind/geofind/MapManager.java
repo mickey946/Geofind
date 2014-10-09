@@ -3,7 +3,6 @@ package com.geofind.geofind;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
@@ -24,9 +23,11 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,10 +39,9 @@ public class MapManager implements LocationListener {
     private MapFragment _mapFragment;
     private GoogleMap _mMap;
     private Activity _activity;
-
-
-
     protected MarkerOptions markerOptions;
+    private MarkerCallback _markerCallback;
+    private HashMap<Marker,Integer> _markerMap;
 
     public MapManager(Activity activity, MapFragment map, TextView tvLocation) {
         _activity = activity;
@@ -57,7 +57,6 @@ public class MapManager implements LocationListener {
         initMap();
     }
 
-
     private void initMap() {
 
         // Getting Google Play availability status
@@ -71,12 +70,30 @@ public class MapManager implements LocationListener {
             _mMap = _mapFragment.getMap();
             if (_mMap == null)
                 Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG);
+            _markerMap = new HashMap<Marker, Integer>();
         }
         _mMap.setMyLocationEnabled(true);
         focusOnCurrentLocation();
 
 
     }
+
+
+    public void setMarkerCallback(MarkerCallback markerCallback){
+        _markerCallback = markerCallback;
+        _mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                // move camera to the current location
+                _mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+
+                _markerCallback.onMarkerClick(_markerMap.get(marker).intValue());
+
+                return true;
+            }
+        });
+    }
+
 
     //Single time focus
     public void focusOnCurrentLocation(){
@@ -138,12 +155,14 @@ public class MapManager implements LocationListener {
     public void setMarker(Location location, String title,Hint.State state){
 
 
-        _mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(location.getLatitude(),location.getLongitude()))
+        Marker marker = _mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(location.getLatitude(), location.getLongitude()))
                 .title(title)
                 .icon(BitmapDescriptorFactory.
                         defaultMarker(state == Hint.State.REVEALED ?
                                 BitmapDescriptorFactory.HUE_RED : BitmapDescriptorFactory.HUE_GREEN)));
+
+        _markerMap.put(marker,_markerMap.size());
     }
 
     @Override
@@ -175,6 +194,7 @@ public class MapManager implements LocationListener {
     public void onProviderDisabled(String s) {
 
     }
+
 
     public void drawCircle (LatLng position, float radius){
         // Instantiating CircleOptions to draw a circle around the marker

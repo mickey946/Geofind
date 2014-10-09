@@ -208,6 +208,17 @@ public class HuntActivity extends FragmentActivity {
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
         mapManager = new MapManager(this, mapFragment);
         mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
+        mapManager.setMarkerCallback(new MarkerCallback() {
+            /**
+             * Slide to the point page at the given index.
+             *
+             * @param index The index of the point in the adapter.
+             */
+            @Override
+            public void onMarkerClick(int index) {
+                viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
+            }
+        });
 
         for (Hint hint : hints) {
             if (hint.getState() != Hint.State.UNREVEALED) {
@@ -229,22 +240,12 @@ public class HuntActivity extends FragmentActivity {
             if (hint != null) { // for ultra safety
                 if (hint.getState() != Hint.State.UNREVEALED) {
                     Point point = hint.getLocation();
-                    // TODO use the point to focus
+                    mapManager.onLocationChanged(point.toLocation());
                 }
             }
         }
     }
 
-    // TODO call this when the user is clicking on a pin on a map
-
-    /**
-     * Slide to the point page at the given index.
-     *
-     * @param index The index of the point in the adapter.
-     */
-    private void slideToHintPage(int index) {
-        viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
