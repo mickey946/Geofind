@@ -12,6 +12,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
@@ -198,14 +199,9 @@ public class MapManager implements LocationListener {
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
+        _atvLocation.setText(""); // text is set programmatically.
+        _atvLocation.setHint("Lat: " + latitude + " Long:" + longitude);
 
-        SimpleAdapter a = (SimpleAdapter) _atvLocation.getAdapter();
-        _atvLocation.setAdapter(null); // Remove the adapter so we don't get a dropdown when
-        _atvLocation.setText("Lat: " + latitude + " Long:" + longitude); // text is set programmatically.
-        _atvLocation.setAdapter(a); // Restore adapter
-//
-//        if (_tvLocation != null)
-//            _tvLocation.setText("Lat: " + latitude + " Long:" + longitude);
     }
 
     @Override
@@ -284,10 +280,34 @@ public class MapManager implements LocationListener {
 
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
-                addressText = String.format("%s, %s, %s",
-                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-                        address.getLocality(),
-                        address.getCountryName());
+                StringBuilder sb = new StringBuilder();
+                boolean sbChanged = false;
+                if (address.getMaxAddressLineIndex()>0) {
+                    sb.append(address.getAddressLine(0));
+                    sbChanged = true;
+                }
+
+                if (address.getLocality() != null)
+                {
+                    if (sbChanged)
+                        sb.append(", ");
+                    sb.append(address.getLocality());
+                    sbChanged=true;
+                }
+
+                if (address.getCountryName() != null)
+                {
+                    if (sbChanged)
+                        sb.append(", ");
+                    sb.append(address.getCountryName());
+                }
+
+                addressText = sb.toString();
+
+//                addressText = String.format("%s, %s, %s",
+//                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
+//                        address.getLocality(),
+//                        address.getCountryName());
             }
 
             return addressText;
@@ -296,13 +316,9 @@ public class MapManager implements LocationListener {
         @Override
         protected void onPostExecute(String addressText) {
             markerOptions.title(addressText);
-//            if(_tvLocation != null) {
-//                _tvLocation.setText(addressText);
-//}
-            SimpleAdapter a = (SimpleAdapter) _atvLocation.getAdapter();
-            _atvLocation.setAdapter(null); // Remove the adapter so we don't get a dropdown when
-            _atvLocation.setText(addressText); // text is set programmatically.
-            _atvLocation.setAdapter(a); // Restore adapter
+
+            _atvLocation.setText(""); // text is set programmatically.
+            _atvLocation.setHint(addressText);
 
             if (mOnlyOne){
                 _mMap.clear();

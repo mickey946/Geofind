@@ -53,6 +53,8 @@ public class GeoAutoComplete {
 
         Log.d("AutoComplete","Init");
 
+
+
         _atvLocation.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -61,12 +63,16 @@ public class GeoAutoComplete {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                Log.d("AutoComplete","Text changed");
-                DownloadTask downloadTask = new DownloadTask(DownloadTypes.PLACES);
+                if(charSequence.length() > 0){
+                    Log.d("AutoComplete", "Text changed to " + charSequence.toString());
+                    DownloadTask downloadTask = new DownloadTask(DownloadTypes.PLACES);
 
-                String Url = getAutocompleteUrl(charSequence.toString());
+                    String Url = getAutocompleteUrl(charSequence.toString());
 
-                downloadTask.execute(Url);
+                    downloadTask.execute(Url);
+                }
+                else
+                    Log.d("AutoComplete","Ignore internal change");
             }
 
             @Override
@@ -95,6 +101,8 @@ public class GeoAutoComplete {
 
     }
 
+
+
     private String getPlaceDetailsUrl(String ref) {
         // Obtain browser key from https://code.google.com/apis/console
         String key = "key="+API_KEY;
@@ -119,21 +127,11 @@ public class GeoAutoComplete {
 
     private static String escape(String s) {
         StringBuilder builder = new StringBuilder();
-        boolean previousWasASpace = true;
         for( char c : s.toCharArray() ) {
             if( c == ' ' ) {
-                Log.d("AutoEscape","c = " + c);
-                Log.d("AutoEscape","previous space" + previousWasASpace);
-               // if( previousWasASpace ) {
                     builder.append("&nbsp;");
-                    previousWasASpace = false;
                     continue;
-                //}
-                //previousWasASpace = true;
             }
-            /*else {
-                previousWasASpace = false;
-            }*/
             switch(c) {
                 case '<': builder.append("&lt;"); break;
                 case '>': builder.append("&gt;"); break;
@@ -150,7 +148,7 @@ public class GeoAutoComplete {
                     }
             }
         }
-        Log.d("AutoComplete-HTML",builder.toString());
+
         return builder.toString();
     }
 
@@ -161,8 +159,6 @@ public class GeoAutoComplete {
 
         // place to be be searched
         String input = "input="+escape(place);
-
-        Log.d("AutoComplete",input);
 
         // place type to be searched
         String types = "types=geocode";
@@ -198,7 +194,6 @@ public class GeoAutoComplete {
         protected String doInBackground(String... strings) {
 
             String strUrl = strings[0];
-            Log.d("AutoComplete","Sending to url " + strUrl );
 
             String data = "";
             InputStream iStream = null;
@@ -241,7 +236,7 @@ public class GeoAutoComplete {
                 }
                 urlConnection.disconnect();
             }
-            Log.d("AutoComplete","Recieved " + data);
+
             return data;
 
         }
@@ -279,10 +274,16 @@ public class GeoAutoComplete {
 
             try {
                 jObject = new JSONObject(strings[0]);
+                if( jObject.getString("status") != "OK")
+                {
+                    if (jObject.has("error_message"))
+                        Log.e("AutoComplete","google maps error = " + jObject.getString("error_message"));
+                    else
+                        Log.e("AutoComplete", "google maps status " + jObject.getString("status"));
+                }
                 switch (_parseType){
                     case  PLACES:
                         PlaceJSONParser placeParser = new PlaceJSONParser();
-                        Log.d("AutoComplete","jObject = " + jObject.toString());
                         list = placeParser.parse(jObject);
                         break;
                     case PLACES_DETAILS:
@@ -302,11 +303,6 @@ public class GeoAutoComplete {
         protected void onPostExecute(List<HashMap<String, String>> result) {
             switch (_parseType){
                 case PLACES:
-                    if (result == null){
-                        Log.d("AutoComplete", "result is null");
-                    }
-                    else
-                        Log.d("AutoComplete", "item num = " +  result.size());
                     String[] from = new String[] {"description"};
                     int[] to = new  int[] {android.R.id.text1};
 
