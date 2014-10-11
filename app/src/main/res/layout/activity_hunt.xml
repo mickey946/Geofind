@@ -13,16 +13,17 @@
         android:gravity="bottom"
         sothree:panelHeight="@dimen/sliding_up_panel_closed_height"
         sothree:shadowHeight="4dp"
-        sothree:paralaxOffset="100dp"
+        sothree:paralaxOffset="@dimen/sliding_up_panel_paralax"
         sothree:fadeColor="@android:color/transparent"
         sothree:dragView="@+id/dragView">
 
         <!-- MAIN CONTENT -->
         <LinearLayout
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="?android:attr/actionBarSize">
-
+            android:orientation="horizontal">
             <fragment
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/hunt_map"

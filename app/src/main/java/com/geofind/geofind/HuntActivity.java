@@ -21,6 +21,8 @@ import com.google.android.gms.maps.MapFragment;
 import com.nineoldandroids.view.animation.AnimatorProxy;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
+
 
 public class HuntActivity extends FragmentActivity {
 
@@ -62,19 +64,14 @@ public class HuntActivity extends FragmentActivity {
     private Hunt hunt;
 
     /**
+     * The hints that would be displayed and used.
+     */
+    ArrayList<Hint> hints = new ArrayList<Hint>();
+
+    /**
      * The map manager controller
      */
     private MapManager mapManager;
-
-    /**
-     * The displayed hints.
-     */
-    private Hint[] hints = {// TODO retrieve the hints on the fly using the hunt
-            new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED),
-            new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED),
-            new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED),
-            new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED)
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,12 +163,23 @@ public class HuntActivity extends FragmentActivity {
 
             }
         });
+
+        // TODO to use focusing on a point on a map when the panel is anchored
+        int height = findViewById(R.id.main_content).getMeasuredHeight();
+        float panDistance = (1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) * height -
+                getResources().getDimension(R.dimen.sliding_up_panel_paralax);
     }
 
     /**
      * Set up the pager view.
      */
     private void setUpPagerView() {
+        // TODO retrieve the hints on the fly using the hunt
+        hints.add(new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
+        hints.add(new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
+        hints.add(new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
+        hints.add(new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
+
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
         // ViewPager and its adapters use support library fragments, so we must use

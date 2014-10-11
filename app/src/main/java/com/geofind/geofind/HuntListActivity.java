@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.model.LatLng;
+import java.util.ArrayList;
 
 
 public class HuntListActivity extends Activity {
@@ -23,19 +24,18 @@ public class HuntListActivity extends Activity {
 
         // create and fill the hunts array to display them.
         // TODO retrieve the hunts from parse
-        Hunt[] hunts = {
-                new Hunt("Title1", 1, 1, "Hunt1", new LatLng(31.76831,35.21371), 500),
-                new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831,35.21371), 1000),
-                new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831,35.21371), 200),
-                new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831,35.21371), 10000),
-                new Hunt("Title5", 5, 5, "Hunt5", new LatLng(31.76831,35.21371), 800)
-        };
+        ArrayList<Hunt> hunts = new ArrayList<Hunt>();
+        hunts.add(new Hunt("Title1", 1, 1, "Hunt1",new LatLng(31.76831,35.21371), 500));
+        hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831,35.21371), 1000));
+        hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831,35.21371), 200));
+        hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831,35.21371), 10000));
+        hunts.add(new Hunt("Title5", 5, 5, "Hunt5", new LatLng(31.76831,35.21371), 800));
 
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // create an adapter
-        HuntListAdapter adapter = new HuntListAdapter(hunts);
+        HuntListAdapter adapter = new HuntListAdapter(hunts, this);
 
         // set adapter
         recyclerView.setAdapter(adapter);
