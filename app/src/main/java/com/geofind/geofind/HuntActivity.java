@@ -147,8 +147,8 @@ public class HuntActivity extends FragmentActivity {
         });
 
         // TODO to use focusing on a point on a map when the panel is anchored
-        int hight = findViewById(R.id.main_content).getMeasuredHeight();
-        float panDistance = (1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) * hight -
+        int height = findViewById(R.id.main_content).getMeasuredHeight();
+        float panDistance = (1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) * height -
                 getResources().getDimension(R.dimen.sliding_up_panel_paralax);
     }
 
