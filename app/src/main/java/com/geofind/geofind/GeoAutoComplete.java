@@ -117,13 +117,52 @@ public class GeoAutoComplete {
         return url;
     }
 
+    private static String escape(String s) {
+        StringBuilder builder = new StringBuilder();
+        boolean previousWasASpace = true;
+        for( char c : s.toCharArray() ) {
+            if( c == ' ' ) {
+                Log.d("AutoEscape","c = " + c);
+                Log.d("AutoEscape","previous space" + previousWasASpace);
+               // if( previousWasASpace ) {
+                    builder.append("&nbsp;");
+                    previousWasASpace = false;
+                    continue;
+                //}
+                //previousWasASpace = true;
+            }
+            /*else {
+                previousWasASpace = false;
+            }*/
+            switch(c) {
+                case '<': builder.append("&lt;"); break;
+                case '>': builder.append("&gt;"); break;
+                case '&': builder.append("&amp;"); break;
+                case '"': builder.append("&quot;"); break;
+                case '\n': builder.append("<br>"); break;
+                // We need Tab support here, because we print StackTraces as HTML
+                case '\t': builder.append("&nbsp; &nbsp; &nbsp;"); break;
+                default:
+                    if( c < 128 ) {
+                        builder.append(c);
+                    } else {
+                        builder.append("&#").append((int)c).append(";");
+                    }
+            }
+        }
+        Log.d("AutoComplete-HTML",builder.toString());
+        return builder.toString();
+    }
+
     private String getAutocompleteUrl(String place) {
 
         // Obtain browser key from https://code.google.com/apis/console
         String key = "key="+API_KEY;
 
         // place to be be searched
-        String input = "input="+place;
+        String input = "input="+escape(place);
+
+        Log.d("AutoComplete",input);
 
         // place type to be searched
         String types = "types=geocode";
@@ -164,7 +203,9 @@ public class GeoAutoComplete {
             String data = "";
             InputStream iStream = null;
             HttpURLConnection urlConnection = null;
+
             try{
+
                 URL url = new URL(strUrl);
 
                 // Creating an http connection to communicate with url
@@ -184,7 +225,6 @@ public class GeoAutoComplete {
                 while( ( line = br.readLine())  != null){
                     sb.append(line);
                 }
-
                 data = sb.toString();
 
                 br.close();
@@ -201,6 +241,7 @@ public class GeoAutoComplete {
                 }
                 urlConnection.disconnect();
             }
+            Log.d("AutoComplete","Recieved " + data);
             return data;
 
         }
@@ -208,11 +249,17 @@ public class GeoAutoComplete {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if (s.isEmpty()) {
+                return;
+            }
             switch (_type){
                 case PLACES:
-
+                    ParseTask placeParser = new ParseTask(DownloadTypes.PLACES);
+                    placeParser.execute(s);
                     break;
                 case PLACES_DETAILS:
+                    ParseTask detailsParser = new ParseTask(DownloadTypes.PLACES_DETAILS);
+                    detailsParser.execute(s);
             }
         }
     }
@@ -235,6 +282,7 @@ public class GeoAutoComplete {
                 switch (_parseType){
                     case  PLACES:
                         PlaceJSONParser placeParser = new PlaceJSONParser();
+                        Log.d("AutoComplete","jObject = " + jObject.toString());
                         list = placeParser.parse(jObject);
                         break;
                     case PLACES_DETAILS:
@@ -243,6 +291,7 @@ public class GeoAutoComplete {
                         break;
                 }
             } catch (JSONException e) {
+                Log.e("AutoComplete",e.getMessage());
                 e.printStackTrace();
             }
 
@@ -253,7 +302,12 @@ public class GeoAutoComplete {
         protected void onPostExecute(List<HashMap<String, String>> result) {
             switch (_parseType){
                 case PLACES:
-                    String[] from = new String[] {"Description"};
+                    if (result == null){
+                        Log.d("AutoComplete", "result is null");
+                    }
+                    else
+                        Log.d("AutoComplete", "item num = " +  result.size());
+                    String[] from = new String[] {"description"};
                     int[] to = new  int[] {android.R.id.text1};
 
                     // Creating a SimpleAdapter for the AutoCompleteTextView
@@ -261,6 +315,7 @@ public class GeoAutoComplete {
 
                     // Setting the adapter
                     _atvLocation.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                     break;
                 case PLACES_DETAILS:
                     HashMap<String, String> hm = result.get(0);
