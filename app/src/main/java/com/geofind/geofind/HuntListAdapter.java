@@ -1,5 +1,6 @@
 package com.geofind.geofind;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +10,8 @@ import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * Created by mickey on 01/10/14.
  */
@@ -17,9 +20,31 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     /**
      * The array of displayed hunts.
      */
-    private Hunt[] hunts;
+    private ArrayList<Hunt> hunts;
 
-    public HuntListAdapter(Hunt[] hunts) {
+    /**
+     * The host activity.
+     */
+    private Context context;
+
+    public HuntListAdapter(ArrayList<Hunt> hunts, Context context) {
+        this.hunts = hunts;
+        this.context = context;
+    }
+
+    /**
+     * Get the hunts array list.
+     * @return The array list of the hunts.
+     */
+    public ArrayList<Hunt> getHunts() {
+        return hunts;
+    }
+
+    /**
+     * Set the array list of the hunts.
+     * @param hunts The array list of the hunts to be displayed
+     */
+    public void setHunts(ArrayList<Hunt> hunts) {
         this.hunts = hunts;
     }
 
@@ -38,10 +63,11 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int i) {
         // put the values of the hunt in all of the views
-        viewHolder.textViewTitle.setText(hunts[i].getTitle());
-        viewHolder.textViewTotalDistance.setText(hunts[i].getTotalDistance().toString());
-        viewHolder.ratingBar.setRating(hunts[i].getRating());
-        viewHolder.textViewDescription.setText(hunts[i].getDescription());
+        viewHolder.context = context;
+        viewHolder.textViewTitle.setText(hunts.get(i).getTitle());
+        viewHolder.textViewTotalDistance.setText(hunts.get(i).getTotalDistance().toString());
+        viewHolder.ratingBar.setRating(hunts.get(i).getRating());
+        viewHolder.textViewDescription.setText(hunts.get(i).getDescription());
 
         // set a listener to the button to start the hunt
         viewHolder.startHuntButton.setOnClickListener(new View.OnClickListener() {
@@ -51,23 +77,22 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
                 // pass the hunt itself to the HuntDetailActivity
                 intent.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
-                        hunts[i]);
+                        hunts.get(i));
 
                 // start the activity
                 v.getContext().startActivity(intent);
             }
         });
-
-
     }
 
     @Override
     public int getItemCount() {
-        return hunts.length;
+        return hunts.size();
     }
 
     // inner class to hold a reference to each item of RecyclerView
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public Context context;
         public TextView textViewTitle;
         public TextView textViewTotalDistance;
         public RatingBar ratingBar;
@@ -88,6 +113,8 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
             startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
 
+            // TODO use the context as an activity an get the fragment manager to get the map
+            // ((Activity) context).getFragmentManager().findFragmentById(...);
         }
 
         @Override
@@ -97,7 +124,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
             // pass the hunt itself to the HuntDetailActivity
             intent.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
-                    hunts[getPosition()]);
+                    hunts.get(getPosition()));
 
             // start the activity
             v.getContext().startActivity(intent);

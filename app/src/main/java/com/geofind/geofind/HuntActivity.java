@@ -19,6 +19,8 @@ import android.widget.RelativeLayout;
 import com.nineoldandroids.view.animation.AnimatorProxy;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
+
 
 public class HuntActivity extends FragmentActivity {
 
@@ -55,6 +57,11 @@ public class HuntActivity extends FragmentActivity {
      * The hunt on which the activity displays the details.
      */
     private Hunt hunt;
+
+    /**
+     * The hints that would be displayed and used.
+     */
+    ArrayList<Hint> hints = new ArrayList<Hint>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +145,11 @@ public class HuntActivity extends FragmentActivity {
 
             }
         });
+
+        // TODO to use focusing on a point on a map when the panel is anchored
+        int height = findViewById(R.id.main_content).getMeasuredHeight();
+        float panDistance = (1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) * height -
+                getResources().getDimension(R.dimen.sliding_up_panel_paralax);
     }
 
     /**
@@ -145,12 +157,10 @@ public class HuntActivity extends FragmentActivity {
      */
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
-        Hint[] hints = {
-                new Hint("Hint1", "Description1", Hint.State.SOLVED),
-                new Hint("Hint2", "Description2", Hint.State.SOLVED),
-                new Hint("Hint3", "Description3", Hint.State.REVEALED),
-                new Hint("Hint4", "Description4", Hint.State.UNREVEALED)
-        };
+        hints.add(new Hint("Hint1", "Description1", Hint.State.SOLVED));
+        hints.add(new Hint("Hint2", "Description2", Hint.State.SOLVED));
+        hints.add(new Hint("Hint3", "Description3", Hint.State.REVEALED));
+        hints.add(new Hint("Hint4", "Description4", Hint.State.UNREVEALED));
 
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.

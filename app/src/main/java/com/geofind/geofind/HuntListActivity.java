@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 
 public class HuntListActivity extends Activity {
 
@@ -21,19 +23,18 @@ public class HuntListActivity extends Activity {
 
         // create and fill the hunts array to display them.
         // TODO retrieve the hunts from parse
-        Hunt[] hunts = {
-                new Hunt("Title1", 1, 1, "Hunt1"),
-                new Hunt("Title2", 2, 2, "Hunt2"),
-                new Hunt("Title3", 3, 3, "Hunt3"),
-                new Hunt("Title4", 4, 4, "Hunt4"),
-                new Hunt("Title5", 5, 5, "Hunt5")
-        };
+        ArrayList<Hunt> hunts = new ArrayList<Hunt>();
+        hunts.add(new Hunt("Title1", 1, 1, "Hunt1"));
+        hunts.add(new Hunt("Title2", 2, 2, "Hunt2"));
+        hunts.add(new Hunt("Title3", 3, 3, "Hunt3"));
+        hunts.add(new Hunt("Title4", 4, 4, "Hunt4"));
+        hunts.add(new Hunt("Title5", 5, 5, "Hunt5"));
 
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // create an adapter
-        HuntListAdapter adapter = new HuntListAdapter(hunts);
+        HuntListAdapter adapter = new HuntListAdapter(hunts, this);
 
         // set adapter
         recyclerView.setAdapter(adapter);
