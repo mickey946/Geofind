@@ -42,6 +42,7 @@ public class MapManager implements LocationListener {
     protected MarkerOptions markerOptions;
     private MarkerCallback _markerCallback;
     private HashMap<Marker,Integer> _markerMap;
+    private float _offsetX, _offsetY;
 
     public MapManager(Activity activity, MapFragment map, TextView tvLocation) {
         _activity = activity;
@@ -73,6 +74,8 @@ public class MapManager implements LocationListener {
             _markerMap = new HashMap<Marker, Integer>();
         }
         _mMap.setMyLocationEnabled(true);
+        _offsetX = 0;
+        _offsetY = 0;
         focusOnCurrentLocation();
 
 
@@ -144,7 +147,7 @@ public class MapManager implements LocationListener {
                 markerOptions.position(latLng);
                 markerOptions.title("lat: " + latLng.latitude + " lng: " + latLng.longitude);
 
-                new ReverseGeocodingTask(_activity.getBaseContext(),onlyOne).execute(latLng);
+                new ReverseGeocodingTask(_activity.getBaseContext(), onlyOne).execute(latLng);
                 //   mMap.clear();
                 //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 //mMap.addMarker(markerOptions);
@@ -162,7 +165,12 @@ public class MapManager implements LocationListener {
                         defaultMarker(state == Hint.State.REVEALED ?
                                 BitmapDescriptorFactory.HUE_RED : BitmapDescriptorFactory.HUE_GREEN)));
 
-        _markerMap.put(marker,_markerMap.size());
+        _markerMap.put(marker, _markerMap.size());
+    }
+
+    public void setMapOffset(float offsetX, float offsetY){
+        _offsetX = offsetX;
+        _offsetY = offsetY;
     }
 
     @Override
@@ -174,6 +182,7 @@ public class MapManager implements LocationListener {
         LatLng latLng = new LatLng(latitude, longitude);
 
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        _mMap.moveCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
         _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         if (_tvLocation != null)

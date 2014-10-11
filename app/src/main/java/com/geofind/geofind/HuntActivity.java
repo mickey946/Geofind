@@ -125,6 +125,8 @@ public class HuntActivity extends FragmentActivity {
                 // when the panel had collapsed, the user would like to see the map rather than the
                 // point
                 Log.i(TAG, "onPanelCollapsed");
+                mapManager.setMapOffset(0, 0);
+                focusOnPoint(viewPager.getCurrentItem());
             }
 
             @Override
@@ -133,7 +135,16 @@ public class HuntActivity extends FragmentActivity {
                 // good to assume that he wants to focus on the point (if it is visible)
                 Log.i(TAG, "onPanelAnchored");
 
+
+                // TODO to use focusing on a point on a map when the panel is anchored
+                int height = findViewById(R.id.main_content).getMeasuredHeight();
+                float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
+                        - getResources().getDimension(R.dimen.sliding_up_panel_paralax)
+                                * SLIDING_UP_PANEL_ANCHOR_POINT;
+                mapManager.setMapOffset(0, panDistance);
+
                 focusOnPoint(viewPager.getCurrentItem());
+
             }
 
             @Override
@@ -164,10 +175,6 @@ public class HuntActivity extends FragmentActivity {
             }
         });
 
-        // TODO to use focusing on a point on a map when the panel is anchored
-        int height = findViewById(R.id.main_content).getMeasuredHeight();
-        float panDistance = (1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) * height -
-                getResources().getDimension(R.dimen.sliding_up_panel_paralax);
     }
 
     /**
@@ -247,8 +254,10 @@ public class HuntActivity extends FragmentActivity {
             Hint hint = (Hint) bundle.getSerializable(HintPagerAdapter.HintFragment.TAG);
             if (hint != null) { // for ultra safety
                 if (hint.getState() != Hint.State.UNREVEALED) {
+
                     Point point = hint.getLocation();
                     mapManager.onLocationChanged(point.toLocation());
+
                 }
             }
         }
