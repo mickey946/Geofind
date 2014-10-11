@@ -58,6 +58,11 @@ public class HuntActivity extends FragmentActivity {
      */
     private Hunt hunt;
 
+    /**
+     * The hints that would be displayed and used.
+     */
+    ArrayList<Hint> hints = new ArrayList<Hint>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,7 +157,6 @@ public class HuntActivity extends FragmentActivity {
      */
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
-        ArrayList<Hint> hints = new ArrayList<Hint>();
         hints.add(new Hint("Hint1", "Description1", Hint.State.SOLVED));
         hints.add(new Hint("Hint2", "Description2", Hint.State.SOLVED));
         hints.add(new Hint("Hint3", "Description3", Hint.State.REVEALED));
