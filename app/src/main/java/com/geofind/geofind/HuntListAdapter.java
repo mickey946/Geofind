@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,10 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         viewHolder.ratingBar.setRating(hunts.get(i).getRating());
         viewHolder.textViewDescription.setText(hunts.get(i).getDescription());
 
+        String add = StaticMap.composeAddress(hunts.get(i).getCenterPosition(),hunts.get(i).getRadius(),
+                600,200,12);
+        Log.d("Addres", add);
+
         // set a listener to the button to start the hunt
         viewHolder.startHuntButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +117,9 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_hunt_list_rating);
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
             startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
+
+
+
 
             // TODO use the context as an activity an get the fragment manager to get the map
             // ((Activity) context).getFragmentManager().findFragmentById(...);
