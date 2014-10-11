@@ -19,6 +19,8 @@ import android.widget.RelativeLayout;
 import com.nineoldandroids.view.animation.AnimatorProxy;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
+
 
 public class HuntActivity extends FragmentActivity {
 
@@ -145,12 +147,11 @@ public class HuntActivity extends FragmentActivity {
      */
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
-        Hint[] hints = {
-                new Hint("Hint1", "Description1", Hint.State.SOLVED),
-                new Hint("Hint2", "Description2", Hint.State.SOLVED),
-                new Hint("Hint3", "Description3", Hint.State.REVEALED),
-                new Hint("Hint4", "Description4", Hint.State.UNREVEALED)
-        };
+        ArrayList<Hint> hints = new ArrayList<Hint>();
+        hints.add(new Hint("Hint1", "Description1", Hint.State.SOLVED));
+        hints.add(new Hint("Hint2", "Description2", Hint.State.SOLVED));
+        hints.add(new Hint("Hint3", "Description3", Hint.State.REVEALED));
+        hints.add(new Hint("Hint4", "Description4", Hint.State.UNREVEALED));
 
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
