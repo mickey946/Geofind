@@ -22,7 +22,6 @@ public class PickPointActivity extends Activity {
 
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.pick_point_map);
-        //_mapManager = new MapManager(this,mapFragment, tvLocation);
         _mapManager = new MapManager(this,mapFragment,(AutoCompleteTextView)findViewById(R.id.atv_places));
         _mapManager.enableMarkers(true);
 

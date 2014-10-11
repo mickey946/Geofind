@@ -13,6 +13,8 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.AutoCompleteTextView;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,32 +38,26 @@ import java.util.List;
  */
 public class MapManager implements LocationListener {
 
-    private TextView _tvLocation;
     private MapFragment _mapFragment;
     private GoogleMap _mMap;
     private Activity _activity;
     protected MarkerOptions markerOptions;
     private MarkerCallback _markerCallback;
     private HashMap<Marker,Integer> _markerMap;
+    private  AutoCompleteTextView _atvLocation;
     private GeoAutoComplete _geoComplete;
 
 
-    public MapManager(Activity activity, MapFragment map, TextView tvLocation) {
-        _activity = activity;
-        _tvLocation = tvLocation;
-        _mapFragment = map;
-        initMap();
-    }
 
     public MapManager(Activity activity, MapFragment map, AutoCompleteTextView atvLocation){
         _mapFragment = map;
         _activity = activity;
+        _atvLocation = atvLocation;
         _geoComplete = new GeoAutoComplete(this,activity,atvLocation);
         initMap();
     }
 
     public MapManager(Activity activity, MapFragment map) {
-        _tvLocation = null;
         _mapFragment = map;
         _activity = activity;
         initMap();
@@ -167,6 +163,7 @@ public class MapManager implements LocationListener {
 
 
     public void displayFoundLocation (LatLng location){
+        _mMap.clear(); // Only one marker can be set
         Marker marker = _mMap.addMarker(new MarkerOptions()
                 .position(location));
 
@@ -201,8 +198,14 @@ public class MapManager implements LocationListener {
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-        if (_tvLocation != null)
-            _tvLocation.setText("Lat: " + latitude + " Long:" + longitude);
+
+        SimpleAdapter a = (SimpleAdapter) _atvLocation.getAdapter();
+        _atvLocation.setAdapter(null); // Remove the adapter so we don't get a dropdown when
+        _atvLocation.setText("Lat: " + latitude + " Long:" + longitude); // text is set programmatically.
+        _atvLocation.setAdapter(a); // Restore adapter
+//
+//        if (_tvLocation != null)
+//            _tvLocation.setText("Lat: " + latitude + " Long:" + longitude);
     }
 
     @Override
@@ -293,9 +296,14 @@ public class MapManager implements LocationListener {
         @Override
         protected void onPostExecute(String addressText) {
             markerOptions.title(addressText);
-            if(_tvLocation != null) {
-                _tvLocation.setText(addressText);
-}
+//            if(_tvLocation != null) {
+//                _tvLocation.setText(addressText);
+//}
+            SimpleAdapter a = (SimpleAdapter) _atvLocation.getAdapter();
+            _atvLocation.setAdapter(null); // Remove the adapter so we don't get a dropdown when
+            _atvLocation.setText(addressText); // text is set programmatically.
+            _atvLocation.setAdapter(a); // Restore adapter
+
             if (mOnlyOne){
                 _mMap.clear();
             }
