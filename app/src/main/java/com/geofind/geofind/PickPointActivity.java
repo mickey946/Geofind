@@ -5,14 +5,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.MapFragment;
 
 
 public class PickPointActivity extends Activity {
 
+    MapManager _mapManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_point);
+        //TextView tvLocation = (TextView) findViewById(R.id.pick_point_txt);
+
+        MapFragment mapFragment =
+                (MapFragment) getFragmentManager().findFragmentById(R.id.pick_point_map);
+        _mapManager = new MapManager(this,mapFragment,(AutoCompleteTextView)findViewById(R.id.atv_places));
+        _mapManager.enableMarkers(true);
+
     }
 
 

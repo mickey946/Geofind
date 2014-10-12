@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.maps.MapFragment;
 import com.nineoldandroids.view.animation.AnimatorProxy;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -23,6 +25,9 @@ import java.util.ArrayList;
 
 
 public class HuntActivity extends FragmentActivity {
+
+    public static final int MIN_UPDATE_TIME = 0; //TODO decide the correct values
+    public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
@@ -63,6 +68,11 @@ public class HuntActivity extends FragmentActivity {
      */
     ArrayList<Hint> hints = new ArrayList<Hint>();
 
+    /**
+     * The map manager controller
+     */
+    private MapManager mapManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,9 +81,11 @@ public class HuntActivity extends FragmentActivity {
 
         setUpHunt();
 
+        setUpPagerView();
+
         setUpSlidingUpPanel();
 
-        setUpPagerView();
+        setUpMap();
     }
 
     /**
@@ -104,18 +116,35 @@ public class HuntActivity extends FragmentActivity {
 
             @Override
             public void onPanelExpanded(View panel) {
+                // when the panel is expanded the map is not visible, so there is nothing to show
                 Log.i(TAG, "onPanelExpanded");
             }
 
             @Override
             public void onPanelCollapsed(View panel) {
+                // when the panel had collapsed, the user would like to see the map rather than the
+                // point
                 Log.i(TAG, "onPanelCollapsed");
-
+                mapManager.setMapOffset(0, 0);
+                focusOnPoint(viewPager.getCurrentItem());
             }
 
             @Override
             public void onPanelAnchored(View panel) {
+                // when the user anchors the panel, he sees both the hint and both the map, so it's
+                // good to assume that he wants to focus on the point (if it is visible)
                 Log.i(TAG, "onPanelAnchored");
+
+
+                // TODO to use focusing on a point on a map when the panel is anchored
+                int height = findViewById(R.id.main_content).getMeasuredHeight();
+                float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
+                        - getResources().getDimension(R.dimen.sliding_up_panel_paralax)
+                                * SLIDING_UP_PANEL_ANCHOR_POINT;
+                mapManager.setMapOffset(0, panDistance);
+
+                focusOnPoint(viewPager.getCurrentItem());
+
             }
 
             @Override
@@ -146,10 +175,6 @@ public class HuntActivity extends FragmentActivity {
             }
         });
 
-        // TODO to use focusing on a point on a map when the panel is anchored
-        int height = findViewById(R.id.main_content).getMeasuredHeight();
-        float panDistance = (1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) * height -
-                getResources().getDimension(R.dimen.sliding_up_panel_paralax);
     }
 
     /**
@@ -157,10 +182,10 @@ public class HuntActivity extends FragmentActivity {
      */
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
-        hints.add(new Hint("Hint1", "Description1", Hint.State.SOLVED));
-        hints.add(new Hint("Hint2", "Description2", Hint.State.SOLVED));
-        hints.add(new Hint("Hint3", "Description3", Hint.State.REVEALED));
-        hints.add(new Hint("Hint4", "Description4", Hint.State.UNREVEALED));
+        hints.add(new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
+        hints.add(new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
+        hints.add(new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
+        hints.add(new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
 
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
@@ -171,7 +196,73 @@ public class HuntActivity extends FragmentActivity {
         // Set up the ViewPager, attaching the adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(hintPagerAdapter);
+
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+                // not useful for now, ignore
+            }
+
+            @Override
+            public void onPageSelected(int index) {
+                focusOnPoint(index);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+                // not useful for now, ignore
+            }
+        });
     }
+
+    /**
+     * Set up the map view.
+     */
+    private void setUpMap() {
+        MapFragment mapFragment =
+                (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
+        mapManager = new MapManager(this, mapFragment);
+        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
+        mapManager.setMarkerCallback(new MarkerCallback() {
+            /**
+             * Slide to the point page at the given index.
+             *
+             * @param index The index of the point in the adapter.
+             */
+            @Override
+            public void onMarkerClick(int index) {
+                viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
+            }
+        });
+
+        for (Hint hint : hints) {
+            if (hint.getState() != Hint.State.UNREVEALED) {
+                mapManager.setMarker(hint.getLocation().toLatLng(), hint.getTitle(), hint.getState());
+            }
+        }
+    }
+
+    /**
+     * Focus on a point on a map.
+     *
+     * @param index The index of the point in the adapter.
+     */
+    private void focusOnPoint(int index) {
+        Fragment fragment = hintPagerAdapter.getItem(index);
+        Bundle bundle = fragment.getArguments();
+        if (bundle != null) { // for extra safety
+            Hint hint = (Hint) bundle.getSerializable(HintPagerAdapter.HintFragment.TAG);
+            if (hint != null) { // for ultra safety
+                if (hint.getState() != Hint.State.UNREVEALED) {
+
+                    Point point = hint.getLocation();
+                    mapManager.onLocationChanged(point.toLocation());
+
+                }
+            }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
