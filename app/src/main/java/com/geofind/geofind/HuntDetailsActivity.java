@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.MapFragment;
+
 
 public class HuntDetailsActivity extends Activity {
 
@@ -15,6 +17,7 @@ public class HuntDetailsActivity extends Activity {
      * The hunt on which the activity displays the details.
      */
     private Hunt hunt;
+    private MapManager _mapManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,13 @@ public class HuntDetailsActivity extends Activity {
             // hunt description
             TextView descriptionTextView = (TextView) findViewById(R.id.hunt_details_description);
             descriptionTextView.setText(hunt.getDescription());
+
+            MapFragment mapFragment =
+                    (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_details_map_preview);
+            _mapManager = new MapManager(this, mapFragment);
+            _mapManager.showMyLocationButton(false);
+
+            _mapManager.drawCircle(hunt.getCenterPosition(),hunt.getRadius());
 
             // hunt total distance
             TextView totalDistanceTextView = (TextView)
