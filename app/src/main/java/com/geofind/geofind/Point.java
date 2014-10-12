@@ -17,11 +17,10 @@ import java.io.Serializable;
 
 //// Tzafrir you can add here what you need for Parse too.
 
-public class Point implements Serializable{
+public class Point implements Serializable { // TODO extend ParseGeoPoint
 
     private  double _latitude;
     private  double _longitude;
-
 
     Point(double latitude, double longitude){
         _latitude = latitude;

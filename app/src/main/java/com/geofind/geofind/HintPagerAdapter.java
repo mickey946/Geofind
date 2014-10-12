@@ -50,6 +50,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
     /**
      * Add a hint to the end of the list.
+     *
      * @param hint The new hint to add.
      */
     public void addHint(Hint hint) {
@@ -85,7 +86,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
             TextView hintDescriptionTextView = (TextView)
                     view.findViewById(R.id.item_hint_description);
-            hintDescriptionTextView.setText(hint.getDescription());
+            hintDescriptionTextView.setText(hint.getText());
 
             Button revealButton = (Button) view.findViewById(R.id.item_hint_reveal_button);
             Drawable drawable = null;

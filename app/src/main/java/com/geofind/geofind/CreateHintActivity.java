@@ -48,7 +48,7 @@ public class CreateHintActivity extends Activity {
                 index = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
                 if (hint != null) { // the user is editing and existing hint
                     hintTitleTextView.setText(hint.getTitle());
-                    hintTextTextView.setText(hint.getDescription());
+                    hintTextTextView.setText(hint.getText());
                 }
             }
         }
@@ -182,7 +182,11 @@ public class CreateHintActivity extends Activity {
             Toast.makeText(this, getString(R.string.create_hint_file_manager_error),
                     Toast.LENGTH_LONG).show();
         }
+
+        // TODO save the image to the Hint
     }
+
+    // TODO add sound and video pickers and savers
 
     /**
      * Helper to retrieve the path of an image URI.

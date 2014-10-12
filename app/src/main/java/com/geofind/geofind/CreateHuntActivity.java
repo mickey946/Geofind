@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,18 @@ public class CreateHuntActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_submit_hunt) {
+            TextView huntTitleTextView = (TextView) findViewById(R.id.create_hunt_title);
+            TextView huntDescriptionTextView = (TextView) findViewById(R.id.create_hunt_description);
+
+            String huntTitle = huntTitleTextView.getText().toString(),
+                    huntDescription = huntDescriptionTextView.getText().toString();
+            String creatorID = "creatorID"; // TODO change to appropriate type
+
+            Hunt hunt = new Hunt(huntTitle, huntDescription, hints, creatorID);
+
+            // TODO save hunt to parse
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -65,8 +77,6 @@ public class CreateHuntActivity extends Activity {
                                 findViewById(R.id.create_hunt_create_points_button);
                         createHintsButton.setText(getString(R.string.hunt_create_edit_button));
                     }
-
-                    // TODO do something with those hints (points)
                 }
             }
         }
