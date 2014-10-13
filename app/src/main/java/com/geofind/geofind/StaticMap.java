@@ -1,5 +1,7 @@
 package com.geofind.geofind;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -22,12 +24,26 @@ public class StaticMap {
     public static String composeAddress (LatLng center, float radius ,
                                          int width, int height,
                                          int zoom){
+
         String address =  base_address +
                 "center=" + center.latitude + "," + center.longitude +"&"+
                 "zoom=" + zoom + "&" + "size="+width+"x"+height;
 
-        address += "&path=fillcolor:0xAA000033%7Ccolor:0xFFFFFF00%7C\n" +
-                "enc:"+encode(createCircle(center,radius,8));
+//        ArrayList<LatLng> t = new ArrayList<LatLng>();
+//        t.add(new LatLng (31.793555207271424,35.22045135498047));
+//        t.add(new LatLng (31.77867180905657,35.229034423828125));
+//        t.add(new LatLng (31.756780107186728,35.2166748046875));
+//        t.add(new LatLng (31.781006618184914,35.19676208496094));
+//        //createCircle(center,radius,90)
+
+        List<LatLng> ee = createCircle(center,radius/1000,10);
+        for (LatLng e : ee){
+            Log.d("static", "Lat, Lng " + e.latitude + "," + e.longitude);
+
+        }
+
+        address += "&path=fillcolor:0xAA000033%7Ccolor:0xFFFFFF00%7C" +
+                "enc:"+encode(ee);
 
 
         return address;
@@ -41,12 +57,23 @@ public class StaticMap {
         double lng = (center.longitude * Math.PI) /180f;
         double d = radius/Ratio;
 
+        double phi1 = lat;
+        double labmda1  = lng;
+
         for (int i=0; i<=360; i+=Details){
             double bRng = i * Math.PI / 180f;
-            double pLat = Math.asin(Math.sin(lat)*Math.cos(d) + Math.cos(lat) * Math.sin(d)*Math.cos(bRng));
-            double pLng = ((lng + Math.atan2(Math.sin(bRng)*Math.sin(d)*Math.cos(lat),
-                    Math.cos(d)-Math.sin(lat)*Math.sin(pLat)))*180)/Math.PI;
-            perimeter.add(new LatLng(pLat, pLng));
+//            double pLat = Math.asin(Math.sin(lat)*Math.cos(d) + Math.cos(lat) * Math.sin(d)*Math.cos(bRng));
+//            double pLng = ((lng + Math.atan2(Math.sin(bRng)*Math.sin(d)*Math.cos(lat),
+//                    Math.cos(d)-Math.sin(lat)*Math.sin(pLat)))*180)/Math.PI;
+
+
+            double phi2 = Math.asin( Math.sin(phi1)*Math.cos(d) +
+                                     Math.cos(phi1)*Math.sin(d)*Math.cos(bRng) );
+            double lambda2 = labmda1 + Math.atan2(Math.sin(bRng)*Math.sin(d)*Math.cos(phi1),
+                    Math.cos(d)-Math.sin(phi1)*Math.sin(phi2));
+
+            //perimeter.add(new LatLng(pLat, pLng));
+            perimeter.add(new LatLng(phi2 * 180/Math.PI,lambda2 * 180/ Math.PI));
 
         }
 
