@@ -4,17 +4,25 @@
     android:layout_height="match_parent"
     tools:context="com.geofind.geofind.PickPointActivity">
 
-    <TextView
-        android:id="@+id/pick_point_txt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <!--<TextView-->
+        <!--android:id="@+id/pick_point_txt"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <com.geofind.geofind.CustomAutoCompleteTextView
+        android:id="@+id/atv_places"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:hint="@string/str_atv_places"
+        android:singleLine="true" />
 
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pick_point_map"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/pick_point_txt"
+        android:layout_below="@+id/atv_places"
         android:name="com.google.android.gms.maps.MapFragment"/>
 
 

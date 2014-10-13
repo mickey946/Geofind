@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by mickey on 01/10/14.
@@ -36,23 +37,49 @@ public class Hunt implements Serializable {
     /**
      * The center point of the hunt.
      */
-    private SerializableLatLng centerPossition;
+    private SerializableLatLng firstPoint; // TODO discuss if we need to change to Point
 
     /**
      * The radius in meters of the hunt.
      */
     private Float radius;
 
-    //TODO Add clues, maps etc.
+    /**
+     * The hints of this hunt.
+     */
+    private ArrayList<Hint> hints;
 
+    /**
+     * The creator Google user ID.
+     */
+    private String creatorID; // TODO change to the appropriate type
 
-    public Hunt(String title, float rating, float totalDistance, String description, LatLng centerPossition, float radius) {
+    /**
+     * Constructor for HuntListActivity.
+     */
+    public Hunt(String title, float rating, float totalDistance, String description,
+                LatLng firstPoint, float radius) {
         this.title = title;
         this.rating = rating;
         this.totalDistance = totalDistance;
         this.description = description;
-        this.centerPossition = new SerializableLatLng( centerPossition);
+        this.firstPoint = new SerializableLatLng(firstPoint);
         this.radius = radius;
+
+        // TODO discuss if we need to add the creator name in the preview
+    }
+
+    /**
+     * Constructor for CreateHuntActivity.
+     */
+    public Hunt(String title, String description, ArrayList<Hint> hints, String creatorID) {
+        this.title = title;
+        this.description = description;
+        this.hints = hints;
+        this.creatorID = creatorID;
+
+        // TODO calculate total distance and radius
+        // TODO assign first point from the Hints list
     }
 
     public String getTitle() {
@@ -72,22 +99,23 @@ public class Hunt implements Serializable {
     }
 
     public LatLng getCenterPosition() {
-        return centerPossition.getLocation();
+        return firstPoint.getLocation();
     }
 
     public Float getRadius() {
         return radius;
     }
+
     public class SerializableLatLng implements Serializable {
         // mark it transient so defaultReadObject()/defaultWriteObject() ignore it
         private transient com.google.android.gms.maps.model.LatLng mLocation;
 
-        public SerializableLatLng(LatLng location){
+        public SerializableLatLng(LatLng location) {
             mLocation = location;
         }
 
-        public  LatLng getLocation(){
-            return  mLocation;
+        public LatLng getLocation() {
+            return mLocation;
         }
 
         private void writeObject(ObjectOutputStream out) throws IOException {

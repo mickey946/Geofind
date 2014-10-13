@@ -43,14 +43,14 @@
     <string name="title_activity_hint_list">Add Points</string>
     <string name="title_activity_create_hunt">Create a Hunt</string>
     <string name="create_hunt_title">Hunt Title and Description</string>
-    <string name="create_hunt_description">In this section, you are required to fill in your hunt\'s title and description. The title and the description are essential, as they would appear first in your hunt\'s preview on other users search. \nUse proper language and try not to give any clues on the points of the hunt in the text.</string>
+    <string name="create_hunt_description">In this section, you are required to fill in your hunt\'s title and text. The title and the text are essential, as they would appear first in your hunt\'s preview on other users search. \nUse proper language and try not to give any clues on the points of the hunt in the text.</string>
     <string name="create_hunt_description_hint">Description</string>
     <string name="create_hunt_title_hint">Title</string>
     <string name="create_hunt_add_points_title">Add Points to your Hunt</string>
     <string name="create_hunt_add_points_description">In this section you are required to create at least two points for your hunt.\nEach point has a hint which should lead the user to it - in one way or another (but not direct).\nYou would be prompted to choose a point on a map and assign it a clue (a text, picture, sound or video). To begin, hit the button below.</string>
     <string name="action_submit">Submit hunt</string>
     <string name="hunt_create_check_before_title">Check before Submitting!</string>
-    <string name="hunt_create_check_before_description">Before submitting your hunt, check your title, description and points thoroughly, as you WILL NOT be able to edit them later!\nYou can click on the button above to edit or add points.\nTo finally submit, hit the upper right button.</string>
+    <string name="hunt_create_check_before_description">Before submitting your hunt, check your title, text and points thoroughly, as you WILL NOT be able to edit them later!\nYou can click on the button above to edit or add points.\nTo finally submit, hit the upper right button.</string>
     <string name="action_add_points">Submit points</string>
     <string name="hint_list_empty">No points yet. Click on the \'plus\' button to add a point.</string>
     <string name="hint_list_add_point">Add a point</string>
@@ -78,5 +78,6 @@
     <string name="hint_list_data_loss_warning_no_save">You have less then one point and your changes will be lost! You have to create at least on more point to save.</string>
     <string name="action_edit_point">Edit Point</string>
     <string name="action_discard_point">Discard Point</string>
+    <string name="str_atv_places">Enter Place Here</string>
 
 </resources>

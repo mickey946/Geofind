@@ -237,7 +237,7 @@ public class HuntActivity extends FragmentActivity {
 
         for (Hint hint : hints) {
             if (hint.getState() != Hint.State.UNREVEALED) {
-                mapManager.setMarker(hint.getLocation().toLocation(), hint.getTitle(), hint.getState());
+                mapManager.setMarker(hint.getLocation().toLatLng(), hint.getTitle(), hint.getState());
             }
         }
     }

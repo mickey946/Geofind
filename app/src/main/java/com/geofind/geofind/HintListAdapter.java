@@ -48,6 +48,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
     /**
      * Get the hints list.
+     *
      * @return ArrayList of hints.
      */
     public ArrayList<Hint> getHints() {
@@ -56,6 +57,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
     /**
      * Set the current hint ArrayList.
+     *
      * @param hints The list hint to display.
      */
     public void setHints(ArrayList<Hint> hints) {
@@ -65,6 +67,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
     /**
      * Add a new hint at the end of the list.
+     *
      * @param hint The new hint to add.
      */
     public void addHint(Hint hint) {
@@ -74,7 +77,8 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
     /**
      * Set the hint in the given index (used as editing).
-     * @param i The index on which we replace (edit) the hint.
+     *
+     * @param i    The index on which we replace (edit) the hint.
      * @param hint The new hint we put in the adapter.
      */
     public void setHint(int i, Hint hint) {
@@ -103,7 +107,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
         // put the values of the hunt in all of the views
         viewHolder.hintTitleTextView.setText(hints.get(i).getTitle());
-        viewHolder.hintTextTextView.setText(hints.get(i).getDescription());
+        viewHolder.hintTextTextView.setText(hints.get(i).getText());
     }
 
     @Override

@@ -13,31 +13,28 @@ public class Hint implements Serializable {
     }
 
     private String title;
-    private String description;
+    private String text;
     private State state;
     private Point location;
 
+    // TODO add picture, recording and video (ParseFile)
 
-
-    // TODO add a Point field
-    // TODO add picture, recording and video
-
-    public Hint(String title, String description, Point location) {
+    public Hint(String title, String text, Point location) {
         this.title = title;
-        this.description = description;
+        this.text = text;
         this.state = State.UNREVEALED; // a default state for a hint
         this.location = location;
     }
 
-    public Hint(String title, String description, Point location, State state) {
+    public Hint(String title, String text, Point location, State state) {
         this.title = title;
-        this.description = description;
+        this.text = text;
         this.location = location;
         this.state = state;
     }
 
-    public String getDescription() {
-        return description;
+    public String getText() {
+        return text;
     }
 
     public String getTitle() {
