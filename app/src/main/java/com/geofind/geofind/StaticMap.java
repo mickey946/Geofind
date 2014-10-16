@@ -11,7 +11,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,9 +33,7 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
 
     @Override
     protected void onPreExecute() {
-        if (_view.getWidth() == 0 || _view.getHeight() == 0) {
-            Log.w("StaticMap", "image view size is 0");
-        }
+        // Nothing to do here
     }
 
     @Override
@@ -59,13 +56,12 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
     }
 
     protected String composeAddress(StaticMapDescriptor desc) {
-        int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, _view.getWidth(), _view.getHeight());
+        int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, desc.width,desc.height);
         Log.d("StaticMap", "proposed new zoom is " + zoom);
 
         String address = base_address +
                 "center=" + desc.center.latitude + "," + desc.center.longitude + "&" +
-                "zoom=" + zoom + "&" + "size=" + _view.getWidth() + "x" + _view.getHeight();
-
+                "zoom=" + zoom + "&" + "size=" + desc.width + "x" + desc.height;
 
         address += "&path=fillcolor:0xAA000033%7Ccolor:0xFFFFFF00%7C" +
                 "enc:" + encode(GeoUtils.createCircle(desc.center, desc.radius, 20));
@@ -76,10 +72,13 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
     public static class StaticMapDescriptor {
         private LatLng center;
         private float radius;
+        private int width, height;
 
-        public StaticMapDescriptor(LatLng center, float radius) {
+        public StaticMapDescriptor(LatLng center, float radius, int width, int height) {
             this.center = center;
-            this.radius = radius / 1000;
+            this.width = width;
+            this.height = height;
+            this.radius = radius / 1000; // Meters to KiloMeters
         }
 
     }

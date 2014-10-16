@@ -3,9 +3,11 @@ package com.geofind.geofind;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 
 /**
  * Created by mickey on 01/10/14.
+ * Edited by Ilia on 16/10/14.
  */
 public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHolder> {
 
@@ -28,9 +31,16 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
      */
     private Context context;
 
+    /**
+     * This is true when the map image is drawn
+     */
+    private int mapWidth, mapHeight;
+
     public HuntListAdapter(ArrayList<Hunt> hunts, Context context) {
         this.hunts = hunts;
         this.context = context;
+        this.mapHeight = -1;
+        this.mapWidth = -1;
     }
 
     /**
@@ -62,7 +72,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         // put the values of the hunt in all of the views
         viewHolder.context = context;
         viewHolder.textViewTitle.setText(hunts.get(i).getTitle());
@@ -70,13 +80,39 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         viewHolder.ratingBar.setRating(hunts.get(i).getRating());
         viewHolder.textViewDescription.setText(hunts.get(i).getDescription());
 
-        // should be called when imgMapPreview exists
-        new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor[]
-                {
-                        new StaticMap.StaticMapDescriptor(
+        Log.d("HuntListAdapter", "view " + i);
+        ViewTreeObserver vto = viewHolder.itemView.getViewTreeObserver();
+        if (mapHeight == -1 || mapWidth == -1){
+            if (vto.isAlive()) {
+                Log.d("HuntListAdapter", "vto is a live on view " + i);
+                vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        viewHolder.itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mapHeight = viewHolder.imgMapPreview.getHeight();
+                        mapWidth = viewHolder.imgMapPreview.getWidth();
+
+                        Log.d("HuntListAdapter", "Static map executing on view " + i);
+
+                        // should be called when imgMapPreview exists
+                        new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor(
                                 hunts.get(i).getCenterPosition(),
-                                hunts.get(i).getRadius())
+                                hunts.get(i).getRadius(), mapWidth, mapHeight));
+
+                    }
                 });
+            } else {
+                Log.d("HuntListAdapter", "vto is  NOT   a live on view " + i);
+            }
+    }else
+        {
+            // The recycler view doesn't create new tiles, so we reuse previous tile and assume
+            // the same dimension for image view
+            Log.d("HuntListAdapter","same size");
+            new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor(
+                    hunts.get(i).getCenterPosition(),
+                    hunts.get(i).getRadius(), mapWidth, mapHeight));
+        }
 
         // set a listener to the button to start the hunt
         viewHolder.startHuntButton.setOnClickListener(new View.OnClickListener() {
