@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewTreeObserver;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Ilia Merin on 05/10/2014.
@@ -48,6 +50,9 @@ public class MapManager implements LocationListener {
     private float _offsetX, _offsetY;
     private  AutoCompleteTextView _atvLocation;
     private GeoAutoComplete _geoComplete;
+    private int _zoomLevel;
+    private int _mapWidth, _mapHeight;
+    private Callable<Void> _zoomUpdate;
 
 
 
@@ -81,10 +86,35 @@ public class MapManager implements LocationListener {
             if (_mMap == null)
                 Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG);
             _markerMap = new HashMap<Marker, Integer>();
+
+            _mapHeight=0;
+            _mapWidth=0;
+
+            ViewTreeObserver vto = _mapFragment.getView().getViewTreeObserver();
+            if (vto.isAlive()){
+                vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        _mapFragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        _mapWidth = _mapFragment.getView().getWidth();
+                        _mapHeight = _mapFragment.getView().getHeight();
+                        Log.d("MapManager", "On Global Change W = " + _mapWidth + " H = " + _mapHeight);
+                        if (_zoomUpdate != null){
+                            try {
+                                _zoomUpdate.call();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                });
+            }
         }
         _mMap.setMyLocationEnabled(true);
         _offsetX = 0;
         _offsetY = 0;
+        _zoomLevel = 15;
         focusOnCurrentLocation();
 
 
@@ -173,7 +203,7 @@ public class MapManager implements LocationListener {
 
 
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-        _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
 
 
     }
@@ -206,7 +236,7 @@ public class MapManager implements LocationListener {
 
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         _mMap.moveCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
-        _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
 
         if(_atvLocation != null) {
             _atvLocation.setText(""); // text is set programmatically.
@@ -230,7 +260,7 @@ public class MapManager implements LocationListener {
     }
 
 
-    public void drawCircle (LatLng position, float radius){
+    public void drawCircle (final LatLng position, final float radius){
         // Instantiating CircleOptions to draw a circle around the marker
         CircleOptions circleOptions = new CircleOptions();
 
@@ -256,9 +286,39 @@ public class MapManager implements LocationListener {
         // Adding the circle to the GoogleMap
         _mMap.addCircle(circleOptions);
 
-        Location l = new Location(LocationManager.PASSIVE_PROVIDER);
+        final Location l = new Location(LocationManager.PASSIVE_PROVIDER);
         l.setLatitude(position.latitude);
         l.setLongitude(position.longitude);
+
+        Log.d("MapManager", "MapWidth = " + _mapWidth);
+        Log.d("MapManager", "MapHeight = " + _mapHeight);
+        Log.d("MapManager", "FragWidth = " + _mapFragment.getView().getWidth());
+        Log.d("MapManager", "FragHeight = " + _mapFragment.getView().getHeight());
+
+
+
+        if (_mapWidth == 0 || _mapHeight == 0)
+        {
+            _zoomUpdate = new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    Log.d("MapManager","OnCall W = " + _mapWidth + " H = " + _mapWidth);
+                    _zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
+                            _mapWidth, _mapHeight) - 2;
+                    Log.d("MapManager","OnCall Zoom = " + _zoomLevel);
+
+                    _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
+                    return null;
+                }
+            };
+            _zoomLevel = 15;
+        }
+        else {
+            _zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
+                    _mapWidth, _mapHeight) - 2;
+            Log.d("MapManager","zoom calculated " + _zoomLevel);
+        }
+
 
         onLocationChanged(l);
     }
@@ -313,11 +373,6 @@ public class MapManager implements LocationListener {
                 }
 
                 addressText = sb.toString();
-
-//                addressText = String.format("%s, %s, %s",
-//                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-//                        address.getLocality(),
-//                        address.getCountryName());
             }
 
             return addressText;
