@@ -3,11 +3,11 @@ package com.geofind.geofind;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -70,9 +70,13 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         viewHolder.ratingBar.setRating(hunts.get(i).getRating());
         viewHolder.textViewDescription.setText(hunts.get(i).getDescription());
 
-        String add = StaticMap.composeAddress(hunts.get(i).getCenterPosition(),hunts.get(i).getRadius(),
-                600,200,12);
-        Log.d("Addres", add);
+        // should be called when imgMapPreview exists
+        new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor[]
+                {
+                        new StaticMap.StaticMapDescriptor(
+                                hunts.get(i).getCenterPosition(),
+                                hunts.get(i).getRadius())
+                });
 
         // set a listener to the button to start the hunt
         viewHolder.startHuntButton.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +107,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         public RatingBar ratingBar;
         public TextView textViewDescription;
         public Button startHuntButton;
+        public ImageView imgMapPreview;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -117,12 +122,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_hunt_list_rating);
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
             startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
-
-
-
-
-            // TODO use the context as an activity an get the fragment manager to get the map
-            // ((Activity) context).getFragmentManager().findFragmentById(...);
+            imgMapPreview = (ImageView) itemView.findViewById(R.id.item_hunt_list_map_preview);
         }
 
         @Override
