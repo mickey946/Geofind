@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,8 +20,6 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import java.io.FileDescriptor;
 import java.util.List;
@@ -156,6 +153,11 @@ public class CreateHintActivity extends Activity {
 
     public void openPointPicker(View view) {
         Intent intent = new Intent(this, PickPointActivity.class);
+        if (hintPoint != null)
+            intent.putExtra(getString(R.string.intent_hint_point_extra), hintPoint);
+        else if (hint != null)
+            intent.putExtra(getString(R.string.intent_hint_point_extra), hint.getLocation());
+
         startActivityForResult(intent, getResources().getInteger(R.integer.intent_point_result));
     }
 

@@ -24,6 +24,16 @@ public class PickPointActivity extends Activity {
         _mapManager = new MapManager(this,mapFragment,(AutoCompleteTextView)findViewById(R.id.atv_places));
         _mapManager.enableMarkers(true);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                Point point =(Point) bundle.getSerializable(
+                        getResources().getString(R.string.intent_hint_point_extra));
+                _mapManager.displayFoundLocation(point.toLatLng());
+            }
+        }
+
     }
 
 

@@ -227,6 +227,7 @@ public class MapManager implements LocationListener {
         _selectedPoint = new Point(location);
     }
 
+
     /**
      * Add a marker to the map
      *
