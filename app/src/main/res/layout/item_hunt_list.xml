@@ -63,12 +63,11 @@
                 </LinearLayout>
             </FrameLayout>
 
-            <!--TODO replace this with a map-->
+
             <ImageView
-                android:id="@+id/hunt_details_map_preview"
+                android:id="@+id/item_hunt_list_map_preview"
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/item_hunt_list_map_height"
-                android:src="@drawable/sample_map"
                 android:scaleType="centerCrop" />
 
             <Button
