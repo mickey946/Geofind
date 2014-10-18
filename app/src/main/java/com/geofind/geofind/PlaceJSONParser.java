@@ -1,18 +1,16 @@
 package com.geofind.geofind;
 
 /**
- * Created by Ilia Merin on 09/10/2014.
+ * Created by Ilia Marin on 09/10/2014.
  */
-
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class PlaceJSONParser {
 
@@ -64,8 +62,6 @@ public class PlaceJSONParser {
             description = jPlace.getString("description");
             id = jPlace.getString("id");
             reference = jPlace.getString("reference");
-
-            Log.d("AutoComplete - PlaceJson", "desc = " + description);
 
             place.put("description", description);
             place.put("_id",id);

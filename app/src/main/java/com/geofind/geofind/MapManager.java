@@ -13,10 +13,8 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewTreeObserver;
 import android.widget.AutoCompleteTextView;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -33,32 +31,48 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
- * Created by Ilia Merin on 05/10/2014.
+ * Created by Ilia Marin on 05/10/2014.
  */
 public class MapManager implements LocationListener {
 
-    private MapFragment _mapFragment;
-    private GoogleMap _mMap;
-    private Activity _activity;
+    public static final String LOG_TAG = "MapManager";
+    // Markers
     protected MarkerOptions markerOptions;
-    private MarkerCallback _markerCallback;
-    private HashMap<Marker,Integer> _markerMap;
+    // Visualize objects
+    private AutoCompleteTextView _atvLocation;
+    private MapFragment _mapFragment;
+    private Activity _activity;
+    // display parameters
     private float _offsetX, _offsetY;
-    private  AutoCompleteTextView _atvLocation;
-    private GeoAutoComplete _geoComplete;
+    private int _zoomLevel;
+    private int _mapWidth, _mapHeight;
+    // zoom handling object
+    private Callable<Void> _zoomUpdate;
+    private MarkerCallback _markerCallback;
+    private HashMap<Marker, Integer> _markerMap;
+
+    // Google map interface object
+    private GoogleMap _mMap;
+    private Point _selectedPoint;
 
 
-
-    public MapManager(Activity activity, MapFragment map, AutoCompleteTextView atvLocation){
+    /**
+     * Map Manager constructor for usage with AutoComplete
+     */
+    public MapManager(Activity activity, MapFragment map, AutoCompleteTextView atvLocation) {
         _mapFragment = map;
         _activity = activity;
         _atvLocation = atvLocation;
-        _geoComplete = new GeoAutoComplete(this,activity,atvLocation);
+        new GeoAutoComplete(this, activity, atvLocation);
         initMap();
     }
 
+    /**
+     * Default constructor .
+     */
     public MapManager(Activity activity, MapFragment map) {
         _mapFragment = map;
         _activity = activity;
@@ -66,7 +80,9 @@ public class MapManager implements LocationListener {
     }
 
 
-
+    /**
+     * Common initialization
+     */
     private void initMap() {
 
         // Getting Google Play availability status
@@ -81,18 +97,42 @@ public class MapManager implements LocationListener {
             if (_mMap == null)
                 Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG);
             _markerMap = new HashMap<Marker, Integer>();
+
+            _mapHeight = 0;
+            _mapWidth = 0;
+
+            // update the zoom parameters when the view is created
+            ViewTreeObserver vto = _mapFragment.getView().getViewTreeObserver();
+            if (vto.isAlive()) {
+                vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        _mapFragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        _mapWidth = _mapFragment.getView().getWidth();
+                        _mapHeight = _mapFragment.getView().getHeight();
+                        if (_zoomUpdate != null) {
+                            try {
+                                _zoomUpdate.call();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                });
+            }
         }
         _mMap.setMyLocationEnabled(true);
         _offsetX = 0;
         _offsetY = 0;
+        _zoomLevel = 15;
         focusOnCurrentLocation();
 
 
     }
 
 
-
-    public void setMarkerCallback(MarkerCallback markerCallback){
+    public void setMarkerCallback(MarkerCallback markerCallback) {
         _markerCallback = markerCallback;
         _mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -109,7 +149,7 @@ public class MapManager implements LocationListener {
 
 
     //Single time focus
-    public void focusOnCurrentLocation(){
+    public void focusOnCurrentLocation() {
         focusOnCurrentLocation(-1, -1);
     }
 
@@ -119,35 +159,42 @@ public class MapManager implements LocationListener {
         LocationManager locationManager = (LocationManager) _activity.getSystemService(Context.LOCATION_SERVICE);
 
         Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria,true);
+        String provider = locationManager.getBestProvider(criteria, true);
         Location location = locationManager.getLastKnownLocation(provider);
 
-        if (location != null){
+        if (location != null) {
             onLocationChanged(location);
         }
 
-        if (minTime>=0 && minDistance>=0)
-            locationManager.requestLocationUpdates(provider,minTime,minDistance,this);
+        if (minTime >= 0 && minDistance >= 0)
+            locationManager.requestLocationUpdates(provider, minTime, minDistance, this);
 
     }
 
-    public void showMyLocationButton(boolean show){
+    // show or hide the location button
+    public void showMyLocationButton(boolean show) {
         _mMap.getUiSettings().setMyLocationButtonEnabled(show);
     }
 
-    public void showZoomButton(boolean show){
+    // show or hide the zoom buttons
+    public void showZoomButton(boolean show) {
         _mMap.getUiSettings().setZoomControlsEnabled(show);
     }
 
-    public void setStaticMapMode (){
+    // disable interactive features
+    public void setStaticMapMode() {
         _mMap.getUiSettings().setMyLocationButtonEnabled(false);
         _mMap.getUiSettings().setAllGesturesEnabled(false);
 
 
-
     }
 
-    public void enableMarkers(final boolean onlyOne){
+    /**
+     * enable the adding of markers by user click to the map
+     *
+     * @param onlyOne enable only one marker at a time
+     */
+    public void enableMarkers(final boolean onlyOne) {
 
         _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -156,31 +203,39 @@ public class MapManager implements LocationListener {
 
                 markerOptions.position(latLng);
                 markerOptions.title("lat: " + latLng.latitude + " lng: " + latLng.longitude);
+                _selectedPoint = new Point(latLng);
 
                 new ReverseGeocodingTask(_activity.getBaseContext(), onlyOne).execute(latLng);
-                //   mMap.clear();
-                //mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                //mMap.addMarker(markerOptions);
             }
         });
     }
 
 
-    public void displayFoundLocation (LatLng location){
+    /**
+     * Add auto generated marker to the map
+     *
+     * @param location the location of the marker
+     */
+    public void displayFoundLocation(LatLng location) {
         _mMap.clear(); // Only one marker can be set
         Marker marker = _mMap.addMarker(new MarkerOptions()
                 .position(location));
 
-
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-        _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
 
-
+        _selectedPoint = new Point(location);
     }
 
-    public void setMarker(LatLng location, String title,Hint.State state){
 
-
+    /**
+     * Add a marker to the map
+     *
+     * @param location the location of the marker
+     * @param title    the title to be added to the marker
+     * @param state    the state of the hint, influence the color of the marker
+     */
+    public void setMarker(LatLng location, String title, Hint.State state) {
         Marker marker = _mMap.addMarker(new MarkerOptions()
                 .position(location)
                 .title(title)
@@ -191,10 +246,19 @@ public class MapManager implements LocationListener {
         _markerMap.put(marker, _markerMap.size());
     }
 
-    public void setMapOffset(float offsetX, float offsetY){
+    /**
+     * Add offset to the display point, used when occluded by other bars
+     */
+    public void setMapOffset(float offsetX, float offsetY) {
         _offsetX = offsetX;
         _offsetY = offsetY;
     }
+
+    /**
+     * Update the map if the required location to display changed
+     *
+     * @param location the location to be focused on
+     */
 
     @Override
     public void onLocationChanged(Location location) {
@@ -206,9 +270,9 @@ public class MapManager implements LocationListener {
 
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         _mMap.moveCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
-        _mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
 
-        if(_atvLocation != null) {
+        if (_atvLocation != null) {
             _atvLocation.setText(""); // text is set programmatically.
             _atvLocation.setHint("Lat: " + latitude + " Long:" + longitude);
         }
@@ -216,21 +280,26 @@ public class MapManager implements LocationListener {
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
-
+        // nothing to do here
     }
 
     @Override
     public void onProviderEnabled(String s) {
-
+        // nothing to do here
     }
 
     @Override
     public void onProviderDisabled(String s) {
-
+        // nothing to do here
     }
 
 
-    public void drawCircle (LatLng position, float radius){
+    /**
+     * Draw a circle on the map
+     * @param position center of the circle
+     * @param radius the radius of circle in meters
+     */
+    public void drawCircle(final LatLng position, final float radius) {
         // Instantiating CircleOptions to draw a circle around the marker
         CircleOptions circleOptions = new CircleOptions();
 
@@ -256,6 +325,29 @@ public class MapManager implements LocationListener {
         // Adding the circle to the GoogleMap
         _mMap.addCircle(circleOptions);
 
+        if (_mapWidth == 0 || _mapHeight == 0) {
+            // the map size is not available
+            _zoomUpdate = new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    Log.d(LOG_TAG, "OnCall W = " + _mapWidth + " H = " + _mapWidth);
+                    _zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
+                            _mapWidth, _mapHeight) - 2;
+                    Log.d(LOG_TAG, "OnCall Zoom = " + _zoomLevel);
+
+                    _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
+                    return null;
+                }
+            };
+            // temporary zoom level
+            _zoomLevel = 15;
+        } else {
+            // calculate the zoom level
+            _zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
+                    _mapWidth, _mapHeight) - 2;
+        }
+
+
         Location l = new Location(LocationManager.PASSIVE_PROVIDER);
         l.setLatitude(position.latitude);
         l.setLongitude(position.longitude);
@@ -263,6 +355,13 @@ public class MapManager implements LocationListener {
         onLocationChanged(l);
     }
 
+    public Point get_selectedPoint() {
+        return _selectedPoint;
+    }
+
+    /**
+     * Class for finding an address by location
+     */
     private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
         Context mContext;
         boolean mOnlyOne;
@@ -275,6 +374,7 @@ public class MapManager implements LocationListener {
 
         @Override
         protected String doInBackground(LatLng... latLngs) {
+
             Geocoder geocoder = new Geocoder(mContext);
             double latitude = latLngs[0].latitude;
             double longitude = latLngs[0].longitude;
@@ -283,59 +383,55 @@ public class MapManager implements LocationListener {
             String addressText = "";
 
             try {
+                // find the address
                 addresses = geocoder.getFromLocation(latitude, longitude, 1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            // compose the address string
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
                 StringBuilder sb = new StringBuilder();
                 boolean sbChanged = false;
-                if (address.getMaxAddressLineIndex()>0) {
+                if (address.getMaxAddressLineIndex() > 0) {
                     sb.append(address.getAddressLine(0));
                     sbChanged = true;
                 }
 
-                if (address.getLocality() != null)
-                {
+                if (address.getLocality() != null) {
                     if (sbChanged)
                         sb.append(", ");
                     sb.append(address.getLocality());
-                    sbChanged=true;
+                    sbChanged = true;
                 }
 
-                if (address.getCountryName() != null)
-                {
+                if (address.getCountryName() != null) {
                     if (sbChanged)
                         sb.append(", ");
                     sb.append(address.getCountryName());
                 }
 
                 addressText = sb.toString();
-
-//                addressText = String.format("%s, %s, %s",
-//                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-//                        address.getLocality(),
-//                        address.getCountryName());
             }
 
             return addressText;
         }
 
+        /**
+         * Set the found address to the text box or marker
+         */
         @Override
         protected void onPostExecute(String addressText) {
             markerOptions.title(addressText);
-
-            if(_atvLocation != null) {
+            if (_atvLocation != null) {
                 _atvLocation.setText(""); // text is set programmatically.
                 _atvLocation.setHint(addressText);
             }
-            if (mOnlyOne){
+            if (mOnlyOne) {
                 _mMap.clear();
             }
             _mMap.addMarker(markerOptions);
-            Toast.makeText(mContext, "Created " + addressText, Toast.LENGTH_LONG);
         }
     }
 

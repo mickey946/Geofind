@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,19 +24,25 @@ import java.util.ArrayList;
  */
 public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHolder> {
 
+    protected Object actionMode;
     /**
      * The hints to display.
      */
     private ArrayList<Hint> hints;
-
     /**
      * The host activity.
      */
     private Context context;
+    /**
+     * This is true when the map image is drawn
+     */
+    private int mapWidth, mapHeight;
 
     public HintListAdapter(Context context) {
         hints = new ArrayList<Hint>();
         this.context = context;
+        this.mapHeight = -1;
+        this.mapWidth = -1;
     }
 
     /**
@@ -98,7 +106,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         // bind the context activity to the view holder
         viewHolder.context = context;
 
@@ -108,6 +116,34 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         // put the values of the hunt in all of the views
         viewHolder.hintTitleTextView.setText(hints.get(i).getTitle());
         viewHolder.hintTextTextView.setText(hints.get(i).getText());
+
+        ViewTreeObserver vto = viewHolder.itemView.getViewTreeObserver();
+        if (mapHeight == -1 || mapWidth == -1) {
+            if (vto.isAlive()) {
+                vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        viewHolder.itemView.getViewTreeObserver()
+                                .removeOnGlobalLayoutListener(this);
+                        mapHeight = viewHolder.imgMapHint.getHeight();
+                        mapWidth = viewHolder.imgMapHint.getWidth();
+
+                        // should be called when imgMapPreview exists
+                        new StaticMap(viewHolder.imgMapHint).execute(
+                                new StaticMap.StaticMapDescriptor(
+                                        hints.get(i).getLocation().toLatLng(), mapWidth, mapHeight));
+
+                    }
+                });
+            }
+        } else {
+            // The recycler view doesn't create new tiles, so we reuse previous tile and assume
+            // the same dimension for image view
+            new StaticMap(viewHolder.imgMapHint).execute(new StaticMap.StaticMapDescriptor(
+                    hints.get(i).getLocation().toLatLng(),
+                    mapWidth, mapHeight));
+        }
+
     }
 
     @Override
@@ -115,16 +151,70 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         return hints.size();
     }
 
-    protected Object actionMode;
-
     // inner class to hold a reference to each item of RecyclerView
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
             View.OnLongClickListener, View.OnTouchListener {
         public Hint hint;
         public TextView hintTitleTextView;
         public TextView hintTextTextView;
+        public ImageView imgMapHint;
         public Context context;
         public LinearLayout cardView;
+        // on long click, show the contextual action bar
+        private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+
+            // Called when the action mode is created; startActionMode() was called
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate a menu resource providing context menu items
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.hint_list_action, menu);
+                return true;
+            }
+
+            // Called each time the action mode is shown. Always called after onCreateActionMode, but
+            // may be called multiple times if the mode is invalidated.
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false; // Return false if nothing is done
+            }
+
+            // Called when the user selects a contextual menu item
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_edit_point:
+                        editHint();
+                        finish();
+                        return true;
+                    case R.id.action_discard_point:
+                        deleteHint();
+                        finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            // Called when the user exits the action mode
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                // reset the highlight
+                cardView.setBackgroundColor(
+                        context.getResources().getColor(R.color.colorUnpressedHighlight));
+
+                actionMode = null;
+            }
+
+            /**
+             * Close the contextual action bar.
+             */
+            private void finish() {
+                if (actionMode != null) {
+                    ((ActionMode) actionMode).finish();
+                }
+            }
+        };
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -138,6 +228,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             cardView = (LinearLayout) itemView.findViewById(R.id.item_hint_card_view);
             hintTitleTextView = (TextView) itemView.findViewById(R.id.item_hint_list_title);
             hintTextTextView = (TextView) itemView.findViewById(R.id.item_hint_list_text);
+            imgMapHint = (ImageView) itemView.findViewById(R.id.item_hint_list_map);
         }
 
         /**
@@ -200,61 +291,5 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
             return false;
         }
-
-        // on long click, show the contextual action bar
-        private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
-
-            // Called when the action mode is created; startActionMode() was called
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // Inflate a menu resource providing context menu items
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.hint_list_action, menu);
-                return true;
-            }
-
-            // Called each time the action mode is shown. Always called after onCreateActionMode, but
-            // may be called multiple times if the mode is invalidated.
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false; // Return false if nothing is done
-            }
-
-            // Called when the user selects a contextual menu item
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_edit_point:
-                        editHint();
-                        finish();
-                        return true;
-                    case R.id.action_discard_point:
-                        deleteHint();
-                        finish();
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
-            // Called when the user exits the action mode
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                // reset the highlight
-                cardView.setBackgroundColor(
-                        context.getResources().getColor(R.color.colorUnpressedHighlight));
-
-                actionMode = null;
-            }
-
-            /**
-             * Close the contextual action bar.
-             */
-            private void finish() {
-                if (actionMode != null) {
-                    ((ActionMode) actionMode).finish();
-                }
-            }
-        };
     }
 }

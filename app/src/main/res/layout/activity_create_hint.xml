@@ -107,6 +107,7 @@
                         </LinearLayout>
 
                         <ImageView
+                            android:id="@+id/create_hint_map"
                             android:layout_width="fill_parent"
                             android:layout_height="@dimen/hunt_details_map_height"
                             android:src="@drawable/sample_map"

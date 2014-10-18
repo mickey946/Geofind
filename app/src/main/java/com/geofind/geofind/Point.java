@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * Created by Ilia Merin on 08/10/2014.
+ * Created by Ilia Marin on 08/10/2014.
  */
 
 
