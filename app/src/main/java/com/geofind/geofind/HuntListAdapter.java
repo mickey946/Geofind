@@ -80,19 +80,15 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         viewHolder.ratingBar.setRating(hunts.get(i).getRating());
         viewHolder.textViewDescription.setText(hunts.get(i).getDescription());
 
-        Log.d("HuntListAdapter", "view " + i);
         ViewTreeObserver vto = viewHolder.itemView.getViewTreeObserver();
         if (mapHeight == -1 || mapWidth == -1){
             if (vto.isAlive()) {
-                Log.d("HuntListAdapter", "vto is a live on view " + i);
                 vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
                         viewHolder.itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         mapHeight = viewHolder.imgMapPreview.getHeight();
                         mapWidth = viewHolder.imgMapPreview.getWidth();
-
-                        Log.d("HuntListAdapter", "Static map executing on view " + i);
 
                         // should be called when imgMapPreview exists
                         new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor(
@@ -101,14 +97,11 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
                     }
                 });
-            } else {
-                Log.d("HuntListAdapter", "vto is  NOT   a live on view " + i);
             }
-    }else
+        }else
         {
             // The recycler view doesn't create new tiles, so we reuse previous tile and assume
             // the same dimension for image view
-            Log.d("HuntListAdapter","same size");
             new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor(
                     hunts.get(i).getCenterPosition(),
                     hunts.get(i).getRadius(), mapWidth, mapHeight));

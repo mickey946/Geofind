@@ -3,7 +3,6 @@ package com.geofind.geofind;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -70,18 +69,32 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
 
     protected String composeAddress(StaticMapDescriptor desc) {
 
-        // Calculate zoom level
-        int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, desc.width,desc.height);
 
         // compose url of the map
-        String address = base_address +
-                "center=" + desc.center.latitude + "," + desc.center.longitude + "&" +
-                "zoom=" + zoom + "&" + "size=" + desc.width + "x" + desc.height;
+        String address = base_address + "size=" + desc.width + "x" + desc.height;
 
-        // Append the circle encoding
-        address += "&path=fillcolor:" + CIRCLE_FILL_COLOR +
-                "%7Ccolor:" + CIRCLE_BORDER_COLOR + "%7C" +
-                "enc:" + encode(GeoUtils.createCircle(desc.center, desc.radius, RESOLUTION));
+        switch (desc.mapElement){
+            case None:
+                break;
+            case Circle:
+                // Calculate zoom level
+                int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, desc.width,desc.height);
+
+                address += "&center=" + desc.center.latitude + "," + desc.center.longitude + "&" +
+                        "zoom=" + zoom ;
+
+
+                // Append the circle encoding
+                address += "&path=fillcolor:" + CIRCLE_FILL_COLOR +
+                        "%7Ccolor:" + CIRCLE_BORDER_COLOR + "%7C" +
+                        "enc:" + encode(GeoUtils.createCircle(desc.center, desc.radius, RESOLUTION));
+                break;
+            case Marker:
+                address += "&markers=" + desc.center.latitude + "," + desc.center.longitude;
+                break;
+        }
+
+
         return address;
 
     }
@@ -90,15 +103,32 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
      * Description of the static map
      */
     public static class StaticMapDescriptor {
+        public static enum MapElement { None, Circle, Marker};
         private LatLng center; // the center of the map
         private float radius; // the radius of the circle in meters
         private int width, height; // the resolution of the output image
+        private MapElement mapElement;
+
+
+        public StaticMapDescriptor(int width,int height){
+            this.mapElement = MapElement.None;
+            this.width = width;
+            this.height = height;
+        }
 
         public StaticMapDescriptor(LatLng center, float radius, int width, int height) {
+            this.mapElement = MapElement.Circle;
             this.center = center;
             this.width = width;
             this.height = height;
             this.radius = radius / 1000; // Meters to KiloMeters
+        }
+
+        public StaticMapDescriptor(LatLng point, int width, int height){
+            this.mapElement = MapElement.Marker;
+            this.center = point;
+            this.width = width;
+            this.height = height;
         }
 
     }

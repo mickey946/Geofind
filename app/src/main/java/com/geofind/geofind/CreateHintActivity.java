@@ -13,12 +13,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.FileDescriptor;
 import java.util.List;
@@ -30,6 +34,9 @@ public class CreateHintActivity extends Activity {
     private TextView hintTextTextView;
     private Hint hint = null;
     private Integer index = null;
+    private ImageView Map;
+    private int mapWidth = -1, mapHeight = -1;
+    private Point hintPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,39 @@ public class CreateHintActivity extends Activity {
                 }
             }
         }
+
+
+
+        Map  = (ImageView) findViewById(R.id.create_hint_map);
+
+        ViewTreeObserver vto = Map.getViewTreeObserver();
+        if (mapHeight == -1 || mapWidth == -1) {
+            if (vto.isAlive()) {
+                vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        Map.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mapHeight = Map.getHeight();
+                        mapWidth = Map.getWidth();
+                        if (hint == null) {
+                            new StaticMap(Map).execute(
+                                    new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
+                        } else
+                        {
+                            new StaticMap(Map).execute(
+                                    new StaticMap.StaticMapDescriptor(
+                                            hint.getLocation().toLatLng(),mapWidth,mapHeight));
+                        }
+
+                    }
+                });
+            }
+        } else {
+            new StaticMap(Map).execute(
+                    new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
+        }
+
+
     }
 
 
@@ -99,7 +139,7 @@ public class CreateHintActivity extends Activity {
     public void submitHint() {
         if (checkInput()) { // check if the user filled all required fields
             Hint hint = new Hint(hintTitleTextView.getText().toString(),
-                    hintTextTextView.getText().toString(), new Point(0,0) ); //TODO change to real point
+                    hintTextTextView.getText().toString(), hintPoint);
 
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();
@@ -123,12 +163,15 @@ public class CreateHintActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         // Check which request we're responding to
         if (requestCode == getResources().getInteger(R.integer.intent_point_result)) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) { // The user picked a point
                 Bundle bundle = data.getExtras();
-                // TODO add the coordinates to the Hint object and display it on the map
+                hintPoint = (Point) data.getSerializableExtra(getString(R.string.intent_hint_extra));
+                new StaticMap(Map).execute(
+                        new StaticMap.StaticMapDescriptor(hintPoint.toLatLng(), mapWidth, mapHeight));
             }
         } else if (requestCode == getResources().getInteger(R.integer.intent_picture_result)) {
             // Make sure the request was successful

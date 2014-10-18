@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.MapFragment;
 
@@ -50,7 +49,15 @@ public class PickPointActivity extends Activity {
              * intent.putExtra(getString(R.string.intent_hint_extra), hint);
              */
 
-            setResult(RESULT_OK, intent);
+        Point resultPoint = _mapManager.get_selectedPoint();
+
+            if (resultPoint == null){
+                setResult(RESULT_CANCELED, intent);
+            }
+            else {
+                intent.putExtra(getString(R.string.intent_hint_extra), _mapManager.get_selectedPoint());
+                setResult(RESULT_OK, intent);
+            }
 
             //close this Activity...
             finish();

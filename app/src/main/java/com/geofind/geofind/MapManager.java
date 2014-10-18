@@ -56,6 +56,7 @@ public class MapManager implements LocationListener {
 
     // Google map interface object
     private GoogleMap _mMap;
+    private Point _selectedPoint;
 
 
     /**
@@ -202,6 +203,7 @@ public class MapManager implements LocationListener {
 
                 markerOptions.position(latLng);
                 markerOptions.title("lat: " + latLng.latitude + " lng: " + latLng.longitude);
+                _selectedPoint = new Point(latLng);
 
                 new ReverseGeocodingTask(_activity.getBaseContext(), onlyOne).execute(latLng);
             }
@@ -221,6 +223,8 @@ public class MapManager implements LocationListener {
 
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
         _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
+
+        _selectedPoint = new Point(location);
     }
 
     /**
@@ -348,6 +352,10 @@ public class MapManager implements LocationListener {
         l.setLongitude(position.longitude);
 
         onLocationChanged(l);
+    }
+
+    public Point get_selectedPoint() {
+        return _selectedPoint;
     }
 
     /**
