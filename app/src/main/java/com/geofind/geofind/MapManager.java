@@ -147,6 +147,20 @@ public class MapManager implements LocationListener {
         });
     }
 
+    public void setOnMapClick(final Callable onMapClick){
+        _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                try {
+                    onMapClick.call();
+                } catch (Exception e) {
+                    Log.e(LOG_TAG,"OnMapClick exception" + e.toString());
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
 
     //Single time focus
     public void focusOnCurrentLocation() {
