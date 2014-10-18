@@ -6,10 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Ilia Merin on 16/10/2014.
+ * Created by Ilia Marin on 16/10/2014.
+ *
+ * This file contains general usage geographical calculation function
  */
 public abstract class GeoUtils {
 
+    /**
+     * Calculates the zoom level for static maps
+     * @param center the center of the map
+     * @param radius the required radius around the center in KiloMeters
+     * @param width the width of the display rectangle
+     * @param height the height of the display rectangle
+     * @return the required zoom level
+     */
     public static int getBoundsZoomLevel(LatLng center, float radius,
                                          int width, int height) {
         final int GLOBE_WIDTH = 256; // a constant in Google's map projection
@@ -33,17 +43,36 @@ public abstract class GeoUtils {
         return (int) (zoom);
     }
 
+    /**
+     * Converts latitude from degree to radians
+     */
     private static double latRad(double lat) {
         double sin = Math.sin(lat * Math.PI / 180);
         double radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
         return Math.max(Math.min(radX2, Math.PI), -Math.PI) / 2;
     }
 
+    /**
+     * Calculate the zoom level (formula from GoogleMap website)
+     * @param mapPx map dimension in pixels
+     * @param worldPx the world dimension in pixels as given by Google
+     * @param fraction the part of the world to display
+     * @return the required zoom level
+     */
     private static double zoom(double mapPx, double worldPx, double fraction) {
         final double LN2 = .693147180559945309417;
         return (Math.log(mapPx / worldPx / fraction) / LN2);
     }
 
+    /**
+     * Calculate the coordinates of a point the located at specific angle on a distance from
+     * specified point.
+     * @param lat the latitude of the center
+     * @param lng the longitude of the center
+     * @param radius the distance in KM
+     * @param angle the required angle in degrees
+     * @return the request point
+     */
     public static LatLng calcPointOnArc(double lat, double lng, float radius, int angle) {
         final int Ratio = 6371;
         double d = radius / Ratio;
@@ -57,14 +86,21 @@ public abstract class GeoUtils {
         return new LatLng(resLat * 180 / Math.PI, resLng * 180 / Math.PI);
     }
 
-    public static List<LatLng> createCircle(LatLng center, float radius, int Details) {
-        ArrayList<LatLng> perimeter = new ArrayList<LatLng>(360 / Details + 1);
+    /**
+     * Creates a list of points which are located on a circle around the center
+     * @param center the center of the circle
+     * @param radius the radius around the center in KiloMeters
+     * @param resolution the maximal distance in degrees between two consecutive points
+     * @return the list of the point on the circle
+     */
+    public static List<LatLng> createCircle(LatLng center, float radius, int resolution) {
+        ArrayList<LatLng> perimeter = new ArrayList<LatLng>(360 / resolution + 1);
 
         double lat = (center.latitude * Math.PI) / 180f;
         double lng = (center.longitude * Math.PI) / 180f;
 
 
-        for (int i = 0; i <= 360; i += Details) {
+        for (int i = 0; i <= 360; i += resolution) {
             LatLng newPoint = calcPointOnArc(lat, lng, radius, i);
 
             perimeter.add(newPoint);

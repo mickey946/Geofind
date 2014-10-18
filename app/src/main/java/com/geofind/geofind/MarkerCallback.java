@@ -1,7 +1,8 @@
 package com.geofind.geofind;
 
 /**
- * Created by Ilia Merin on 09/10/2014.
+ * Created by Ilia Marin on 09/10/2014.
+ * This interface uses for implementing onMarkerClick for for updating not-map GUI elements
  */
 public interface MarkerCallback {
 

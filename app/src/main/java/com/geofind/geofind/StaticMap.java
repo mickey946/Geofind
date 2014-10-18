@@ -14,17 +14,20 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Created by Ilia Merin on 11/10/2014.
+ * This class loads a static google map to an ImageView object
+ * Created by Ilia Marin on 11/10/2014.
  */
 public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bitmap> {
 
 
-    private final static String base_address;
-    private ImageView _view;
+    // the google maps api address
+    private final static String base_address = "https://maps.googleapis.com/maps/api/staticmap?";
+    private static final int RESOLUTION = 20;
+    private static final String CIRCLE_FILL_COLOR = "0xAA000033";
+    private static final String CIRCLE_BORDER_COLOR = "0xFFFFFF00";
 
-    static {
-        base_address = "https://maps.googleapis.com/maps/api/staticmap?";
-    }
+    // the image view for output
+    private ImageView _view;
 
     public StaticMap(ImageView view) {
         _view = view;
@@ -36,11 +39,17 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
         // Nothing to do here
     }
 
+    /**
+     * An asynchronous method that downloads the map
+     * @param staticMapDescriptors the parameters of the map
+     * @return the image of the map
+     */
     @Override
     protected Bitmap doInBackground(StaticMapDescriptor... staticMapDescriptors) {
-        String address = composeAddress(staticMapDescriptors[0]);
         try {
-            URL url = new URL(address);
+            // generate the path to the map
+            URL url = new URL(composeAddress(staticMapDescriptors[0]));
+            // download the map
             return BitmapFactory.decodeStream(url.openConnection().getInputStream());
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -50,29 +59,40 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
         return null;
     }
 
+    /**
+     * Set the downloaded image to ImageView
+     * @param bitmap the downloaded image
+     */
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         _view.setImageBitmap(bitmap);
     }
 
     protected String composeAddress(StaticMapDescriptor desc) {
-        int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, desc.width,desc.height);
-        Log.d("StaticMap", "proposed new zoom is " + zoom);
 
+        // Calculate zoom level
+        int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, desc.width,desc.height);
+
+        // compose url of the map
         String address = base_address +
                 "center=" + desc.center.latitude + "," + desc.center.longitude + "&" +
                 "zoom=" + zoom + "&" + "size=" + desc.width + "x" + desc.height;
 
-        address += "&path=fillcolor:0xAA000033%7Ccolor:0xFFFFFF00%7C" +
-                "enc:" + encode(GeoUtils.createCircle(desc.center, desc.radius, 20));
+        // Append the circle encoding
+        address += "&path=fillcolor:" + CIRCLE_FILL_COLOR +
+                "%7Ccolor:" + CIRCLE_BORDER_COLOR + "%7C" +
+                "enc:" + encode(GeoUtils.createCircle(desc.center, desc.radius, RESOLUTION));
         return address;
 
     }
 
+    /**
+     * Description of the static map
+     */
     public static class StaticMapDescriptor {
-        private LatLng center;
-        private float radius;
-        private int width, height;
+        private LatLng center; // the center of the map
+        private float radius; // the radius of the circle in meters
+        private int width, height; // the resolution of the output image
 
         public StaticMapDescriptor(LatLng center, float radius, int width, int height) {
             this.center = center;
