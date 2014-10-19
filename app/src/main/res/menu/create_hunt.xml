@@ -1,5 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.geofind.geofind.CreateHuntActivity">
 
     <item
@@ -7,6 +8,6 @@
         android:title="@string/action_submit"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_send_now"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />
 
 </menu>

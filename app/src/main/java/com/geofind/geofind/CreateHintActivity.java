@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,7 @@ import java.io.FileDescriptor;
 import java.util.List;
 
 
-public class CreateHintActivity extends Activity {
+public class CreateHintActivity extends ActionBarActivity {
 
     private TextView hintTitleTextView;
     private TextView hintTextTextView;
@@ -58,8 +59,7 @@ public class CreateHintActivity extends Activity {
         }
 
 
-
-        Map  = (ImageView) findViewById(R.id.create_hint_map);
+        Map = (ImageView) findViewById(R.id.create_hint_map);
 
         ViewTreeObserver vto = Map.getViewTreeObserver();
         if (mapHeight == -1 || mapWidth == -1) {
@@ -73,11 +73,10 @@ public class CreateHintActivity extends Activity {
                         if (hint == null) {
                             new StaticMap(Map).execute(
                                     new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
-                        } else
-                        {
+                        } else {
                             new StaticMap(Map).execute(
                                     new StaticMap.StaticMapDescriptor(
-                                            hint.getLocation().toLatLng(),mapWidth,mapHeight));
+                                            hint.getLocation().toLatLng(), mapWidth, mapHeight));
                         }
 
                     }

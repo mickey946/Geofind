@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
@@ -10,9 +11,10 @@ import android.widget.AutoCompleteTextView;
 import com.google.android.gms.maps.MapFragment;
 
 
-public class PickPointActivity extends Activity {
+public class PickPointActivity extends ActionBarActivity {
 
     MapManager _mapManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,14 +23,14 @@ public class PickPointActivity extends Activity {
 
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.pick_point_map);
-        _mapManager = new MapManager(this,mapFragment,(AutoCompleteTextView)findViewById(R.id.atv_places));
+        _mapManager = new MapManager(this, mapFragment, (AutoCompleteTextView) findViewById(R.id.atv_places));
         _mapManager.enableMarkers(true);
 
         Intent intent = getIntent();
         if (intent != null) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-                Point point =(Point) bundle.getSerializable(
+                Point point = (Point) bundle.getSerializable(
                         getResources().getString(R.string.intent_hint_point_extra));
                 _mapManager.displayFoundLocation(point.toLatLng());
             }
@@ -59,12 +61,11 @@ public class PickPointActivity extends Activity {
              * intent.putExtra(getString(R.string.intent_hint_extra), hint);
              */
 
-        Point resultPoint = _mapManager.get_selectedPoint();
+            Point resultPoint = _mapManager.get_selectedPoint();
 
-            if (resultPoint == null){
+            if (resultPoint == null) {
                 setResult(RESULT_CANCELED, intent);
-            }
-            else {
+            } else {
                 intent.putExtra(getString(R.string.intent_hint_extra), _mapManager.get_selectedPoint());
                 setResult(RESULT_OK, intent);
             }

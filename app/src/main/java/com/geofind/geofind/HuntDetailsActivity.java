@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RatingBar;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.MapFragment;
 
 
-public class HuntDetailsActivity extends Activity {
+public class HuntDetailsActivity extends ActionBarActivity {
 
     /**
      * The hunt on which the activity displays the details.
@@ -44,7 +45,7 @@ public class HuntDetailsActivity extends Activity {
             _mapManager = new MapManager(this, mapFragment);
             _mapManager.showMyLocationButton(false);
 
-            _mapManager.drawCircle(hunt.getCenterPosition(),hunt.getRadius());
+            _mapManager.drawCircle(hunt.getCenterPosition(), hunt.getRadius());
 
             // hunt total distance
             TextView totalDistanceTextView = (TextView)
