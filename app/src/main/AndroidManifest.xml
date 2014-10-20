@@ -39,7 +39,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.HuntListActivity" />
         </activity>
-        <activity android:name=".HuntActivity">
+        <activity
+            android:name=".HuntActivity"
+            android:theme="@style/AppTheme.ActionBarOverlay">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.HuntDetailsActivity" />
