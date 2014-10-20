@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHolder> {
 
     protected Object actionMode;
+
     /**
      * The hints to display.
      */
@@ -188,11 +189,11 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
                 switch (menuItem.getItemId()) {
                     case R.id.action_edit_point:
                         editHint();
-                        finish();
+                        close();
                         return true;
                     case R.id.action_discard_point:
                         deleteHint();
-                        finish();
+                        close();
                         return true;
                     default:
                         return false;
@@ -201,7 +202,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
             // Called when the user exits the action mode
             @Override
-            public void onDestroyActionMode(android.support.v7.view.ActionMode actionMode) {
+            public void onDestroyActionMode(android.support.v7.view.ActionMode action) {
                 // reset the highlight
                 cardView.setBackgroundColor(
                         context.getResources().getColor(R.color.colorUnpressedHighlight));
@@ -212,9 +213,9 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             /**
              * Close the contextual action bar.
              */
-            private void finish() {
+            private void close() {
                 if (actionMode != null) {
-                    ((ActionMode) actionMode).finish();
+                    ((android.support.v7.view.ActionMode) actionMode).finish();
                 }
             }
         };
