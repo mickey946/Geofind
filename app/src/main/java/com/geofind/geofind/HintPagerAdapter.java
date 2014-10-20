@@ -92,16 +92,16 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
             Drawable drawable = null;
             switch (hint.getState()) {
                 case REVEALED:
-                    drawable = getResources().getDrawable(R.drawable.ic_action_cancel);
+                    drawable = getResources().getDrawable(R.drawable.ic_clear_grey600_24dp);
                     revealButton.setText(getResources().getText(R.string.item_hint_revealed));
                     revealButton.setEnabled(false);
                     break;
                 case UNREVEALED:
-                    drawable = getResources().getDrawable(R.drawable.ic_action_place);
+                    drawable = getResources().getDrawable(R.drawable.ic_room_grey600_24dp);
                     revealButton.setText(getResources().getText(R.string.item_hint_reveal));
                     break;
                 case SOLVED:
-                    drawable = getResources().getDrawable(R.drawable.ic_action_accept);
+                    drawable = getResources().getDrawable(R.drawable.ic_done_grey600_24dp);
                     revealButton.setText(getResources().getText(R.string.item_hint_solved));
                     revealButton.setEnabled(false);
                     break;

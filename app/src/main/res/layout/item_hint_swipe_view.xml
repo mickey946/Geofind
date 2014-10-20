@@ -41,7 +41,7 @@
                 android:id="@+id/item_hint_reveal_button"
                 android:layout_width="@dimen/activity_hunt_reveal_width"
                 android:layout_height="match_parent"
-                android:drawableTop="@drawable/ic_action_place"
+                android:drawableTop="@drawable/ic_room_grey600_24dp"
                 android:text="@string/item_hint_reveal"
                 android:padding="@dimen/activity_hunt_reveal_padding"
                 android:textColor="@android:color/darker_gray" />

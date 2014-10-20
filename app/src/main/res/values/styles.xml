@@ -46,8 +46,8 @@
 
     <!-- Main screen main buttons. -->
     <style name="main_bottom_button" parent="android:Widget.Holo.Light.Button">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">70dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">90dp</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
 

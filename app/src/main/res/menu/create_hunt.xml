@@ -7,7 +7,7 @@
         android:id="@+id/action_submit_hunt"
         android:title="@string/action_submit"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_action_send_now"
+        android:icon="@drawable/ic_send_white_48dp"
         app:showAsAction="ifRoom" />
 
 </menu>

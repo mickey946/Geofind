@@ -196,7 +196,7 @@ public class HintListActivity extends ActionBarActivity {
         }
 
         // set icon
-        builder.setIcon(getResources().getDrawable(R.drawable.ic_action_warning));
+        builder.setIcon(getResources().getDrawable(R.drawable.ic_warning_grey600_48dp));
 
         // set positive button
         builder.setPositiveButton(getString(R.string.hint_list_data_loss_warning_positive),
