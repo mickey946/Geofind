@@ -51,7 +51,7 @@
 
             <Button
                 style="@style/main_bottom_button_half"
-                android:drawableTop="@drawable/games_controller_white_small"
+                android:drawableTop="@drawable/ic_games_controller_white"
                 android:text="@string/main_screen_google_play_games" />
 
             <Button
