@@ -1,5 +1,6 @@
 package com.geofind.geofind;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.MapFragment;
 
+import java.util.concurrent.Callable;
 
 public class HuntDetailsActivity extends ActionBarActivity {
 
@@ -49,7 +51,19 @@ public class HuntDetailsActivity extends ActionBarActivity {
             _mapManager = new MapManager(this, mapFragment);
             _mapManager.showMyLocationButton(false);
 
-            _mapManager.drawCircle(hunt.getCenterPosition(), hunt.getRadius());
+            _mapManager.drawCircle(hunt.getCenterPosition(),hunt.getRadius());
+            _mapManager.setOnMapClick(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    Intent intent = new Intent(HuntDetailsActivity.this, HuntActivity.class);
+
+                    // pass the hunt itself to the HuntDetailActivity
+                    intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+
+                    startActivity(intent);
+                    return null;
+                }
+            });
 
             // hunt total distance
             TextView totalDistanceTextView = (TextView)

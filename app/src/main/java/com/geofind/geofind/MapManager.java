@@ -131,7 +131,10 @@ public class MapManager implements LocationListener {
 
     }
 
-
+    /**
+     * Set callback for on marker click
+     * @param markerCallback the callback method
+     */
     public void setMarkerCallback(MarkerCallback markerCallback) {
         _markerCallback = markerCallback;
         _mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -143,6 +146,24 @@ public class MapManager implements LocationListener {
                 _markerCallback.onMarkerClick(_markerMap.get(marker).intValue());
 
                 return true;
+            }
+        });
+    }
+
+    /**
+     * Set general purpose on map click
+     * @param onMapClick the callback method
+     */
+    public void setOnMapClick(final Callable onMapClick){
+        _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                try {
+                    onMapClick.call();
+                } catch (Exception e) {
+                    Log.e(LOG_TAG,"OnMapClick exception" + e.toString());
+                    e.printStackTrace();
+                }
             }
         });
     }
