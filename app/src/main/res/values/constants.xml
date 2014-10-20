@@ -16,4 +16,6 @@
     <color name="colorPressedHighlight">@android:color/holo_blue_light</color>
     <color name="colorLongPressedHighlight">@android:color/holo_blue_bright</color>
     <color name="colorUnpressedHighlight">@android:color/background_light</color>
+    <color name="colorPrimary">#0a8f08</color>
+    <color name="colorPrimaryDark">#056f00</color>
 </resources>
