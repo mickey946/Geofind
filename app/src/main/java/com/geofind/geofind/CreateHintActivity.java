@@ -58,6 +58,7 @@ public class CreateHintActivity extends ActionBarActivity {
                 if (hint != null) { // the user is editing and existing hint
                     hintTitleTextView.setText(hint.getTitle());
                     hintTextTextView.setText(hint.getText());
+                    hintPoint = hint.getLocation();
                 }
             }
         }
@@ -129,6 +130,12 @@ public class CreateHintActivity extends ActionBarActivity {
                     Toast.LENGTH_LONG).show();
         }
 
+        if (hintPoint == null){
+            legal = false;
+            Toast.makeText(this, getString(R.string.create_hint_point_missing),
+                    Toast.LENGTH_LONG).show();
+        }
+
         return legal;
     }
 
@@ -158,8 +165,6 @@ public class CreateHintActivity extends ActionBarActivity {
         Intent intent = new Intent(this, PickPointActivity.class);
         if (hintPoint != null)
             intent.putExtra(getString(R.string.intent_hint_point_extra), hintPoint);
-        else if (hint != null)
-            intent.putExtra(getString(R.string.intent_hint_point_extra), hint.getLocation());
 
         startActivityForResult(intent, getResources().getInteger(R.integer.intent_point_result));
     }
