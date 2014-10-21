@@ -3,6 +3,8 @@ package com.geofind.geofind;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RatingBar;
@@ -12,8 +14,7 @@ import com.google.android.gms.maps.MapFragment;
 
 import java.util.concurrent.Callable;
 
-
-public class HuntDetailsActivity extends Activity {
+public class HuntDetailsActivity extends ActionBarActivity {
 
     /**
      * The hunt on which the activity displays the details.
@@ -25,6 +26,10 @@ public class HuntDetailsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunt_details);
+
+        // show the back button on the action bar
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // retrieve the hunt from the intent that started the activity
         Intent intent = getIntent();

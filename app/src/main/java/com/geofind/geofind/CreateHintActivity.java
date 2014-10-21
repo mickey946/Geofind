@@ -1,6 +1,5 @@
 package com.geofind.geofind;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -13,6 +12,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,7 @@ import java.io.FileDescriptor;
 import java.util.List;
 
 
-public class CreateHintActivity extends Activity {
+public class CreateHintActivity extends ActionBarActivity {
 
     private TextView hintTitleTextView;
     private TextView hintTextTextView;
@@ -39,6 +40,10 @@ public class CreateHintActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_hint);
+
+        // show the back button on the action bar
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         hintTitleTextView = (TextView) findViewById(R.id.create_hint_title);
         hintTextTextView = (TextView) findViewById(R.id.create_hint_description);
@@ -58,8 +63,7 @@ public class CreateHintActivity extends Activity {
         }
 
 
-
-        Map  = (ImageView) findViewById(R.id.create_hint_map);
+        Map = (ImageView) findViewById(R.id.create_hint_map);
 
         ViewTreeObserver vto = Map.getViewTreeObserver();
         if (mapHeight == -1 || mapWidth == -1) {
@@ -73,11 +77,10 @@ public class CreateHintActivity extends Activity {
                         if (hint == null) {
                             new StaticMap(Map).execute(
                                     new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
-                        } else
-                        {
+                        } else {
                             new StaticMap(Map).execute(
                                     new StaticMap.StaticMapDescriptor(
-                                            hint.getLocation().toLatLng(),mapWidth,mapHeight));
+                                            hint.getLocation().toLatLng(), mapWidth, mapHeight));
                         }
 
                     }
@@ -171,7 +174,7 @@ public class CreateHintActivity extends Activity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) { // The user picked a point
                 Bundle bundle = data.getExtras();
-                hintPoint = (Point) data.getSerializableExtra(getString(R.string.intent_hint_extra));
+                hintPoint = (Point) bundle.getSerializable(getString(R.string.intent_hint_extra));
                 new StaticMap(Map).execute(
                         new StaticMap.StaticMapDescriptor(hintPoint.toLatLng(), mapWidth, mapHeight));
             }

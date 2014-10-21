@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_edit_point"
         android:title="@string/action_edit_point"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_action_edit"
-        android:showAsAction="ifRoom" />
+        android:icon="@drawable/ic_create_white_48dp"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_discard_point"
         android:title="@string/action_discard_point"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_action_discard"
-        android:showAsAction="ifRoom" />
+        android:icon="@drawable/ic_delete_white_48dp"
+        app:showAsAction="ifRoom" />
 </menu>

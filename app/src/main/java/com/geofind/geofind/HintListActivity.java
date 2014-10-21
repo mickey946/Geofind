@@ -1,11 +1,12 @@
 package com.geofind.geofind;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +18,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 
-public class HintListActivity extends Activity {
+public class HintListActivity extends ActionBarActivity {
 
     private RetainedFragment<ArrayList<Hint>> retainedFragment;
     private HintListAdapter adapter;
@@ -26,6 +27,10 @@ public class HintListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hint_list);
+
+        // show the back button on the action bar
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // find the retained fragment on activity restarts
         FragmentManager fragmentManager = getFragmentManager();
@@ -195,7 +200,7 @@ public class HintListActivity extends Activity {
         }
 
         // set icon
-        builder.setIcon(getResources().getDrawable(R.drawable.ic_action_warning));
+        builder.setIcon(getResources().getDrawable(R.drawable.ic_warning_grey600_48dp));
 
         // set positive button
         builder.setPositiveButton(getString(R.string.hint_list_data_loss_warning_positive),

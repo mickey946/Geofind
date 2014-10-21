@@ -1,7 +1,8 @@
 package com.geofind.geofind;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,15 +10,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 
 
-public class HuntListActivity extends Activity {
+public class HuntListActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunt_list);
+
+        // show the back button on the action bar
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // get a reference to recyclerView
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -25,11 +31,11 @@ public class HuntListActivity extends Activity {
         // create and fill the hunts array to display them.
         // TODO retrieve the hunts from parse
         ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        hunts.add(new Hunt("Title1", 1, 1, "Hunt1",new LatLng(31.76831,35.21371), 500));
-        hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831,35.21371), 1000));
-        hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831,35.21371), 200));
-        hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831,35.21371), 10000));
-        hunts.add(new Hunt("Title5", 5, 5, "Hunt5", new LatLng(31.76831,35.21371), 800));
+        hunts.add(new Hunt("Title1", 1, 1, "Hunt1", new LatLng(31.76831, 35.21371), 500));
+        hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831, 35.21371), 1000));
+        hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831, 35.21371), 200));
+        hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831, 35.21371), 10000));
+        hunts.add(new Hunt("Title5", 5, 5, "Hunt5", new LatLng(31.76831, 35.21371), 800));
 
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

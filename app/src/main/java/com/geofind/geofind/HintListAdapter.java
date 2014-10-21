@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHolder> {
 
     protected Object actionMode;
+
     /**
      * The hints to display.
      */
@@ -161,13 +163,13 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         public Context context;
         public LinearLayout cardView;
         // on long click, show the contextual action bar
-        private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        private android.support.v7.view.ActionMode.Callback
+                actionModeCallback = new android.support.v7.view.ActionMode.Callback() {
 
-            // Called when the action mode is created; startActionMode() was called
             @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // Inflate a menu resource providing context menu items
-                MenuInflater inflater = mode.getMenuInflater();
+            public boolean onCreateActionMode(android.support.v7.view.ActionMode actionMode,
+                                              Menu menu) {
+                MenuInflater inflater = ((ActionBarActivity) context).getMenuInflater();
                 inflater.inflate(R.menu.hint_list_action, menu);
                 return true;
             }
@@ -175,21 +177,23 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             // Called each time the action mode is shown. Always called after onCreateActionMode, but
             // may be called multiple times if the mode is invalidated.
             @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            public boolean onPrepareActionMode(android.support.v7.view.ActionMode actionMode,
+                                               Menu menu) {
                 return false; // Return false if nothing is done
             }
 
             // Called when the user selects a contextual menu item
             @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
+            public boolean onActionItemClicked(android.support.v7.view.ActionMode actionMode,
+                                               MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
                     case R.id.action_edit_point:
                         editHint();
-                        finish();
+                        close();
                         return true;
                     case R.id.action_discard_point:
                         deleteHint();
-                        finish();
+                        close();
                         return true;
                     default:
                         return false;
@@ -198,7 +202,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
 
             // Called when the user exits the action mode
             @Override
-            public void onDestroyActionMode(ActionMode mode) {
+            public void onDestroyActionMode(android.support.v7.view.ActionMode action) {
                 // reset the highlight
                 cardView.setBackgroundColor(
                         context.getResources().getColor(R.color.colorUnpressedHighlight));
@@ -209,9 +213,9 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             /**
              * Close the contextual action bar.
              */
-            private void finish() {
+            private void close() {
                 if (actionMode != null) {
-                    ((ActionMode) actionMode).finish();
+                    ((android.support.v7.view.ActionMode) actionMode).finish();
                 }
             }
         };
@@ -268,7 +272,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             // Start the CAB using the ActionMode.Callback defined above
             cardView.setBackgroundColor(
                     context.getResources().getColor(R.color.colorLongPressedHighlight));
-            actionMode = ((Activity) context).startActionMode(actionModeCallback);
+            actionMode = ((ActionBarActivity) context).startSupportActionMode(actionModeCallback);
             view.setSelected(true);
             return true;
         }

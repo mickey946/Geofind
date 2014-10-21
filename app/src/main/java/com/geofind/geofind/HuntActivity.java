@@ -5,8 +5,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -24,7 +24,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
 
 
-public class HuntActivity extends FragmentActivity {
+public class HuntActivity extends ActionBarActivity {
 
     public static final int MIN_UPDATE_TIME = 0; //TODO decide the correct values
     public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
@@ -75,8 +75,8 @@ public class HuntActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunt);
 
         setUpHunt();
@@ -111,7 +111,7 @@ public class HuntActivity extends FragmentActivity {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
                 Log.i(TAG, "onPanelSlide, offset " + slideOffset);
-                setActionBarTranslation(slidingUpPanel.getCurrentParalaxOffset());
+                // setActionBarTranslation(slidingUpPanel.getCurrentParalaxOffset());
             }
 
             @Override
@@ -135,8 +135,6 @@ public class HuntActivity extends FragmentActivity {
                 // good to assume that he wants to focus on the point (if it is visible)
                 Log.i(TAG, "onPanelAnchored");
 
-
-                // TODO to use focusing on a point on a map when the panel is anchored
                 int height = findViewById(R.id.main_content).getMeasuredHeight();
                 float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
                         - getResources().getDimension(R.dimen.sliding_up_panel_paralax)
@@ -144,7 +142,6 @@ public class HuntActivity extends FragmentActivity {
                 mapManager.setMapOffset(0, panDistance);
 
                 focusOnPoint(viewPager.getCurrentItem());
-
             }
 
             @Override
