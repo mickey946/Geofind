@@ -226,7 +226,12 @@ public class MapManager implements LocationListener {
                 markerOptions.title("lat: " + latLng.latitude + " lng: " + latLng.longitude);
                 _selectedPoint = new Point(latLng);
 
-                new ReverseGeocodingTask(_activity.getBaseContext(), onlyOne).execute(latLng);
+                if (onlyOne) {
+                    _mMap.clear();
+                }
+                Marker marker = _mMap.addMarker(markerOptions);
+
+                new ReverseGeocodingTask(_activity.getBaseContext(),marker).execute(latLng);
             }
         });
     }
@@ -385,12 +390,12 @@ public class MapManager implements LocationListener {
      */
     private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
         Context mContext;
-        boolean mOnlyOne;
+        Marker mMarker;
 
-        public ReverseGeocodingTask(Context context, boolean onlyOne) {
+        public ReverseGeocodingTask(Context context, Marker marker) {
             super();
             mContext = context;
-            mOnlyOne = onlyOne;
+            mMarker = marker;
         }
 
         @Override
@@ -444,15 +449,12 @@ public class MapManager implements LocationListener {
          */
         @Override
         protected void onPostExecute(String addressText) {
-            markerOptions.title(addressText);
+            mMarker.setTitle(addressText);
             if (_atvLocation != null) {
                 _atvLocation.setText(""); // text is set programmatically.
                 _atvLocation.setHint(addressText);
             }
-            if (mOnlyOne) {
-                _mMap.clear();
-            }
-            _mMap.addMarker(markerOptions);
+
         }
     }
 

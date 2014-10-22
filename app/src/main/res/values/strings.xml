@@ -80,5 +80,6 @@
     <string name="action_discard_point">Discard Point</string>
     <string name="str_atv_places">Enter Place Here</string>
     <string name="intent_hint_point_extra">HINT_POINT</string>
+    <string name="create_hint_point_missing">Please select a point on the map</string>
 
 </resources>
