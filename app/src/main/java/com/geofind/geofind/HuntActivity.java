@@ -138,7 +138,7 @@ public class HuntActivity extends ActionBarActivity {
                 int height = findViewById(R.id.main_content).getMeasuredHeight();
                 float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
                         - getResources().getDimension(R.dimen.sliding_up_panel_paralax)
-                                * SLIDING_UP_PANEL_ANCHOR_POINT;
+                        * SLIDING_UP_PANEL_ANCHOR_POINT;
                 mapManager.setMapOffset(0, panDistance);
 
                 focusOnPoint(viewPager.getCurrentItem());
@@ -253,7 +253,11 @@ public class HuntActivity extends ActionBarActivity {
                 if (hint.getState() != Hint.State.UNREVEALED) {
 
                     Point point = hint.getLocation();
-                    mapManager.onLocationChanged(point.toLocation());
+                    if (!slidingUpPanel.isPanelAnchored()) {
+                        mapManager.onLocationChanged(point.toLocation());
+                    } else {
+                        mapManager.onLocationChangedAnchored(point.toLocation());
+                    }
 
                 }
             }
