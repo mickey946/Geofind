@@ -3,7 +3,6 @@ package com.geofind.geofind;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +44,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
     /**
      * Get the hunts array list.
+     *
      * @return The array list of the hunts.
      */
     public ArrayList<Hunt> getHunts() {
@@ -53,6 +53,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
 
     /**
      * Set the array list of the hunts.
+     *
      * @param hunts The array list of the hunts to be displayed
      */
     public void setHunts(ArrayList<Hunt> hunts) {
@@ -81,7 +82,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         viewHolder.textViewDescription.setText(hunts.get(i).getDescription());
 
         ViewTreeObserver vto = viewHolder.itemView.getViewTreeObserver();
-        if (mapHeight == -1 || mapWidth == -1){
+        if (mapHeight == -1 || mapWidth == -1) {
             if (vto.isAlive()) {
                 vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -98,8 +99,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
                     }
                 });
             }
-        }else
-        {
+        } else {
             // The recycler view doesn't create new tiles, so we reuse previous tile and assume
             // the same dimension for image view
             new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor(

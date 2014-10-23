@@ -81,5 +81,8 @@
     <string name="str_atv_places">Enter Place Here</string>
     <string name="intent_hint_point_extra">HINT_POINT</string>
     <string name="create_hint_point_missing">Please select a point on the map</string>
+    <string name="hunt_list_pager_new_hunts_title">New Hunts</string>
+    <string name="hunt_list_pager_ongoing_hunts_title">Ongoing Hunts</string>
+    <string name="hunt_list_pager_finished_hunts_title">Finished Hunts</string>
 
 </resources>
