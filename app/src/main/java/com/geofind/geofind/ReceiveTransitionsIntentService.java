@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class ReceiveTransitionsIntentService extends IntentService {
 
+    private static String TAG= "ReceiveTransitionsIntentService - GeoFence";
+
     /**
      * Set service identifier
      */
@@ -23,6 +25,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG,"onHandleIntent");
         if (LocationClient.hasError(intent)){
             int errorCode = LocationClient.getErrorCode(intent);
             Log.e("ReceiveTransitionsIntentService",
@@ -41,8 +44,19 @@ public class ReceiveTransitionsIntentService extends IntentService {
                             LocationClient.getTriggeringGeofences(intent); //Added LocationClient
                 String[] triggerIds = new String[triggerList.size()];
 
+
+                String type ;
+
+                if (transientType == Geofence.GEOFENCE_TRANSITION_EXIT){
+                    type = "Exit";
+                } else
+                {
+                    type = "Enter";
+                }
+
                 for (int i = 0; i < triggerIds.length; i++) {
                     triggerIds[i] = triggerList.get(i).getRequestId();
+                    Log.d(TAG, "Type: " + type + " " + triggerIds[i]);
                 }
                 /*
                  * At this point, you can store the IDs for further use

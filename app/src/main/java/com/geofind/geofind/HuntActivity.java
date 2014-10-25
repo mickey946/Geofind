@@ -28,6 +28,7 @@ public class HuntActivity extends ActionBarActivity {
 
     public static final int MIN_UPDATE_TIME = 0; //TODO decide the correct values
     public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
+    public static final int GEOFENCE_RADIUS = 10;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
@@ -73,6 +74,11 @@ public class HuntActivity extends ActionBarActivity {
      */
     private MapManager mapManager;
 
+    /**
+     * This manages the geofence control
+     */
+    GeofenceManager geofence;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -86,14 +92,17 @@ public class HuntActivity extends ActionBarActivity {
         setUpSlidingUpPanel();
 
         setUpMap();
+
+        setUpGeofence();
     }
 
     /**
      * Retrieve the hunt from the intent that started the activity and set it up.
      */
     private void setUpHunt() {
-        Intent intent = getIntent();
 
+        Intent intent = getIntent();
+        Log.d(TAG,"got intent is " + (intent == null? "null":intent.getType()));
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(
                     getResources().getString(R.string.intent_hunt_extra));
@@ -237,6 +246,24 @@ public class HuntActivity extends ActionBarActivity {
                 mapManager.setMarker(hint.getLocation().toLatLng(), hint.getTitle(), hint.getState());
             }
         }
+    }
+
+    /**
+     * Set up the geofence
+     */
+    private void setUpGeofence(){
+        Log.d(TAG,"setUpGeofence");
+        geofence = new GeofenceManager(this);
+
+
+        int unrevealedIndex = 0;
+        while (hints.get(unrevealedIndex).getState() != Hint.State.UNREVEALED){
+            unrevealedIndex++;
+        }
+
+        geofence.createGeofence(hints.get(unrevealedIndex).getLocation(), GEOFENCE_RADIUS);
+
+
     }
 
     /**

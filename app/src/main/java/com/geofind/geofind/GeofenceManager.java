@@ -9,6 +9,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
@@ -19,6 +20,7 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationStatusCodes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +38,7 @@ public class GeofenceManager implements
      */
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private static final String TAG = "GeoFence";
     List<Geofence> mCurrentGeofence;
     private Activity _activity;
     // Holds the location client
@@ -46,25 +49,34 @@ public class GeofenceManager implements
     private PendingIntent mTransitionPendingIntent;
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
+    private SimpleGeofenceStore simpleGeofenceStore;
 
     public GeofenceManager(Activity activity) {
+        Log.d(TAG,"constructor");
         this._activity = activity;
+        simpleGeofenceStore = new SimpleGeofenceStore(activity);
+        mCurrentGeofence = new ArrayList<Geofence>();
 
         // Start with the request flag set to false
         mInProgress = false;
+
+        addGeofences();
     }
 
-    public void createGeofence(Point p, float radius, Context context) {
-        final String ID = "GeoFind_" + p.get_latitude() + p.get_longitude();
+    public void createGeofence(Point p, float radius) {
+
+        final String ID = "GeoFind_" + p.get_latitude() + "_" + p.get_longitude();
+        Log.d(TAG,"create geofence " + ID + "with radius " + radius);
         SimpleGeofence simpleGeofence = new SimpleGeofence(
                 ID,
                 p.get_latitude(),
                 p.get_longitude(),
                 radius,
-                -1,
+                Geofence.NEVER_EXPIRE,
                 Geofence.GEOFENCE_TRANSITION_ENTER);
-        SimpleGeofenceStore simpleGeofenceStore = new SimpleGeofenceStore(context);
+
         simpleGeofenceStore.setGeofence(ID, simpleGeofence);
+        mCurrentGeofence.add(simpleGeofence.toGeofence());
 
 
     }
@@ -99,7 +111,6 @@ public class GeofenceManager implements
          * If Google Play services isn't present, the request can be
          * restarted.
          */
-        //TODO google service check
         if (!GooglePlayUtils.servicesConnected(_activity)) {
             return;
         }
@@ -130,6 +141,7 @@ public class GeofenceManager implements
 
     @Override
     public void onConnected(Bundle bundle) {
+        Log.d(TAG,"onConnect");
         // Start with the request flag set to false
         mInProgress = false;
         switch (mRequestType) {
@@ -147,9 +159,11 @@ public class GeofenceManager implements
     }
 
     public void addGeofences() {
+        Log.d(TAG, "addGeofences");
         mRequestType = REQUEST_TYPE.ADD;
 
-        //TODO validate google service
+        if (!GooglePlayUtils.servicesConnected(_activity))
+            return;
 
         mLocationClient = new LocationClient(_activity, this, this);
 
@@ -176,6 +190,7 @@ public class GeofenceManager implements
              * You can send out a broadcast intent or update the UI.
              * geofences into the Intent's extended data.
              */
+            Log.d(TAG, "Location geofence added succssfully");
         } else {
             // If adding the geofences failed
             /*
@@ -183,6 +198,7 @@ public class GeofenceManager implements
              * You can log the error using Log.e() or update
              * the UI.
              */
+            Log.d(TAG, "Location geofence added with error: " + statusCode);
         }
 
         mInProgress = false;
