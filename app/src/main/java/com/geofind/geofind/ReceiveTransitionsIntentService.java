@@ -1,7 +1,11 @@
 package com.geofind.geofind;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
@@ -35,11 +39,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
 
         } else {
+
             int transientType =
                     LocationClient.getGeofenceTransition(intent);
-
+            Log.d(TAG,"onHandleIntent - no error" + transientType);
             if (transientType == Geofence.GEOFENCE_TRANSITION_ENTER ||
                     transientType == Geofence.GEOFENCE_TRANSITION_EXIT){
+                Log.d(TAG,"onHandleIntent - correct type");
                 List<Geofence> triggerList =
                             LocationClient.getTriggeringGeofences(intent); //Added LocationClient
                 String[] triggerIds = new String[triggerList.size()];
@@ -63,6 +69,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
                  * display them, or display the details associated with
                  * them.
                  */
+
+                Intent intent1 = new Intent(getString(R.string.GeofenceResultIntent));
+                intent1.putExtra("ID", triggerIds[0]);
+                LocalBroadcastManager.getInstance(this)
+                        .sendBroadcast(intent1);
                 }
         }
     }

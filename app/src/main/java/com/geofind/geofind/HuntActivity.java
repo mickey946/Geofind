@@ -1,10 +1,14 @@
 package com.geofind.geofind;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -243,7 +247,8 @@ public class HuntActivity extends ActionBarActivity {
 
         for (Hint hint : hints) {
             if (hint.getState() != Hint.State.UNREVEALED) {
-                mapManager.setMarker(hint.getLocation().toLatLng(), hint.getTitle(), hint.getState());
+                mapManager.setMarker(hint.getLocation().toLatLng(),
+                        hint.getTitle(), hint.getState());
             }
         }
     }
@@ -252,9 +257,18 @@ public class HuntActivity extends ActionBarActivity {
      * Set up the geofence
      */
     private void setUpGeofence(){
-        Log.d(TAG,"setUpGeofence");
+        Log.d(TAG, "setUpGeofence");
         geofence = new GeofenceManager(this);
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String id = intent.getStringExtra("ID");
+                Log.d(TAG,"point recieved: " + id);
+                hints.get(3).setState(Hint.State.SOLVED);
+                hintPagerAdapter.notifyDataSetChanged();
+            }
+        }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
         int unrevealedIndex = 0;
         while (hints.get(unrevealedIndex).getState() != Hint.State.UNREVEALED){
