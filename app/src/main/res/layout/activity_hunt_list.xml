@@ -1,20 +1,27 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    tools:context="com.geofind.geofind.HuntListActivity">
+    tools:context="com.geofind.geofind.HuntListActivity"
+    android:orientation="vertical">
+
+    <com.geofind.geofind.widget.SlidingTabLayout
+        android:background="@color/colorPrimary"
+        android:id="@+id/sliding_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pagerHuntList"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.view.PagerTabStrip
-            android:id="@+id/tabStrip"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_gravity="top" />
+        <!--<android.support.v4.view.PagerTabStrip-->
+        <!--android:id="@+id/tabStrip"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_gravity="top" />-->
 
     </android.support.v4.view.ViewPager>
 
-</RelativeLayout>
+</LinearLayout>

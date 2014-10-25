@@ -5,14 +5,16 @@
         <!-- customize the color palette -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">#76ff03</item>
+        <item name="colorAccent">@color/themeAccent</item>
         <!-- Customize your theme here. -->
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar"></style>
 
+    <style name="AppTheme.ActionBarNoShadow" parent="AppTheme">
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="AppTheme.ActionBarOverlay" parent="AppTheme">

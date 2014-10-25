@@ -26,6 +26,7 @@
         <activity
             android:name=".HuntListActivity"
             android:label="@string/title_activity_hunt_list"
+            android:theme="@style/AppTheme.ActionBarNoShadow"
             android:parentActivityName=".MainScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

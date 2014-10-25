@@ -58,12 +58,10 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         // create new Hint fragment
         Fragment fragment = new HuntListFragment();
 
-//        ((HuntListFragment) fragment).context = context;
-
         // create and fill the hunts array to display them.
         // TODO retrieve the hunts from parse
         ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        hunts.add(new Hunt("Titleb1", 1, 1, "Hunt1", new LatLng(31.76831, 35.21371), 500));
+        hunts.add(new Hunt("Title1", 1, 1, "Hunt1", new LatLng(31.76831, 35.21371), 500));
         hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831, 35.21371), 1000));
         hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831, 35.21371), 200));
         hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831, 35.21371), 10000));
