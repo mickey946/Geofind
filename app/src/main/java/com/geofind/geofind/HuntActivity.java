@@ -233,14 +233,14 @@ public class HuntActivity extends ActionBarActivity {
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
         mapManager = new MapManager(this, mapFragment);
         mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
-        mapManager.setMarkerCallback(new MarkerCallback() {
+        mapManager.setMarkerCallback(new IndexCallback() {
             /**
              * Slide to the point page at the given index.
              *
              * @param index The index of the point in the adapter.
              */
             @Override
-            public void onMarkerClick(int index) {
+            public void executeCallback(int index) {
                 viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
             }
         });
@@ -285,7 +285,22 @@ public class HuntActivity extends ActionBarActivity {
             unrevealedIndex++;
         }
 
-        geofence.createGeofence(hints.get(unrevealedIndex).getLocation(), GEOFENCE_RADIUS, unrevealedIndex);
+        geofence.createGeofence(hints.get(unrevealedIndex).getLocation(),
+                GEOFENCE_RADIUS, unrevealedIndex);
+
+        geofence.setCancelCallback(new IndexCallback() {
+            @Override
+            public void executeCallback(int index) {
+                hints.get(index).setState(Hint.State.REVEALED);
+                mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
+                        hints.get(index).getTitle(), hints.get(index).getState());
+
+                //TODO prepare for next hint
+
+                hintPagerAdapter.notifyDataSetChanged();
+
+            }
+        });
 
 
     }
@@ -336,6 +351,9 @@ public class HuntActivity extends ActionBarActivity {
 
                 startActivity(intent);
                 finish();
+                return true;
+            case R.id.action_temp_reveal:
+                geofence.removeGeofences(hints.get(hints.size()-1).getLocation());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

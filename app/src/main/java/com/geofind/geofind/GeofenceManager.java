@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -22,6 +21,7 @@ import com.google.android.gms.location.LocationStatusCodes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Ilia Marin on 23/10/2014.
@@ -43,14 +43,14 @@ public class GeofenceManager implements
     private Activity _activity;
     // Holds the location client
     private LocationClient mLocationClient;
-    // Stores the PendingIntent used to request geofence monitoring
-    private PendingIntent mGeofenceRequestIntent;
     private REQUEST_TYPE mRequestType;
     private PendingIntent mTransitionPendingIntent;
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
     private SimpleGeofenceStore simpleGeofenceStore;
     private int _pointIndex;
+    private List<String> _deletePoint;
+    private IndexCallback _cancelCallback;
 
     public GeofenceManager(Activity activity) {
         Log.d(TAG,"constructor");
@@ -60,13 +60,13 @@ public class GeofenceManager implements
         _pointIndex = -1;
         // Start with the request flag set to false
         mInProgress = false;
-
+        _cancelCallback = null;
         addGeofences();
     }
 
     public void createGeofence(Point p, float radius, int pointIndex) {
 
-        final String ID = "GeoFind_" + p.get_latitude() + "_" + p.get_longitude();
+        final String ID = composeID(p);
 
         Log.d(TAG,"create geofence " + ID + "with radius " + radius + "at" + pointIndex);
         _pointIndex = pointIndex;
@@ -82,6 +82,15 @@ public class GeofenceManager implements
         mCurrentGeofence.add(simpleGeofence.toGeofence());
 
 
+    }
+
+
+    public void setCancelCallback(IndexCallback cancelCallback) {
+        this._cancelCallback = cancelCallback;
+    }
+
+    private String composeID(Point p) {
+        return "GeoFind_" + p.get_latitude() + "_" + p.get_longitude();
     }
 
     /*
@@ -109,7 +118,7 @@ public class GeofenceManager implements
      * Start a request to remove geofences by calling
      * LocationClient.connect()
      */
-    public void removeGeofences(PendingIntent requestIntent) {
+    public void removeGeofences(Point point) {
         // Record the type of removal request
         mRequestType = REQUEST_TYPE.REMOVE_INTENT;
         /*
@@ -121,7 +130,8 @@ public class GeofenceManager implements
             return;
         }
         // Store the PendingIntent
-        mGeofenceRequestIntent = requestIntent;
+        _deletePoint = new ArrayList<String>();
+        _deletePoint.add(composeID(point));
         /*
          * Create a new location client object. Since the current
          * activity class implements ConnectionCallbacks and
@@ -147,7 +157,7 @@ public class GeofenceManager implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d(TAG,"onConnect");
+        Log.d(TAG,"onConnect:" + mRequestType.toString());
         // Start with the request flag set to false
         mInProgress = false;
         switch (mRequestType) {
@@ -158,7 +168,7 @@ public class GeofenceManager implements
                 break;
             case REMOVE_INTENT:
                 mLocationClient.removeGeofences(
-                        mGeofenceRequestIntent, this);
+                        _deletePoint, this);
                 break;
 
         }
@@ -257,10 +267,19 @@ public class GeofenceManager implements
     @Override
     public void onRemoveGeofencesByRequestIdsResult(int statusCode, String[] strings) {
        if (statusCode == LocationStatusCodes.SUCCESS){
-            /**
+           Log.d(TAG,"location removed by id");
+           if (_cancelCallback != null){
+               try {
+                   _cancelCallback.executeCallback(_pointIndex);
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+           }
+           /**
              * Succusful removal can handle UI
              */
         } else {
+           Log.d(TAG,"location failed removed by id");
             /**
              * Report Error to UI
              */
@@ -273,10 +292,19 @@ public class GeofenceManager implements
     @Override
     public void onRemoveGeofencesByPendingIntentResult(int statusCode, PendingIntent requestIntent) {
         if (statusCode == LocationStatusCodes.SUCCESS){
+            Log.d(TAG,"location removed by intent");
+            if (_cancelCallback != null){
+                try {
+                    _cancelCallback.executeCallback(_pointIndex);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             /**
              * Succusful removal can handle UI
              */
         } else {
+            Log.d(TAG,"location removed failed by intent");
             /**
              * Report Error to UI
              */
