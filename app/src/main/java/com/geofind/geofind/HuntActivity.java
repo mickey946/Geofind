@@ -263,9 +263,19 @@ public class HuntActivity extends ActionBarActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String id = intent.getStringExtra("ID");
+                String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
+                int indx = intent.getIntExtra(getString(R.string.PointIndexExtra),-1);
+                Log.d(TAG,"recieved poind index" + indx);
                 Log.d(TAG,"point recieved: " + id);
-                hints.get(3).setState(Hint.State.SOLVED);
+
+                // Mark the current hint as solved
+
+                hints.get(indx).setState(Hint.State.SOLVED);
+                mapManager.setMarker(hints.get(indx).getLocation().toLatLng(),
+                        hints.get(indx).getTitle(), hints.get(indx).getState());
+
+                //TODO prepare for next hint
+
                 hintPagerAdapter.notifyDataSetChanged();
             }
         }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
@@ -275,7 +285,7 @@ public class HuntActivity extends ActionBarActivity {
             unrevealedIndex++;
         }
 
-        geofence.createGeofence(hints.get(unrevealedIndex).getLocation(), GEOFENCE_RADIUS);
+        geofence.createGeofence(hints.get(unrevealedIndex).getLocation(), GEOFENCE_RADIUS, unrevealedIndex);
 
 
     }

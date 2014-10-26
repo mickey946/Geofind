@@ -82,5 +82,7 @@
     <string name="intent_hint_point_extra">HINT_POINT</string>
     <string name="create_hint_point_missing">Please select a point on the map</string>
     <string name="GeofenceResultIntent">GeofenceEnter</string>
+    <string name="PointIndexExtra">PointIndex</string>
+    <string name="PointIdIntentExtra">ID</string>
 
 </resources>

@@ -50,23 +50,26 @@ public class GeofenceManager implements
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
     private SimpleGeofenceStore simpleGeofenceStore;
+    private int _pointIndex;
 
     public GeofenceManager(Activity activity) {
         Log.d(TAG,"constructor");
         this._activity = activity;
         simpleGeofenceStore = new SimpleGeofenceStore(activity);
         mCurrentGeofence = new ArrayList<Geofence>();
-
+        _pointIndex = -1;
         // Start with the request flag set to false
         mInProgress = false;
 
         addGeofences();
     }
 
-    public void createGeofence(Point p, float radius) {
+    public void createGeofence(Point p, float radius, int pointIndex) {
 
         final String ID = "GeoFind_" + p.get_latitude() + "_" + p.get_longitude();
-        Log.d(TAG,"create geofence " + ID + "with radius " + radius);
+
+        Log.d(TAG,"create geofence " + ID + "with radius " + radius + "at" + pointIndex);
+        _pointIndex = pointIndex;
         SimpleGeofence simpleGeofence = new SimpleGeofence(
                 ID,
                 p.get_latitude(),
@@ -89,6 +92,9 @@ public class GeofenceManager implements
         // Create an explicit Intent
         Intent intent = new Intent(_activity,
                 ReceiveTransitionsIntentService.class);
+
+        intent.putExtra(_activity.
+                getString(R.string.PointIndexExtra),_pointIndex);
         /*
          * Return the PendingIntent
          */

@@ -71,7 +71,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
                  */
 
                 Intent intent1 = new Intent(getString(R.string.GeofenceResultIntent));
-                intent1.putExtra("ID", triggerIds[0]);
+                intent1.putExtra(getString(R.string.PointIdIntentExtra), triggerIds[0]);
+                intent1.putExtra(getString(R.string.PointIndexExtra),
+                        intent.getIntExtra(getString(R.string.PointIndexExtra),-1));
                 LocalBroadcastManager.getInstance(this)
                         .sendBroadcast(intent1);
                 }
