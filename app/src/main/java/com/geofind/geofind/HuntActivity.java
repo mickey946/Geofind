@@ -184,10 +184,10 @@ public class HuntActivity extends ActionBarActivity {
      */
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
-        hints.add(new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
-        hints.add(new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
-        hints.add(new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
-        hints.add(new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
+        hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
+        hints.add(new Hint("Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
+        hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
+        hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
 
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
@@ -237,9 +237,13 @@ public class HuntActivity extends ActionBarActivity {
             }
         });
 
+        int index = 0;
         for (Hint hint : hints) {
+            index++;
             if (hint.getState() != Hint.State.UNREVEALED) {
-                mapManager.setMarker(hint.getLocation().toLatLng(), hint.getTitle(), hint.getState());
+                mapManager.setMarker(hint.getLocation().toLatLng(),
+                        getString(R.string.hunt_activity_hint_number_title) + index,
+                        hint.getState());
             }
         }
     }
@@ -253,7 +257,7 @@ public class HuntActivity extends ActionBarActivity {
         Fragment fragment = hintPagerAdapter.getItem(index);
         Bundle bundle = fragment.getArguments();
         if (bundle != null) { // for extra safety
-            Hint hint = (Hint) bundle.getSerializable(HintPagerAdapter.HintFragment.TAG);
+            Hint hint = (Hint) bundle.getSerializable(HintPagerAdapter.HintFragment.HINT_TAG);
             if (hint != null) { // for ultra safety
                 if (hint.getState() != Hint.State.UNREVEALED) {
 

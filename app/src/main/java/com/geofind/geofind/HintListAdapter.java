@@ -116,7 +116,8 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         viewHolder.hint = hints.get(i);
 
         // put the values of the hunt in all of the views
-        viewHolder.hintTitleTextView.setText(hints.get(i).getTitle());
+        viewHolder.hintTitleTextView.setText(
+                context.getString(R.string.hunt_activity_hint_number_title) + (i + 1));
         viewHolder.hintTextTextView.setText(hints.get(i).getText());
 
         ViewTreeObserver vto = viewHolder.itemView.getViewTreeObserver();

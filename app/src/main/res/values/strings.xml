@@ -84,5 +84,6 @@
     <string name="hunt_list_pager_new_hunts_title">New Hunts</string>
     <string name="hunt_list_pager_ongoing_hunts_title">Ongoing Hunts</string>
     <string name="hunt_list_pager_finished_hunts_title">Finished Hunts</string>
+    <string name="hunt_activity_hint_number_title">Point #</string>
 
 </resources>

@@ -29,7 +29,6 @@ import java.util.List;
 
 public class CreateHintActivity extends ActionBarActivity {
 
-    private TextView hintTitleTextView;
     private TextView hintTextTextView;
     private Hint hint = null;
     private Integer index = null;
@@ -47,7 +46,6 @@ public class CreateHintActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        hintTitleTextView = (TextView) findViewById(R.id.create_hint_title);
         hintTextTextView = (TextView) findViewById(R.id.create_hint_description);
 
         Intent intent = getIntent();
@@ -58,7 +56,6 @@ public class CreateHintActivity extends ActionBarActivity {
                         getResources().getString(R.string.intent_hint_extra));
                 index = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
                 if (hint != null) { // the user is editing and existing hint
-                    hintTitleTextView.setText(hint.getTitle());
                     hintTextTextView.setText(hint.getText());
                     hintPoint = hint.getLocation();
                 }
@@ -123,15 +120,14 @@ public class CreateHintActivity extends ActionBarActivity {
      * @return whether the user filled all the required fields or not
      */
     public boolean checkInput() {
-        boolean legal = !hintTitleTextView.getText().toString().trim().equals("")
-                && !hintTextTextView.getText().toString().trim().equals("");
+        boolean legal = !hintTextTextView.getText().toString().trim().equals("");
 
         if (!legal) {
             Toast.makeText(this, getString(R.string.create_hint_fields_error),
                     Toast.LENGTH_LONG).show();
         }
 
-        if (hintPoint == null){
+        if (hintPoint == null) {
             legal = false;
             Toast.makeText(this, getString(R.string.create_hint_point_missing),
                     Toast.LENGTH_LONG).show();
@@ -146,8 +142,7 @@ public class CreateHintActivity extends ActionBarActivity {
      */
     public void submitHint() {
         if (checkInput()) { // check if the user filled all required fields
-            Hint hint = new Hint(hintTitleTextView.getText().toString(),
-                    hintTextTextView.getText().toString(), hintPoint);
+            Hint hint = new Hint(hintTextTextView.getText().toString(), hintPoint);
 
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();
@@ -157,9 +152,7 @@ public class CreateHintActivity extends ActionBarActivity {
 
             //close this Activity
             finish();
-        } else {
-            // do not exit
-        }
+        } // else: do not exit
     }
 
     public void openPointPicker(View view) {
@@ -173,7 +166,6 @@ public class CreateHintActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
 
         // Check which request we're responding to
         if (requestCode == getResources().getInteger(R.integer.intent_point_result)) {
