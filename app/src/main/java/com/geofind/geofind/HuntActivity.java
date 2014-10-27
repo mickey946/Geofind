@@ -87,9 +87,20 @@ public class HuntActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
+
+
+        // TODO retrieve the hints on the fly using the hunt
+        hints.add(new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
+        hints.add(new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
+        hints.add(new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
+        hints.add(new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
+
+
         setContentView(R.layout.activity_hunt);
 
         setUpHunt();
+
+        setUpGeofence();
 
         setUpPagerView();
 
@@ -97,7 +108,7 @@ public class HuntActivity extends ActionBarActivity {
 
         setUpMap();
 
-        setUpGeofence();
+
     }
 
     /**
@@ -191,17 +202,12 @@ public class HuntActivity extends ActionBarActivity {
      * Set up the pager view.
      */
     private void setUpPagerView() {
-        // TODO retrieve the hints on the fly using the hunt
-        hints.add(new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
-        hints.add(new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
-        hints.add(new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
-        hints.add(new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
-
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
         // ViewPager and its adapters use support library fragments, so we must use
         // getSupportFragmentManager.
-        hintPagerAdapter = new HintPagerAdapter(getSupportFragmentManager(), hints);
+        Log.i(TAG, "create geofence HinatAdapter valid:" + (geofence == null));
+        hintPagerAdapter = new HintPagerAdapter(getSupportFragmentManager(), hints, geofence );
 
         // Set up the ViewPager, attaching the adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -265,8 +271,8 @@ public class HuntActivity extends ActionBarActivity {
             public void onReceive(Context context, Intent intent) {
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
                 int indx = intent.getIntExtra(getString(R.string.PointIndexExtra),-1);
-                Log.d(TAG,"recieved poind index" + indx);
-                Log.d(TAG,"point recieved: " + id);
+                Log.d(TAG,"recieved from geofence point index" + indx);
+                Log.d(TAG,"geofence point recieved: " + id);
 
                 // Mark the current hint as solved
 
@@ -281,7 +287,8 @@ public class HuntActivity extends ActionBarActivity {
         }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
         int unrevealedIndex = 0;
-        while (hints.get(unrevealedIndex).getState() != Hint.State.UNREVEALED){
+        while (unrevealedIndex < hints.size() &&
+                hints.get(unrevealedIndex).getState() != Hint.State.UNREVEALED){
             unrevealedIndex++;
         }
 
@@ -291,9 +298,14 @@ public class HuntActivity extends ActionBarActivity {
         geofence.setCancelCallback(new IndexCallback() {
             @Override
             public void executeCallback(int index) {
+                Log.d(TAG,"recieved from geofence cancel point index" + index);
+
                 hints.get(index).setState(Hint.State.REVEALED);
                 mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
                         hints.get(index).getTitle(), hints.get(index).getState());
+
+
+                // Mark the current hint as solved
 
                 //TODO prepare for next hint
 

@@ -270,6 +270,7 @@ public class GeofenceManager implements
            Log.d(TAG,"location removed by id");
            if (_cancelCallback != null){
                try {
+                   Log.d(TAG,"executing callback");
                    _cancelCallback.executeCallback(_pointIndex);
                } catch (Exception e) {
                    e.printStackTrace();
