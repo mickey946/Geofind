@@ -181,6 +181,8 @@ public class CreateHintActivity extends ActionBarActivity {
             if (resultCode == RESULT_OK) { // The user picked a point
                 Bundle bundle = data.getExtras();
                 hintPoint = (Point) bundle.getSerializable(getString(R.string.intent_hint_extra));
+                Map.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 new StaticMap(Map, progressBar).execute(
                         new StaticMap.StaticMapDescriptor(hintPoint.toLatLng(), mapWidth, mapHeight));
             }
