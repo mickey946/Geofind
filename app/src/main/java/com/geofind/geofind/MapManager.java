@@ -408,7 +408,7 @@ public class MapManager implements LocationListener {
         l.setLatitude(position.latitude);
         l.setLongitude(position.longitude);
 
-        onLocationChanged(l);
+        onLocationChangedAnchored(l);
     }
 
     public Point get_selectedPoint() {
