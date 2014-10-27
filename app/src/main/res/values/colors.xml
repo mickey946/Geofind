@@ -7,5 +7,5 @@
     <color name="colorPrimary">#0a8f08</color>
     <color name="colorPrimaryDark">#056f00</color>
     <color name="themeAccent">#00b0ff</color>
-    <color name="tab_selected_strip">@color/themeAccent</color>
+    <color name="tab_selected_strip">@android:color/white</color>
 </resources>
