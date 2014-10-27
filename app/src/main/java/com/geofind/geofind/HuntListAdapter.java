@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -92,9 +93,10 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
                         mapWidth = viewHolder.imgMapPreview.getWidth();
 
                         // should be called when imgMapPreview exists
-                        new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor(
-                                hunts.get(i).getCenterPosition(),
-                                hunts.get(i).getRadius(), mapWidth, mapHeight));
+                        new StaticMap(viewHolder.imgMapPreview, viewHolder.progressBar)
+                                .execute(new StaticMap.StaticMapDescriptor(
+                                        hunts.get(i).getCenterPosition(),
+                                        hunts.get(i).getRadius(), mapWidth, mapHeight));
 
                     }
                 });
@@ -102,9 +104,10 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         } else {
             // The recycler view doesn't create new tiles, so we reuse previous tile and assume
             // the same dimension for image view
-            new StaticMap(viewHolder.imgMapPreview).execute(new StaticMap.StaticMapDescriptor(
-                    hunts.get(i).getCenterPosition(),
-                    hunts.get(i).getRadius(), mapWidth, mapHeight));
+            new StaticMap(viewHolder.imgMapPreview, viewHolder.progressBar)
+                    .execute(new StaticMap.StaticMapDescriptor(
+                            hunts.get(i).getCenterPosition(),
+                            hunts.get(i).getRadius(), mapWidth, mapHeight));
         }
 
         // set a listener to the button to start the hunt
@@ -137,6 +140,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         public TextView textViewDescription;
         public Button startHuntButton;
         public ImageView imgMapPreview;
+        public ProgressBar progressBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -152,6 +156,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
             startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
             imgMapPreview = (ImageView) itemView.findViewById(R.id.item_hunt_list_map_preview);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         }
 
         @Override

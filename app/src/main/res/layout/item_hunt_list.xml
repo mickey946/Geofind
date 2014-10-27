@@ -63,12 +63,25 @@
                 </LinearLayout>
             </FrameLayout>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_hunt_list_map_height">
 
-            <ImageView
-                android:id="@+id/item_hunt_list_map_preview"
-                android:layout_width="fill_parent"
-                android:layout_height="@dimen/item_hunt_list_map_height"
-                android:scaleType="centerCrop" />
+                <ImageView
+                    android:id="@+id/item_hunt_list_map_preview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="invisible" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
 
             <Button
                 style="@android:style/Widget.Holo.Button.Borderless"

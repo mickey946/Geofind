@@ -45,6 +45,59 @@
 
             <LinearLayout
                 style="@style/card_view"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    style="@style/card_view"
+                    card_view:cardCornerRadius="@dimen/cardview_default_radius">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            style="@style/item_list_hunt_inner_layout"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/hunt_details_title"
+                                android:text="@string/create_hint_pick_point_title" />
+
+                            <TextView
+                                style="@style/hunt_details"
+                                android:text="@string/create_hint_pick_point_description" />
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/hunt_details_map_height">
+
+                            <ImageView
+                                android:id="@+id/create_hint_map"
+                                android:layout_width="fill_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:onClick="openPointPicker"
+                                android:visibility="invisible" />
+
+                            <ProgressBar
+                                android:id="@+id/progress_bar"
+                                style="?android:attr/progressBarStyleLarge"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/card_view"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:orientation="vertical">
@@ -74,45 +127,6 @@
                             android:minHeight="@dimen/hunt_finish_review_text_view_min_height"
                             android:hint="@string/create_hint_hint_text_hint" />
 
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-            </LinearLayout>
-
-            <LinearLayout
-                style="@style/card_view"
-                android:orientation="vertical">
-
-                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                    style="@style/card_view"
-                    card_view:cardCornerRadius="@dimen/cardview_default_radius">
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            style="@style/item_list_hunt_inner_layout"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/hunt_details_title"
-                                android:text="@string/create_hint_pick_point_title" />
-
-                            <TextView
-                                style="@style/hunt_details"
-                                android:text="@string/create_hint_pick_point_description" />
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:id="@+id/create_hint_map"
-                            android:layout_width="fill_parent"
-                            android:layout_height="@dimen/hunt_details_map_height"
-                            android:src="@drawable/sample_map"
-                            android:scaleType="centerCrop"
-                            android:onClick="openPointPicker" />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>

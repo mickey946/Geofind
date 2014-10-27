@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ public class CreateHintActivity extends ActionBarActivity {
     private Hint hint = null;
     private Integer index = null;
     private ImageView Map;
+    private ProgressBar progressBar;
     private int mapWidth = -1, mapHeight = -1;
     private Point hintPoint;
 
@@ -63,9 +65,10 @@ public class CreateHintActivity extends ActionBarActivity {
             }
         }
 
-
+        // load the picked point map
         Map = (ImageView) findViewById(R.id.create_hint_map);
-
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        final StaticMap staticMap = new StaticMap(Map, progressBar);
         ViewTreeObserver vto = Map.getViewTreeObserver();
         if (mapHeight == -1 || mapWidth == -1) {
             if (vto.isAlive()) {
@@ -76,10 +79,10 @@ public class CreateHintActivity extends ActionBarActivity {
                         mapHeight = Map.getHeight();
                         mapWidth = Map.getWidth();
                         if (hint == null) {
-                            new StaticMap(Map).execute(
+                            staticMap.execute(
                                     new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
                         } else {
-                            new StaticMap(Map).execute(
+                            staticMap.execute(
                                     new StaticMap.StaticMapDescriptor(
                                             hint.getLocation().toLatLng(), mapWidth, mapHeight));
                         }
@@ -88,11 +91,9 @@ public class CreateHintActivity extends ActionBarActivity {
                 });
             }
         } else {
-            new StaticMap(Map).execute(
+            staticMap.execute(
                     new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
         }
-
-
     }
 
 
@@ -180,7 +181,7 @@ public class CreateHintActivity extends ActionBarActivity {
             if (resultCode == RESULT_OK) { // The user picked a point
                 Bundle bundle = data.getExtras();
                 hintPoint = (Point) bundle.getSerializable(getString(R.string.intent_hint_extra));
-                new StaticMap(Map).execute(
+                new StaticMap(Map, progressBar).execute(
                         new StaticMap.StaticMapDescriptor(hintPoint.toLatLng(), mapWidth, mapHeight));
             }
         } else if (requestCode == getResources().getInteger(R.integer.intent_picture_result)) {

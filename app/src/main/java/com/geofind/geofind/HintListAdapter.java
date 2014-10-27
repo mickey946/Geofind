@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -131,7 +131,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
                         mapWidth = viewHolder.imgMapHint.getWidth();
 
                         // should be called when imgMapPreview exists
-                        new StaticMap(viewHolder.imgMapHint).execute(
+                        new StaticMap(viewHolder.imgMapHint, viewHolder.progressBar).execute(
                                 new StaticMap.StaticMapDescriptor(
                                         hints.get(i).getLocation().toLatLng(), mapWidth, mapHeight));
 
@@ -141,9 +141,10 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         } else {
             // The recycler view doesn't create new tiles, so we reuse previous tile and assume
             // the same dimension for image view
-            new StaticMap(viewHolder.imgMapHint).execute(new StaticMap.StaticMapDescriptor(
-                    hints.get(i).getLocation().toLatLng(),
-                    mapWidth, mapHeight));
+            new StaticMap(viewHolder.imgMapHint, viewHolder.progressBar)
+                    .execute(new StaticMap.StaticMapDescriptor(
+                            hints.get(i).getLocation().toLatLng(),
+                            mapWidth, mapHeight));
         }
 
     }
@@ -160,6 +161,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
         public TextView hintTitleTextView;
         public TextView hintTextTextView;
         public ImageView imgMapHint;
+        public ProgressBar progressBar;
         public Context context;
         public LinearLayout cardView;
         // on long click, show the contextual action bar
@@ -233,6 +235,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             hintTitleTextView = (TextView) itemView.findViewById(R.id.item_hint_list_title);
             hintTextTextView = (TextView) itemView.findViewById(R.id.item_hint_list_text);
             imgMapHint = (ImageView) itemView.findViewById(R.id.item_hint_list_map);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         }
 
         /**
