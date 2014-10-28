@@ -1,6 +1,7 @@
 package com.geofind.geofind;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -29,6 +30,10 @@ import java.util.List;
 
 public class CreateHintActivity extends ActionBarActivity {
 
+    private static final String PREF_CREATE_HINT_POINT_DISMISS = "PREF_CREATE_HINT_POINT_DISMISS";
+
+    private SharedPreferences sharedPreferences;
+
     private TextView hintTextTextView;
     private Hint hint = null;
     private Integer index = null;
@@ -45,6 +50,14 @@ public class CreateHintActivity extends ActionBarActivity {
         // show the back button on the action bar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // get the preferences of the activity
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        // check and hide information cards if needed
+        if (isPointInfoDismissed()) {
+            hidePointInfo();
+        }
 
         hintTextTextView = (TextView) findViewById(R.id.create_hint_description);
 
@@ -252,5 +265,35 @@ public class CreateHintActivity extends ActionBarActivity {
         } else {
             return uri.getPath();
         }
+    }
+
+    /**
+     * Check if the card view was set to be hidden (dismissed) before.
+     *
+     * @return whether the card was dismissed in the past.
+     */
+    private boolean isPointInfoDismissed() {
+        return sharedPreferences.getBoolean(PREF_CREATE_HINT_POINT_DISMISS, false);
+    }
+
+    /**
+     * Hide point info card view.
+     */
+    private void hidePointInfo() {
+        View infoCard = findViewById(R.id.create_hint_point_info);
+        infoCard.setVisibility(View.GONE);
+    }
+
+    /**
+     * Dismiss the Point card view info and save so it won't show again.
+     *
+     * @param view The current view.
+     */
+    public void dismissPointInfo(View view) {
+        hidePointInfo();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PREF_CREATE_HINT_POINT_DISMISS, true);
+        editor.apply();
     }
 }

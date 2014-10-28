@@ -57,7 +57,7 @@
     <string name="create_hunt_create_points">Create Points</string>
     <string name="title_activity_create_hint">Create a Point</string>
     <string name="create_hint_title">Adding a Point</string>
-    <string name="create_hint_details">In this section you are required to edit a point in your hunt. Each point must have a title, hint text and of course a real world coordinate. Additionally, you can add to your point a picture, sound or video hints.</string>
+    <string name="create_hint_details">In this section you are required to edit a point in your hunt. Each point must have a hint text and a real world coordinate. Additionally, you may add to your point a picture, sound or video hints. Note: The hint should not be too trivial for the player to solve.</string>
     <string name="create_hint_hint_text_hint">Hint text</string>
     <string name="create_hint_pick_point_title">Pick a Point</string>
     <string name="create_hint_pick_point_description">Click on the map to choose a point.</string>
@@ -89,6 +89,7 @@
     <string name="settings_distance_units_default">Automatic</string>
     <string name="hunt_create_edit_points_text">You have added %d points to your hunt.</string>
     <string name="create_hint_invalid_input">A hunt must have a title, a description and at least 2 points!</string>
+    <string name="info_card_dismiss">Got it!</string>
     <string-array name="settings_distance_units">
         <item>@string/settings_distance_units_default</item>
         <item>Kilometers</item>

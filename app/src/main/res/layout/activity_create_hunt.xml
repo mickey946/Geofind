@@ -54,7 +54,7 @@
                         <Button
                             style="@style/bottom_card_button"
                             android:onClick="dismissTitleDescriptionInfo"
-                            android:text="Got it!" />
+                            android:text="@string/info_card_dismiss" />
 
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

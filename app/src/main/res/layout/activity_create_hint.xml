@@ -20,24 +20,40 @@
 
             <LinearLayout
                 style="@style/card_view"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/create_hint_point_info">
 
                 <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     style="@style/card_view"
                     card_view:cardCornerRadius="@dimen/cardview_default_radius">
 
                     <LinearLayout
-                        style="@style/item_list_hunt_inner_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <TextView
-                            style="@style/hunt_details_title"
-                            android:text="@string/create_hint_title" />
+                        <LinearLayout
+                            style="@style/item_list_hunt_inner_layout"
+                            android:orientation="vertical">
 
-                        <TextView
-                            style="@style/hunt_details"
-                            android:text="@string/create_hint_details" />
+                            <TextView
+                                style="@style/hunt_details_title"
+                                android:text="@string/create_hint_title" />
 
+                            <TextView
+                                style="@style/hunt_details"
+                                android:text="@string/create_hint_details" />
+
+                        </LinearLayout>
+
+                        <View style="@style/bottom_card_button_separator" />
+
+                        <Button
+                            style="@style/bottom_card_button"
+                            android:onClick="dismissPointInfo"
+                            android:text="@string/info_card_dismiss" />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
