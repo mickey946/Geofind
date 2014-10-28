@@ -224,7 +224,8 @@ public class MapManager implements LocationListener {
 
                 markerOptions.position(latLng);
                 markerOptions.title("lat: " + latLng.latitude + " lng: " + latLng.longitude);
-                _selectedPoint = new Point(latLng);
+                _selectedPoint = new Point();
+                _selectedPoint.initialize(latLng.latitude, latLng.longitude);
 
                 if (onlyOne) {
                     _mMap.clear();
@@ -250,7 +251,8 @@ public class MapManager implements LocationListener {
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
         _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
 
-        _selectedPoint = new Point(location);
+        _selectedPoint = new Point();
+        _selectedPoint.initialize(location.latitude, location.longitude);
     }
 
 
