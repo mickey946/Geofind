@@ -1,5 +1,6 @@
 package com.geofind.geofind;
 
+import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
 import java.io.Serializable;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 /**
  * Created by mickey on 04/10/14.
  */
+@ParseClassName("Hint")
 public class Hint extends ParseObject implements Serializable {
 
 
@@ -14,44 +16,33 @@ public class Hint extends ParseObject implements Serializable {
         UNREVEALED, REVEALED, SOLVED
     }
 
-    private String title;
-    private String text;
-    private State state;
-    private Point location;
-
     // TODO add picture, recording and video (ParseFile)
 
-    public Hint(String title, String text, Point location) {
-        this.title = title;
-        this.text = text;
-        this.state = State.UNREVEALED; // a default state for a hint
-        this.location = location;
+    /**
+     * Zero arguments constructor. required by Parse.
+     */
+    public Hint() {
     }
 
-    public Hint(String title, String text, Point location, State state) {
-        this.title = title;
-        this.text = text;
-        this.location = location;
-        this.state = state;
+    public void initialize(String text, Point location) {
+        put("text", text);
+        put("location", location);
+        put("state", State.UNREVEALED);
     }
 
     public String getText() {
-        return text;
-    }
-
-    public String getTitle() {
-        return title;
+        return getString("text");
     }
 
     public Point getLocation() {
-        return location;
+        return (Point) get("location");
     }
 
     public State getState() {
-        return state;
+        return (State) get("state");
     }
 
     public void setState(State state) {
-        this.state = state;
+        put("state", state);
     }
 }

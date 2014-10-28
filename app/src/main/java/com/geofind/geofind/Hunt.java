@@ -1,132 +1,58 @@
 package com.geofind.geofind;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseClassName;
+import com.parse.ParseObject;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by mickey on 01/10/14.
  */
-public class Hunt implements Serializable {
+@ParseClassName("Hunt")
+public class Hunt extends ParseObject implements Serializable {
 
     /**
-     * Title of the hunt.
+     * Zero arg constructor. required by Parse.
      */
-    private String title;
-
-    /**
-     * Rating of the hunt. Must be between 0 and 5.
-     */
-    private Float rating;
-
-    /**
-     * Total distance of the hunt. Calculated by summing the aerial distance between each two
-     * successive points.
-     */
-    private Float totalDistance;
-
-    /**
-     * Description of the hunt.
-     */
-    private String description;
-
-    /**
-     * The center point of the hunt.
-     */
-    private SerializableLatLng firstPoint; // TODO discuss if we need to change to Point
-
-    /**
-     * The radius in meters of the hunt.
-     */
-    private Float radius;
-
-    /**
-     * The hints of this hunt.
-     */
-    private ArrayList<Hint> hints;
-
-    /**
-     * The creator Google user ID.
-     */
-    private String creatorID; // TODO change to the appropriate type
-
-    /**
-     * Constructor for HuntListActivity.
-     */
-    public Hunt(String title, float rating, float totalDistance, String description,
-                LatLng firstPoint, float radius) {
-        this.title = title;
-        this.rating = rating;
-        this.totalDistance = totalDistance;
-        this.description = description;
-        this.firstPoint = new SerializableLatLng(firstPoint);
-        this.radius = radius;
-
-        // TODO discuss if we need to add the creator name in the preview
+    public Hunt() {
     }
 
-    /**
-     * Constructor for CreateHuntActivity.
-     */
-    public Hunt(String title, String description, ArrayList<Hint> hints, String creatorID) {
-        this.title = title;
-        this.description = description;
-        this.hints = hints;
-        this.creatorID = creatorID;
+    public void initialize(String title, String description, String creatorID, ArrayList<Hint> hints) {
+        put("title", title);
+        put("description", description);
+        put("creatorID", creatorID);
+        put("hints", hints);
+        put("rating", 0);
+        put("firstPoint", hints.get(0).getLocation());
+        put("comments", new ArrayList<Comment>());
+        //TODO radius, totalDistance
 
-        // TODO calculate total distance and radius
-        // TODO assign first point from the Hints list
     }
 
     public String getTitle() {
-        return title;
+        return getString("title");
     }
 
     public Float getRating() {
-        return rating;
+        return (Float) get("rating");
     }
 
     public String getDescription() {
-        return description;
+        return getString("description");
     }
 
     public Float getTotalDistance() {
-        return totalDistance;
+        return (Float) get("totalDistance");
     }
 
     public LatLng getCenterPosition() {
-        return firstPoint.getLocation();
+        return ((Point) get("firstPoint")).toLatLng();
     }
 
     public Float getRadius() {
-        return radius;
+        return (Float) get("radius");
     }
 
-    public class SerializableLatLng implements Serializable {
-        // mark it transient so defaultReadObject()/defaultWriteObject() ignore it
-        private transient com.google.android.gms.maps.model.LatLng mLocation;
-
-        public SerializableLatLng(LatLng location) {
-            mLocation = location;
-        }
-
-        public LatLng getLocation() {
-            return mLocation;
-        }
-
-        private void writeObject(ObjectOutputStream out) throws IOException {
-            out.defaultWriteObject();
-            out.writeDouble(mLocation.latitude);
-            out.writeDouble(mLocation.longitude);
-        }
-
-        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-            in.defaultReadObject();
-            mLocation = new LatLng(in.readDouble(), in.readDouble());
-        }
-    }
 }
