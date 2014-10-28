@@ -74,7 +74,7 @@
         <CheckBoxPreference
             android:key="pref_crashlog"
             android:title="Crashlogs"
-            android:summary="Sent anonymous crash reports of this app."
+            android:summary="Send anonymous crash reports of this app."
             android:defaultValue="true" />
 
     </PreferenceCategory>

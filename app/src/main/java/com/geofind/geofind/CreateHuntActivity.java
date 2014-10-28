@@ -1,6 +1,9 @@
 package com.geofind.geofind;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -9,11 +12,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 
 public class CreateHuntActivity extends ActionBarActivity {
+
+    private static final String PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS =
+            "PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS";
+
+    private SharedPreferences sharedPreferences;
 
     ArrayList<Hint> hints;
 
@@ -25,6 +34,14 @@ public class CreateHuntActivity extends ActionBarActivity {
         // show the back button on the action bar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // get the preferences of the activity
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        // check and hide information cards if needed
+        if (isTitleDescriptionInfoDismissed()) {
+            hideTitleDescriptionInfo();
+        }
     }
 
 
@@ -48,14 +65,18 @@ public class CreateHuntActivity extends ActionBarActivity {
 
                 String huntTitle = huntTitleTextView.getText().toString(),
                         huntDescription = huntDescriptionTextView.getText().toString();
-                String creatorID = "creatorID"; // TODO change to appropriate type
 
-                Hunt hunt = new Hunt(huntTitle, huntDescription, hints, creatorID);
+                if (isInputInvalid(huntTitle, huntDescription)) {
+                    Toast.makeText(this, getString(R.string.create_hint_invalid_input),
+                            Toast.LENGTH_LONG).show();
+                    return true;
+                }
 
-                // TODO save hunt to parse
+                warnUserBeforeSubmitting(huntTitle, huntDescription);
 
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -79,12 +100,101 @@ public class CreateHuntActivity extends ActionBarActivity {
                     hints = (ArrayList<Hint>)
                             bundle.getSerializable(getString(R.string.intent_hints_extra));
                     if (hints != null) {
+                        TextView createHintsText = (TextView)
+                                findViewById(R.id.create_hunt_add_points_description_text);
+                        createHintsText.setText(String.format(
+                                getString(R.string.hunt_create_edit_points_text), hints.size()));
+
                         Button createHintsButton = (Button)
                                 findViewById(R.id.create_hunt_create_points_button);
-                        createHintsButton.setText(getString(R.string.hunt_create_edit_button));
+                        createHintsButton.setText(
+                                getString(R.string.hunt_create_edit_points_button));
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Check if the card view was set to be hidden (dismissed) before.
+     *
+     * @return whether the card was dismissed in the past.
+     */
+    private boolean isTitleDescriptionInfoDismissed() {
+        return sharedPreferences.getBoolean(PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS, false);
+    }
+
+    /**
+     * Hide title & description info card view.
+     */
+    private void hideTitleDescriptionInfo() {
+        View infoCard = findViewById(R.id.hunt_title_details_info);
+        infoCard.setVisibility(View.GONE);
+    }
+
+    /**
+     * Hide the title & description info card view and save it so it won't show again.
+     *
+     * @param view The current view.
+     */
+    public void dismissTitleDescriptionInfo(View view) {
+        hideTitleDescriptionInfo();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS, true);
+        editor.apply();
+    }
+
+    public boolean isInputInvalid(String huntTitle, String huntDescription) {
+        return hints == null || huntTitle.trim().equals("") || huntDescription.trim().equals("");
+    }
+
+    /**
+     * Display a warning to the user before submitting the hunt. If the user is sure, submit the
+     * hunt.
+     */
+    public void warnUserBeforeSubmitting(final String huntTitle, final String huntDetails) {
+        // instantiate an AlertDialog.Builder with its constructor
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // chain together various setter methods to set the dialog characteristics
+        builder.setMessage(getString(R.string.hunt_create_check_before_description))
+                .setTitle(getString(R.string.hunt_create_check_before_title));
+
+        // set icon
+        builder.setIcon(getResources().getDrawable(R.drawable.ic_warning_grey600_48dp));
+
+        // set positive button
+        builder.setPositiveButton(getString(R.string.hint_list_data_loss_warning_positive),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                        submitHunt(huntTitle, huntDetails); // save the changes
+                    }
+                });
+
+        // set negative button
+        builder.setNegativeButton(getString(R.string.hint_list_data_loss_warning_negative),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+        // get the AlertDialog from create()
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+    }
+
+    /**
+     * Submit the Hunt and save it in the database.
+     */
+    public void submitHunt(String huntTitle, String huntDescription) {
+        String creatorID = "creatorID"; // TODO change to appropriate type
+
+        Hunt hunt = new Hunt(huntTitle, huntDescription, hints, creatorID);
+
+        // TODO save hunt to parse
     }
 }

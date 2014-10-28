@@ -46,11 +46,11 @@
     <string name="create_hunt_description">In this section, you are required to fill in your hunt\'s title and text. The title and the text are essential, as they would appear first in your hunt\'s preview on other users search. \nUse proper language and try not to give any clues on the points of the hunt in the text.</string>
     <string name="create_hunt_description_hint">Description</string>
     <string name="create_hunt_title_hint">Title</string>
-    <string name="create_hunt_add_points_title">Add Points to your Hunt</string>
-    <string name="create_hunt_add_points_description">In this section you are required to create at least two points for your hunt.\nEach point has a hint which should lead the user to it - in one way or another (but not direct).\nYou would be prompted to choose a point on a map and assign it a clue (a text, picture, sound or video). To begin, hit the button below.</string>
+    <string name="create_hunt_add_points_title">Points of your Hunt</string>
+    <string name="create_hunt_add_points_description">Click on the button below to add points to your hunt.</string>
     <string name="action_submit">Submit hunt</string>
-    <string name="hunt_create_check_before_title">Check before Submitting!</string>
-    <string name="hunt_create_check_before_description">Before submitting your hunt, check your title, text and points thoroughly, as you WILL NOT be able to edit them later!\nYou can click on the button above to edit or add points.\nTo finally submit, hit the upper right button.</string>
+    <string name="hunt_create_check_before_title">Submit hunt?</string>
+    <string name="hunt_create_check_before_description">Before submitting your hunt, check your title, text and points thoroughly, as you will not be able to edit them later!</string>
     <string name="action_add_points">Submit points</string>
     <string name="hint_list_empty">No points yet. Click on the \'plus\' button to add a point.</string>
     <string name="hint_list_add_point">Add a point</string>
@@ -70,7 +70,7 @@
     <string name="create_hint_file_manager_error">No file manager available.</string>
     <string name="create_hint_kitkat_file_error">Error loading file.</string>
     <string name="hint_list_not_enough_points_error">A hunt must have at least 2 points!</string>
-    <string name="hunt_create_edit_button">Edit your Points</string>
+    <string name="hunt_create_edit_points_button">Edit your Points</string>
     <string name="hint_list_data_loss_warning">Your changes will be lost! Do you want to save them?</string>
     <string name="hint_list_data_loss_warning_title">Unsaved Changes</string>
     <string name="hint_list_data_loss_warning_positive">OK</string>
@@ -87,6 +87,8 @@
     <string name="hunt_activity_hint_number_title">Point #</string>
     <string name="title_activity_settings">@string/action_settings</string>
     <string name="settings_distance_units_default">Automatic</string>
+    <string name="hunt_create_edit_points_text">You have added %d points to your hunt.</string>
+    <string name="create_hint_invalid_input">A hunt must have a title, a description and at least 2 points!</string>
     <string-array name="settings_distance_units">
         <item>@string/settings_distance_units_default</item>
         <item>Kilometers</item>
