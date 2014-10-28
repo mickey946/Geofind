@@ -71,12 +71,12 @@
                                 android:text="@string/hunt_details_map_description" />
                         </LinearLayout>
 
-                        <fragment
-                            xmlns:android="http://schemas.android.com/apk/res/android"
+                        <ImageView
                             android:id="@+id/hunt_details_map_preview"
                             android:layout_width="fill_parent"
                             android:layout_height="@dimen/hunt_details_map_height"
-                            android:name="com.google.android.gms.maps.MapFragment"/>
+                            android:src="@drawable/sample_map"
+                            android:scaleType="centerCrop" />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
