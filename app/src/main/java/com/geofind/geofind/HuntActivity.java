@@ -301,8 +301,10 @@ public class HuntActivity extends ActionBarActivity {
                 Log.d(TAG,"recieved from geofence cancel point index" + index);
 
                 hints.get(index).setState(Hint.State.REVEALED);
-                mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
+                Point hintPoint = hints.get(index).getLocation();
+                mapManager.setMarker(hintPoint.toLatLng(),
                         hints.get(index).getTitle(), hints.get(index).getState());
+                mapManager.onLocationChanged(hintPoint.toLocation());
 
 
                 // Mark the current hint as solved

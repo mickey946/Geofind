@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 /**
@@ -107,7 +108,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                     view.findViewById(R.id.item_hint_description);
             hintDescriptionTextView.setText(hint.getText());
 
-            Button revealButton = (Button) view.findViewById(R.id.item_hint_reveal_button);
+            final Button revealButton = (Button) view.findViewById(R.id.item_hint_reveal_button);
             Drawable drawable = null;
             switch (hint.getState()) {
                 case REVEALED:
@@ -133,6 +134,12 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                 public void onClick(View v) {
                     Log.i(TAG, "using geofence valid:" + (_geofenceManager == null));
                     _geofenceManager.removeGeofences(hint.getLocation());
+                    Drawable drawable1 = getResources().getDrawable(R.drawable.ic_clear_grey600_24dp);
+                    revealButton.setText(getResources().getText(R.string.item_hint_revealed));
+                    revealButton.setEnabled(false);
+                    revealButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable1, null, null);
+                    revealButton.invalidate();
+
                 }
             });
 
