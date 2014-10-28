@@ -12,4 +12,5 @@
     <integer name="intent_hints_result">4</integer>
     <integer name="intent_hint_edit_extra">5</integer>
     <string name="hint_list_retained_fragment">HINTS</string>
+    <string name="intent_hint_point_extra">HINT_POINT</string>
 </resources>

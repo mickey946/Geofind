@@ -53,10 +53,8 @@
 
                     <TextView
                         android:id="@+id/item_hunt_list_description"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/hunt_details"
                         android:paddingTop="@dimen/item_hunt_list_description_top_padding"
-                        android:textColor="@android:color/darker_gray"
                         android:singleLine="true"
                         android:text="Description" />
 

@@ -8,4 +8,5 @@
     <color name="colorPrimaryDark">#056f00</color>
     <color name="themeAccent">#00b0ff</color>
     <color name="tab_selected_strip">@android:color/white</color>
+    <color name="text_details">#616161</color>
 </resources>
