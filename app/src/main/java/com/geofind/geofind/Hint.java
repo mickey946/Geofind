@@ -1,11 +1,13 @@
 package com.geofind.geofind;
 
+import com.parse.ParseObject;
+
 import java.io.Serializable;
 
 /**
  * Created by mickey on 04/10/14.
  */
-public class Hint implements Serializable {
+public class Hint extends ParseObject implements Serializable {
 
 
     public enum State {
