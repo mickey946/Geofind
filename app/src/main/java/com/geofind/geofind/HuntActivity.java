@@ -287,11 +287,14 @@ public class HuntActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent intent;
         switch (id) {
             case R.id.action_settings:
-                return true;
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.action_temp_finish:
-                Intent intent = new Intent(this, HuntFinishActivity.class);
+                intent = new Intent(this, HuntFinishActivity.class);
 
                 // TODO pass arguments for statistics
                 intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
@@ -299,9 +302,9 @@ public class HuntActivity extends ActionBarActivity {
                 startActivity(intent);
                 finish();
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

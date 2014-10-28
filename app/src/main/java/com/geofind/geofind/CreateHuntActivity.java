@@ -41,19 +41,20 @@ public class CreateHuntActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_submit_hunt) {
-            TextView huntTitleTextView = (TextView) findViewById(R.id.create_hunt_title);
-            TextView huntDescriptionTextView = (TextView) findViewById(R.id.create_hunt_description);
+        switch (id) {
+            case R.id.action_submit_hunt:
+                TextView huntTitleTextView = (TextView) findViewById(R.id.create_hunt_title);
+                TextView huntDescriptionTextView = (TextView) findViewById(R.id.create_hunt_description);
 
-            String huntTitle = huntTitleTextView.getText().toString(),
-                    huntDescription = huntDescriptionTextView.getText().toString();
-            String creatorID = "creatorID"; // TODO change to appropriate type
+                String huntTitle = huntTitleTextView.getText().toString(),
+                        huntDescription = huntDescriptionTextView.getText().toString();
+                String creatorID = "creatorID"; // TODO change to appropriate type
 
-            Hunt hunt = new Hunt(huntTitle, huntDescription, hints, creatorID);
+                Hunt hunt = new Hunt(huntTitle, huntDescription, hints, creatorID);
 
-            // TODO save hunt to parse
+                // TODO save hunt to parse
 
-            return true;
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

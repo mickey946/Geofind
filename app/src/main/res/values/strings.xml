@@ -85,5 +85,12 @@
     <string name="hunt_list_pager_ongoing_hunts_title">Ongoing Hunts</string>
     <string name="hunt_list_pager_finished_hunts_title">Finished Hunts</string>
     <string name="hunt_activity_hint_number_title">Point #</string>
+    <string name="title_activity_settings">@string/action_settings</string>
+    <string name="settings_distance_units_default">Automatic</string>
+    <string-array name="settings_distance_units">
+        <item>@string/settings_distance_units_default</item>
+        <item>Kilometers</item>
+        <item>Miles</item>
+    </string-array>
 
 </resources>
