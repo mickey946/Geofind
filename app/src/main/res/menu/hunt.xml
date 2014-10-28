@@ -14,9 +14,4 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_temp_reveal"
-        android:title="Temporary reveal"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
 </menu>

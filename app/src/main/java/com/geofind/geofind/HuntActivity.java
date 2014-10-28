@@ -377,9 +377,6 @@ public class HuntActivity extends ActionBarActivity {
                 startActivity(intent);
                 finish();
                 return true;
-            case R.id.action_temp_reveal:
-                geofence.removeGeofences(hints.get(hints.size() - 1).getLocation());
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
