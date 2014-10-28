@@ -145,8 +145,9 @@ public class CreateHintActivity extends ActionBarActivity {
      */
     public void submitHint() {
         if (checkInput()) { // check if the user filled all required fields
-            Hint hint = new Hint(hintTitleTextView.getText().toString(),
-                    hintTextTextView.getText().toString(), hintPoint);
+
+            Hint hint = new Hint();
+            hint.initialize(hintTitleTextView.getText().toString(), hintTextTextView.getText().toString(), hintPoint);
 
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();

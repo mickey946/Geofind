@@ -24,10 +24,15 @@ public class Hint extends ParseObject implements Serializable {
     public Hint() {
     }
 
-    public void initialize(String text, Point location) {
+    public void initialize(String title, String text, Point location) {
+        put("title", title);
         put("text", text);
         put("location", location);
         put("state", State.UNREVEALED);
+    }
+
+    public String getTitle() {
+        return getString("title");
     }
 
     public String getText() {
