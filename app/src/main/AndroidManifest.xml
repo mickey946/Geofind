@@ -15,7 +15,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -96,8 +96,16 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:theme="@style/AppTheme"
-            android:label="@string/title_activity_settings" />
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HuntDetailsMapActivity"
+            android:label="@string/title_activity_hunt_details_map"
+            android:parentActivityName=".HuntDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.geofind.geofind.HuntDetailsActivity" />
+        </activity>
     </application>
 
     <!-- For reading pictures, audio, video -->

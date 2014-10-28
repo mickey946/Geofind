@@ -54,9 +54,10 @@ public class HuntDetailsActivity extends ActionBarActivity {
             _mapManager.setOnMapClick(new Callable() {
                 @Override
                 public Object call() throws Exception {
-                    Intent intent = new Intent(HuntDetailsActivity.this, HuntActivity.class);
+                    Intent intent = new Intent(HuntDetailsActivity.this,
+                            HuntDetailsMapActivity.class);
 
-                    // pass the hunt itself to the HuntDetailActivity
+                    // pass the hunt to the map
                     intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
 
                     startActivity(intent);

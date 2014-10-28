@@ -13,4 +13,6 @@
     <integer name="intent_hint_edit_extra">5</integer>
     <string name="hint_list_retained_fragment">HINTS</string>
     <string name="intent_hint_point_extra">HINT_POINT</string>
+    <string name="intent_hunt_point_extra">HUNT_POINT</string>
+    <string name="intent_hunt_radius_extra">HUNT_RADIUS</string>
 </resources>

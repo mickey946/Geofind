@@ -56,8 +56,7 @@
     <string name="hunt_create_check_before_description">Before submitting your hunt, check your
         title, text and points thoroughly, as you will not be able to edit them later!</string>
     <string name="action_add_points">Submit points</string>
-    <string name="hint_list_empty">No points yet. Click on the \'add\' button to add a point.
-    </string>
+    <string name="hint_list_empty">No points yet. Click on the \'add\' button to add a point.</string>
     <string name="hint_list_add_point">Add a point</string>
     <string name="create_hunt_create_points">Create Points</string>
     <string name="title_activity_create_hint">Create a Point</string>
@@ -71,8 +70,7 @@
     <string name="create_hint_pick_point_description">Click on the map to choose a point.</string>
     <string name="create_hint_add_hint">Add Point</string>
     <string name="create_hint_select_picture">Select a Picture</string>
-    <string name="create_hint_select_picture_details">Click on the button below to add a picture
-    </string>
+    <string name="create_hint_select_picture_details">Click on the button below to add a picture</string>
     <string name="create_hint_fields_error">One or more fields are missing or illegal!</string>
     <string name="title_activity_pick_point">Pick a Point</string>
     <string name="action_pick_point">Pick a Point</string>
@@ -80,8 +78,7 @@
     <string name="create_hint_kitkat_file_error">Error loading file.</string>
     <string name="hint_list_not_enough_points_error">A hunt must have at least 2 points!</string>
     <string name="hunt_create_edit_points_button">Edit your Points</string>
-    <string name="hint_list_data_loss_warning">Your changes will be lost! Do you want to save them?
-    </string>
+    <string name="hint_list_data_loss_warning">Your changes will be lost! Do you want to save them?</string>
     <string name="hint_list_data_loss_warning_title">Unsaved Changes</string>
     <string name="hint_list_data_loss_warning_positive">OK</string>
     <string name="hint_list_data_loss_warning_negative">Cancel</string>
@@ -101,10 +98,15 @@
     <string name="create_hint_invalid_input">A hunt must have a title, a description and at least 2
         points!</string>
     <string name="info_card_dismiss">Got it!</string>
+
     <string-array name="settings_distance_units">
         <item>@string/settings_distance_units_default</item>
         <item>Kilometers</item>
         <item>Miles</item>
     </string-array>
+
+    <string name="title_activity_hunt_details_map">@string/hunt_details_map</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="hunt_details_navigate_start_point">Navigate to Start Point</string>
 
 </resources>
