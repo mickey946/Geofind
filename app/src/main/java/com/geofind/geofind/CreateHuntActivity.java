@@ -49,7 +49,8 @@ public class CreateHuntActivity extends ActionBarActivity {
                     huntDescription = huntDescriptionTextView.getText().toString();
             String creatorID = "creatorID"; // TODO change to appropriate type
 
-            Hunt hunt = new Hunt(huntTitle, huntDescription, hints, creatorID);
+            Hunt hunt = new Hunt();
+            hunt.initialize(huntTitle, huntDescription, creatorID, hints);
 
             // TODO save hunt to parse
 
