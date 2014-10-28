@@ -111,13 +111,25 @@ public class HuntActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
+    }
+
+    @Override
+    protected void onPause() {
+        mapManager.stopTrackCurrentLocation();
+        super.onPause();
+    }
+
     /**
      * Retrieve the hunt from the intent that started the activity and set it up.
      */
     private void setUpHunt() {
 
         Intent intent = getIntent();
-        Log.d(TAG,"got intent is " + (intent == null? "null":intent.getType()));
+        Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(
                     getResources().getString(R.string.intent_hunt_extra));
@@ -238,7 +250,6 @@ public class HuntActivity extends ActionBarActivity {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
         mapManager = new MapManager(this, mapFragment);
-        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
         mapManager.setMarkerCallback(new IndexCallback() {
             /**
              * Slide to the point page at the given index.
@@ -270,9 +281,9 @@ public class HuntActivity extends ActionBarActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
-                int indx = intent.getIntExtra(getString(R.string.PointIndexExtra),-1);
-                Log.d(TAG,"recieved from geofence point index" + indx);
-                Log.d(TAG,"geofence point recieved: " + id);
+                int indx = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
+                Log.d(TAG, "recieved from geofence point index" + indx);
+                Log.d(TAG, "geofence point recieved: " + id);
 
                 // Mark the current hint as solved
 
@@ -367,7 +378,7 @@ public class HuntActivity extends ActionBarActivity {
                 finish();
                 return true;
             case R.id.action_temp_reveal:
-                geofence.removeGeofences(hints.get(hints.size()-1).getLocation());
+                geofence.removeGeofences(hints.get(hints.size() - 1).getLocation());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

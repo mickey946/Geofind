@@ -192,6 +192,12 @@ public class MapManager implements LocationListener {
 
     }
 
+    public  void stopTrackCurrentLocation(){
+        LocationManager locationManager = (LocationManager)
+                _activity.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.removeUpdates(this);
+    }
+
     // show or hide the location button
     public void showMyLocationButton(boolean show) {
         _mMap.getUiSettings().setMyLocationButtonEnabled(show);
