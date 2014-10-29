@@ -1,6 +1,7 @@
 package com.geofind.geofind;
 
 import android.location.Location;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -113,45 +114,35 @@ public abstract class GeoUtils {
         return perimeter;
     }
 
-    public GeoCircle getCircle(List<Point> points){
-        ArrayList<Location> _usedPoints = new ArrayList<Location>();
-        Pair<Location,Location> border = new Pair<Location, Location>(
-                points.get(0).toLocation(),
-                points.get(1).toLocation());
-        _usedPoints.add(points.get(0).toLocation());
-        _usedPoints.add(points.get(1).toLocation());
-        float radius = points.get(0).toLocation().distanceTo(points.get(1).toLocation());
-
-        for (int i = 2; i < points.size(); i++) {
-            Location p = points.get(i).toLocation();
-            for (int j = 0; j < i; j++) {
-                float r = p.distanceTo(_usedPoints.get(j));
-                if (r > radius){
-                    radius = r;
-                    border = new Pair<Location, Location>(p,_usedPoints.get(j));
-                }
-            }
+    /**
+     * Returns the air-path distance in meters between the
+     * point in the path.
+     * Distance is defined using  the WGS84 ellipsoid.
+     *
+     * @param points the points of the path
+     * @return the approximate distance in meters
+     */
+    public static float calcPathLength(List<Point> points){
+        float len = 0;
+        for (int i = 0; i < points.size() - 1; i++) {
+            len += points.get(i).toLocation().distanceTo(points.get(i).toLocation());
         }
 
-        double x = Math.sin(border.first.getLatitude()) * Math.cos(border.first.getLongitude()),
-               y = Math.sin(border.first.getLatitude()) * Math.sin(border.first.getLongitude()),
-                z = Math.cos(border.first.getLatitude());
-
-        double x2 = Math.sin(border.second.getLatitude()) * Math.cos(border.second.getLongitude()),
-                y2 = Math.sin(border.second.getLatitude()) * Math.sin(border.second.getLongitude()),
-                z2 = Math.cos(border.second.getLatitude());
-
-        double c_x = (x+x2)/2,
-               c_y = (y+y2)/2,
-               c_z = (z+z2)/2;
-
-        double lat = Math.atan2(c_z,Math.sqrt(c_x*c_x+c_y*c_y)),
-               lon = Math.atan2(-c_y,c_x);
-
-
-        return new GeoCircle(new Point(lat,lon), radius/2);
-
-
+        return len;
     }
 
+
+    /**
+     * Calculate the maximal distance from the starting point in meters.
+     * @param points the points of the path
+     * @return  the approximate distance in meters
+     */
+    public static float calcRadius(List<Point> points){
+        float len = 0;
+        Location startPoint = points.get(0).toLocation();
+        for (Point p : points){
+            len = Math.max(len,startPoint.distanceTo(p.toLocation()));
+        }
+        return  len;
+    }
 }
