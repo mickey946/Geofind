@@ -51,8 +51,22 @@ public class GooglePlusSignInActivity extends Activity implements
         mConnectionProgressDialog.setMessage("Signing in...");
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-
 //        ShareButton = (Button) findViewById(R.id.post_button);
+//        GetData = (Button)findViewById(R.id.get_data_button);
+//
+//        GetData.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//                if( mPlusClient.isConnected()){
+//                    Person currentPerson = mPlusClient.getCurrentPerson();
+//
+//                    Toast.makeText(getApplicationContext(), UserData.getEmail(),
+//                            Toast.LENGTH_LONG).show();
+//                }else{
+//                    Toast.makeText(getApplicationContext(), "Please Sign In", Toast.LENGTH_LONG).show();
+//                }}
+//        });
 //        ShareButton.setOnClickListener(new OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -102,8 +116,8 @@ public class GooglePlusSignInActivity extends Activity implements
     }
     @Override
     public void onConnected(Bundle connectionHint) {
-        String accountName = mPlusClient.getAccountName();
-        Toast.makeText(this, UserData.getName() + " is connected.", Toast.LENGTH_LONG).show();
+        UserData.init(mPlusClient.getCurrentPerson(), mPlusClient.getAccountName());
+        Toast.makeText(this, UserData.getEmail() + " is connected.", Toast.LENGTH_LONG).show();
         if (mPlusClient.isConnected()){
             Intent i = new Intent(GooglePlusSignInActivity.this, MainScreenActivity.class);
             startActivity(i);
