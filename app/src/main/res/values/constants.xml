@@ -11,8 +11,11 @@
     <integer name="intent_picture_result">3</integer>
     <integer name="intent_hints_result">4</integer>
     <integer name="intent_hint_edit_extra">5</integer>
+    <integer name="intent_video_result">6</integer>
+    <integer name="intent_audio_result">7</integer>
     <string name="hint_list_retained_fragment">HINTS</string>
     <string name="intent_hint_point_extra">HINT_POINT</string>
     <string name="intent_hunt_point_extra">HUNT_POINT</string>
     <string name="intent_hunt_radius_extra">HUNT_RADIUS</string>
+    <integer name="bitmap_compression_quality">70</integer>
 </resources>

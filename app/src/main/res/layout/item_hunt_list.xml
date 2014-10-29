@@ -82,14 +82,9 @@
             </RelativeLayout>
 
             <Button
-                style="@android:style/Widget.Holo.Button.Borderless"
+                style="@style/bottom_card_button_start"
                 android:id="@+id/item_hunt_list_start_hunt_button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start|center"
                 android:text="@string/item_hunt_list_start_hunt"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
                 android:drawableLeft="@drawable/ic_play_arrow_grey600_24dp" />
 
         </LinearLayout>

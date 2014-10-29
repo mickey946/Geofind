@@ -70,7 +70,9 @@
     <string name="create_hint_pick_point_description">Click on the map to choose a point.</string>
     <string name="create_hint_add_hint">Add Point</string>
     <string name="create_hint_select_picture">Select a Picture</string>
-    <string name="create_hint_select_picture_details">Click on the button below to add a picture</string>
+    <string name="create_hint_select_picture_details">Click on the button below to add a picture.</string>
+    <string name="create_hint_select_video_details">Click on the button below to add a video.</string>
+    <string name="create_hint_select_audio_details">Click on the button below to add an audio.</string>
     <string name="create_hint_fields_error">One or more fields are missing or illegal!</string>
     <string name="title_activity_pick_point">Pick a Point</string>
     <string name="action_pick_point">Pick a Point</string>
@@ -108,5 +110,7 @@
     <string name="title_activity_hunt_details_map">@string/hunt_details_map</string>
     <string name="hello_world">Hello world!</string>
     <string name="hunt_details_navigate_start_point">Navigate to Start Point</string>
+    <string name="create_hint_select_audio">Select an Audio</string>
+    <string name="create_hint_select_video">Select a Video</string>
 
 </resources>

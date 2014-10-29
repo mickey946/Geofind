@@ -52,8 +52,9 @@
                         <View style="@style/bottom_card_button_separator" />
 
                         <Button
-                            style="@style/bottom_card_button"
+                            style="@style/bottom_card_button_start"
                             android:onClick="dismissTitleDescriptionInfo"
+                            android:drawableLeft="@drawable/ic_done_grey600_24dp"
                             android:text="@string/info_card_dismiss" />
 
                     </LinearLayout>

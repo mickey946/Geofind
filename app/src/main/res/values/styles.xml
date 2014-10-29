@@ -121,6 +121,10 @@
         <item name="android:textSize">@dimen/item_hunt_list_start_hunt_text_size</item>
     </style>
 
+    <style name="bottom_card_button_start" parent="bottom_card_button">
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+
     <style name="bottom_card_button_separator">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">@dimen/sliding_up_panel_divider_width</item>
