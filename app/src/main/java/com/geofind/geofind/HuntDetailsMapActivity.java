@@ -14,8 +14,14 @@ import com.google.android.gms.maps.MapFragment;
 
 public class HuntDetailsMapActivity extends ActionBarActivity {
 
+    /**
+     * Control dynamic map
+     */
     private MapManager mapManager;
 
+    /**
+     * the displayed hunt
+     */
     Hunt hunt;
 
     @Override

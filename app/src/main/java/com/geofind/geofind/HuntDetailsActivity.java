@@ -13,17 +13,16 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.MapFragment;
-
-import java.util.concurrent.Callable;
-
 public class HuntDetailsActivity extends ActionBarActivity {
 
     /**
      * The hunt on which the activity displays the details.
      */
     private Hunt hunt;
-    //private MapManager _mapManager;
+
+    /**
+     * map image dimensions
+     */
     int mapWidth = -1, mapHeight = -1;
 
 
@@ -50,8 +49,6 @@ public class HuntDetailsActivity extends ActionBarActivity {
             // hunt description
             TextView descriptionTextView = (TextView) findViewById(R.id.hunt_details_description);
             descriptionTextView.setText(hunt.getDescription());
-
-
 
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.hunt_details_progress_bar);
 

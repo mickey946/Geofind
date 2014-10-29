@@ -1,8 +1,6 @@
 package com.geofind.geofind;
 
 import android.location.Location;
-import android.util.Log;
-import android.util.Pair;
 
 import com.google.android.gms.maps.model.LatLng;
 

@@ -21,7 +21,6 @@ import com.google.android.gms.location.LocationStatusCodes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Ilia Marin on 23/10/2014.
@@ -33,47 +32,73 @@ public class GeofenceManager implements
         LocationClient.OnRemoveGeofencesResultListener {
 
     /*
-     * Define a request code to send to Google Play services
-     * This code is returned in Activity.onActivityResult
-     */
+         * Define a request code to send to Google Play services
+         * This code is returned in Activity.onActivityResult
+         */
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "GeoFence";
+
+    // Geofence list
     List<Geofence> mCurrentGeofence;
+
+    // Host activity
     private Activity _activity;
+
     // Holds the location client
     private LocationClient mLocationClient;
+
+    // Geofonce request type
     private REQUEST_TYPE mRequestType;
+
+    // the intent that will be called when point approached
     private PendingIntent mTransitionPendingIntent;
+
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
+
+    // Storage of geofence data
     private SimpleGeofenceStore simpleGeofenceStore;
+
+    // Active point index
     private int _pointIndex;
+
+    // List of point IDs to be canceled
     private List<String> _deletePoint;
+
+    //Call back to inform the UI of canceling
     private IndexCallback _cancelCallback;
 
+    /**
+     * Contstructor and initializer
+     * @param activity the hosting activity
+     */
     public GeofenceManager(Activity activity) {
-        Log.d(TAG,"constructor");
         this._activity = activity;
         simpleGeofenceStore = new SimpleGeofenceStore(activity);
         mCurrentGeofence = new ArrayList<Geofence>();
         _pointIndex = -1;
-        // Start with the request flag set to false
         mInProgress = false;
         _cancelCallback = null;
         addGeofences();
     }
 
-    public void createGeofence(Point p, float radius, int pointIndex) {
+    /**
+     * Add new geofence
+     * @param point the destination point
+     * @param radius the radius of accepted arrival in meters
+     * @param pointIndex the index of the point in the route
+     */
+    public void createGeofence(Point point, float radius, int pointIndex) {
 
-        final String ID = composeID(p);
+        final String ID = composeID(point);
 
         Log.d(TAG,"create geofence " + ID + "with radius " + radius + "at" + pointIndex);
         _pointIndex = pointIndex;
         SimpleGeofence simpleGeofence = new SimpleGeofence(
                 ID,
-                p.get_latitude(),
-                p.get_longitude(),
+                point.get_latitude(),
+                point.get_longitude(),
                 radius,
                 Geofence.NEVER_EXPIRE,
                 Geofence.GEOFENCE_TRANSITION_ENTER);
@@ -85,10 +110,17 @@ public class GeofenceManager implements
     }
 
 
+    /**
+     * Set the callback to be initiated when the point be revealed
+     * @param cancelCallback
+     */
     public void setCancelCallback(IndexCallback cancelCallback) {
         this._cancelCallback = cancelCallback;
     }
 
+    /*
+     * Helping method for consistent id
+     */
     private String composeID(Point p) {
         return "GeoFind_" + p.get_latitude() + "_" + p.get_longitude();
     }
@@ -157,7 +189,6 @@ public class GeofenceManager implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d(TAG,"onConnect:" + mRequestType.toString());
         // Start with the request flag set to false
         mInProgress = false;
         switch (mRequestType) {
@@ -174,8 +205,10 @@ public class GeofenceManager implements
         }
     }
 
+    /**
+     * initialize geofence capability
+     */
     public void addGeofences() {
-        Log.d(TAG, "addGeofences");
         mRequestType = REQUEST_TYPE.ADD;
 
         if (!GooglePlayUtils.servicesConnected(_activity))
@@ -245,18 +278,10 @@ public class GeofenceManager implements
             // If Google Play services can provide an error dialog
             if (errorDialog != null) {
                 // Create a new DialogFragment for the error dialog
-                // Ilia
-
                 ErrorDialogFragment errorFragment =
                         ErrorDialogFragment.newInstance(errorDialog);
-
-//                ErrorDialogFragment errorFragment =
-//                        new ErrorDialogFragment();
-//                // Set the dialog in the DialogFragment
-//                errorFragment.setDialog(errorDialog);
                 // Show the error dialog in the DialogFragment
                 errorFragment.show(
-                        //getSupportFragmentManager(),
                         _activity.getFragmentManager(),
                         "Geofence Detection");
             }
@@ -264,13 +289,14 @@ public class GeofenceManager implements
         }
     }
 
+    /**
+     * Canceling geofence response by ID
+     */
     @Override
     public void onRemoveGeofencesByRequestIdsResult(int statusCode, String[] strings) {
        if (statusCode == LocationStatusCodes.SUCCESS){
-           Log.d(TAG,"location removed by id");
            if (_cancelCallback != null){
                try {
-                   Log.d(TAG,"executing callback");
                    _cancelCallback.executeCallback(_pointIndex);
                } catch (Exception e) {
                    e.printStackTrace();
@@ -290,10 +316,12 @@ public class GeofenceManager implements
         mLocationClient.disconnect();
     }
 
+    /**
+     * Canceling geofence response by intent
+     */
     @Override
     public void onRemoveGeofencesByPendingIntentResult(int statusCode, PendingIntent requestIntent) {
         if (statusCode == LocationStatusCodes.SUCCESS){
-            Log.d(TAG,"location removed by intent");
             if (_cancelCallback != null){
                 try {
                     _cancelCallback.executeCallback(_pointIndex);
@@ -406,18 +434,18 @@ public class GeofenceManager implements
     public class SimpleGeofenceStore {
         // Keys for flattened geofences stored in SharedPreferences
         public static final String KEY_LATITUDE =
-                "com.example.android.geofence.KEY_LATITUDE";
+                "com.geofind.geofind.geofence.KEY_LATITUDE";
         public static final String KEY_LONGITUDE =
-                "com.example.android.geofence.KEY_LONGITUDE";
+                "com.geofind.geofind.geofence.KEY_LONGITUDE";
         public static final String KEY_RADIUS =
-                "com.example.android.geofence.KEY_RADIUS";
+                "com.geofind.geofind.geofence.KEY_RADIUS";
         public static final String KEY_EXPIRATION_DURATION =
-                "com.example.android.geofence.KEY_EXPIRATION_DURATION";
+                "com.geofind.geofind.geofence.KEY_EXPIRATION_DURATION";
         public static final String KEY_TRANSITION_TYPE =
-                "com.example.android.geofence.KEY_TRANSITION_TYPE";
+                "com.geofind.geofind.geofence.KEY_TRANSITION_TYPE";
         // The prefix for flattened geofence keys
         public static final String KEY_PREFIX =
-                "com.example.android.geofence.KEY";
+                "com.geofind.geofind.geofence.KEY";
         /*
          * Invalid values, used to test geofence storage when
          * retrieving geofences

@@ -1,10 +1,7 @@
 package com.geofind.geofind;
 
-import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -14,11 +11,11 @@ import com.google.android.gms.location.LocationClient;
 import java.util.List;
 
 /**
+ * This intent service used when approaching geofence point
  * Created by Ilia Marin on 24/10/2014.
  */
 public class ReceiveTransitionsIntentService extends IntentService {
 
-    private static String TAG= "ReceiveTransitionsIntentService - GeoFence";
 
     /**
      * Set service identifier
@@ -29,7 +26,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG,"onHandleIntent");
         if (LocationClient.hasError(intent)){
             int errorCode = LocationClient.getErrorCode(intent);
             Log.e("ReceiveTransitionsIntentService",
@@ -42,27 +38,14 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
             int transientType =
                     LocationClient.getGeofenceTransition(intent);
-            Log.d(TAG,"onHandleIntent - no error" + transientType);
             if (transientType == Geofence.GEOFENCE_TRANSITION_ENTER ||
                     transientType == Geofence.GEOFENCE_TRANSITION_EXIT){
-                Log.d(TAG,"onHandleIntent - correct type");
                 List<Geofence> triggerList =
-                            LocationClient.getTriggeringGeofences(intent); //Added LocationClient
+                        LocationClient.getTriggeringGeofences(intent); //Added LocationClient
                 String[] triggerIds = new String[triggerList.size()];
-
-
-                String type ;
-
-                if (transientType == Geofence.GEOFENCE_TRANSITION_EXIT){
-                    type = "Exit";
-                } else
-                {
-                    type = "Enter";
-                }
 
                 for (int i = 0; i < triggerIds.length; i++) {
                     triggerIds[i] = triggerList.get(i).getRequestId();
-                    Log.d(TAG, "Type: " + type + " " + triggerIds[i]);
                 }
                 /*
                  * At this point, you can store the IDs for further use
@@ -76,7 +59,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                         intent.getIntExtra(getString(R.string.PointIndexExtra),-1));
                 LocalBroadcastManager.getInstance(this)
                         .sendBroadcast(intent1);
-                }
+            }
         }
     }
 }

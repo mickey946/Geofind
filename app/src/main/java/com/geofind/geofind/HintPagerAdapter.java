@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 /**
@@ -49,7 +48,6 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         args.putSerializable(HintFragment.HINT_TAG, hints.get(i));
         args.putSerializable(HintFragment.INDEX_TAG, i);
         fragment.setArguments(args);
-        Log.i(this.getClass().getName(), "set geofence to fragment valid:" + (geofence == null));
         fragment.set_geofenceManager(geofence);
 
         return fragment;
@@ -82,11 +80,16 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
          * The tag used to pass the index of the hint from the adapter to the fragment.
          */
         public static String INDEX_TAG = "HINT_INDEX";
-		
+
+        /**
+         * The geofence control class for revealing the hint point
+         */
         private GeofenceManager _geofenceManager;
 
+        /**
+         * give the access to the geofence manager for revealing the hint point
+         */
         public void set_geofenceManager(GeofenceManager geofenceManager){
-            Log.i("HintFragment", "set geo fence valid:" + (geofenceManager == null));
             this._geofenceManager = geofenceManager;
         }
 
@@ -132,12 +135,17 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
             revealButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("HintFragment", "using geofence valid:" + (_geofenceManager == null));
                     _geofenceManager.removeGeofences(hint.getLocation());
+                    /**
+                     * on revealing the point update it's text and icon
+                     */
                     Drawable drawable1 = getResources().getDrawable(R.drawable.ic_clear_grey600_24dp);
                     revealButton.setText(getResources().getText(R.string.item_hint_revealed));
                     revealButton.setEnabled(false);
                     revealButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable1, null, null);
+                    /**
+                     * must be done for visualize the change
+                     */
                     revealButton.invalidate();
 
                 }
