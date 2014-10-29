@@ -377,7 +377,7 @@ public class MapManager implements LocationListener {
         // 55 represents percentage of transparency. For 100% transparency, specify 00.
         // For 0% transparency ( ie, opaque ) , specify ff
         // The remaining 6 characters(00ff00) specify the fill color
-        circleOptions.fillColor(0x5500ff00);
+        circleOptions.fillColor(0x33aa0000);
 
         // Border width of the circle
         circleOptions.strokeWidth(2);
