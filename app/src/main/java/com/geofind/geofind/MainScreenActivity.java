@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class MainScreenActivity extends Activity {
@@ -12,6 +13,8 @@ public class MainScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+        Toast.makeText(this, UserData.getEmail(), Toast.LENGTH_LONG).show();
+
     }
 
     /**

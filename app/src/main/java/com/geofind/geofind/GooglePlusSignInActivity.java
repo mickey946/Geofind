@@ -113,6 +113,14 @@ public class GooglePlusSignInActivity extends Activity implements
             mConnectionResult = null;
             mPlusClient.connect();
         }
+        else {
+            Toast.makeText(this, "Connection failed / cancel pressed", Toast.LENGTH_LONG).show();
+            Intent i = new Intent(GooglePlusSignInActivity.this, MainScreenActivity.class);
+            startActivity(i);
+
+            // close this activity
+            finish();
+        }
     }
     @Override
     public void onConnected(Bundle connectionHint) {
