@@ -1,24 +1,20 @@
 package com.geofind.geofind;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
-import com.nineoldandroids.view.animation.AnimatorProxy;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -77,7 +73,11 @@ public class HuntActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_hunt);
+
+        View layout = findViewById(R.id.main_content);
+        layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
         setUpHunt();
 
@@ -111,7 +111,12 @@ public class HuntActivity extends ActionBarActivity {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
                 Log.i(TAG, "onPanelSlide, offset " + slideOffset);
-                // setActionBarTranslation(slidingUpPanel.getCurrentParalaxOffset());
+                android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+                if (slideOffset >= SLIDING_UP_PANEL_ANCHOR_POINT - 0.01f) {
+                    actionBar.hide();
+                } else {
+                    actionBar.show();
+                }
             }
 
             @Override
@@ -138,7 +143,7 @@ public class HuntActivity extends ActionBarActivity {
                 int height = findViewById(R.id.main_content).getMeasuredHeight();
                 float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
                         - getResources().getDimension(R.dimen.sliding_up_panel_paralax)
-                                * SLIDING_UP_PANEL_ANCHOR_POINT;
+                        * SLIDING_UP_PANEL_ANCHOR_POINT;
                 mapManager.setMapOffset(0, panDistance);
 
                 focusOnPoint(viewPager.getCurrentItem());
@@ -179,10 +184,10 @@ public class HuntActivity extends ActionBarActivity {
      */
     private void setUpPagerView() {
         // TODO retrieve the hints on the fly using the hunt
-        hints.add(new Hint("Hint1", "Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
-        hints.add(new Hint("Hint2", "Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
-        hints.add(new Hint("Hint3", "Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
-        hints.add(new Hint("Hint4", "Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
+        hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
+        hints.add(new Hint("Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
+        hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
+        hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
 
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
@@ -232,9 +237,13 @@ public class HuntActivity extends ActionBarActivity {
             }
         });
 
+        int index = 0;
         for (Hint hint : hints) {
+            index++;
             if (hint.getState() != Hint.State.UNREVEALED) {
-                mapManager.setMarker(hint.getLocation().toLatLng(), hint.getTitle(), hint.getState());
+                mapManager.setMarker(hint.getLocation().toLatLng(),
+                        getString(R.string.hunt_activity_hint_number_title) + index,
+                        hint.getState());
             }
         }
     }
@@ -248,12 +257,16 @@ public class HuntActivity extends ActionBarActivity {
         Fragment fragment = hintPagerAdapter.getItem(index);
         Bundle bundle = fragment.getArguments();
         if (bundle != null) { // for extra safety
-            Hint hint = (Hint) bundle.getSerializable(HintPagerAdapter.HintFragment.TAG);
+            Hint hint = (Hint) bundle.getSerializable(HintPagerAdapter.HintFragment.HINT_TAG);
             if (hint != null) { // for ultra safety
                 if (hint.getState() != Hint.State.UNREVEALED) {
 
                     Point point = hint.getLocation();
-                    mapManager.onLocationChanged(point.toLocation());
+                    if (!slidingUpPanel.isPanelAnchored()) {
+                        mapManager.onLocationChanged(point.toLocation());
+                    } else {
+                        mapManager.onLocationChangedAnchored(point.toLocation());
+                    }
 
                 }
             }
@@ -274,11 +287,14 @@ public class HuntActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent intent;
         switch (id) {
             case R.id.action_settings:
-                return true;
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.action_temp_finish:
-                Intent intent = new Intent(this, HuntFinishActivity.class);
+                intent = new Intent(this, HuntFinishActivity.class);
 
                 // TODO pass arguments for statistics
                 intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
@@ -286,52 +302,9 @@ public class HuntActivity extends ActionBarActivity {
                 startActivity(intent);
                 finish();
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
-    }
 
-    /**
-     * Get the height of the action bar for animation.
-     *
-     * @return the height of the action bar.
-     */
-    private int getActionBarHeight() {
-        int actionBarHeight = 0;
-        TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
-                    getResources().getDisplayMetrics());
-        }
-        return actionBarHeight;
-    }
-
-    /**
-     * Translate the action bar up as the user slides up the bottom panel.
-     *
-     * @param y The height of the translation.
-     */
-    public void setActionBarTranslation(float y) {
-        // Figure out the actionbar height
-        int actionBarHeight = getActionBarHeight();
-        // A hack to add the translation to the action bar
-        ViewGroup content = ((ViewGroup) findViewById(android.R.id.content).getParent());
-        int children = content.getChildCount();
-        for (int i = 0; i < children; i++) {
-            View child = content.getChildAt(i);
-            if (child.getId() != android.R.id.content) {
-                if (y <= -actionBarHeight) {
-                    child.setVisibility(View.GONE);
-                } else {
-                    child.setVisibility(View.VISIBLE);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        child.setTranslationY(y);
-                    } else {
-                        AnimatorProxy.wrap(child).setTranslationY(y);
-                    }
-                }
-            }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

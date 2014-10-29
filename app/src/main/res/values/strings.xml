@@ -3,7 +3,6 @@
 
     <string name="app_name">Geofind</string>
     <string name="action_settings">Settings</string>
-    <string name="main_screen_intro">Some inspirational bullshit with a picture of boobs.</string>
     <string name="main_screen_play_hunt">Play a Hunt</string>
     <string name="main_screen_create_hunt">Create a Hunt</string>
     <string name="main_screen_google_play_games">Achievements</string>
@@ -28,9 +27,9 @@
     <string name="item_hint_sound">Hint Sound</string>
     <string name="coming_soon">Coming soon!</string>
     <string name="title_activity_hunt_finish">HuntFinishActivity</string>
-    <string name="hello_world">Hello world!</string>
     <string name="hunt_finish_title">Finished Hunt!</string>
-    <string name="hunt_finish_description">Good job, you have finished this hunt! Feel free to review and share it with your friends.</string>
+    <string name="hunt_finish_description">Good job, you have finished this hunt! Feel free to
+        review and share it with your friends.</string>
     <string name="hunt_finish_statistics_title">Statistics</string>
     <string name="hunt_finish_total_points">Total number of points:</string>
     <string name="hunt_finish_solved_points">Solved points:</string>
@@ -43,43 +42,75 @@
     <string name="title_activity_hint_list">Add Points</string>
     <string name="title_activity_create_hunt">Create a Hunt</string>
     <string name="create_hunt_title">Hunt Title and Description</string>
-    <string name="create_hunt_description">In this section, you are required to fill in your hunt\'s title and text. The title and the text are essential, as they would appear first in your hunt\'s preview on other users search. \nUse proper language and try not to give any clues on the points of the hunt in the text.</string>
+    <string name="create_hunt_description">In this section, you are required to fill in your hunt\'s
+        title and text. The title and the text are essential, as they would appear first in your
+        hunt\'s preview on other users search. \nUse proper language and try not to give any clues
+        on the points of the hunt in the text.</string>
     <string name="create_hunt_description_hint">Description</string>
     <string name="create_hunt_title_hint">Title</string>
-    <string name="create_hunt_add_points_title">Add Points to your Hunt</string>
-    <string name="create_hunt_add_points_description">In this section you are required to create at least two points for your hunt.\nEach point has a hint which should lead the user to it - in one way or another (but not direct).\nYou would be prompted to choose a point on a map and assign it a clue (a text, picture, sound or video). To begin, hit the button below.</string>
+    <string name="create_hunt_add_points_title">Points of your Hunt</string>
+    <string name="create_hunt_add_points_description">Click on the button below to add points to
+        your hunt.</string>
     <string name="action_submit">Submit hunt</string>
-    <string name="hunt_create_check_before_title">Check before Submitting!</string>
-    <string name="hunt_create_check_before_description">Before submitting your hunt, check your title, text and points thoroughly, as you WILL NOT be able to edit them later!\nYou can click on the button above to edit or add points.\nTo finally submit, hit the upper right button.</string>
+    <string name="hunt_create_check_before_title">Submit hunt?</string>
+    <string name="hunt_create_check_before_description">Before submitting your hunt, check your
+        title, text and points thoroughly, as you will not be able to edit them later!</string>
     <string name="action_add_points">Submit points</string>
-    <string name="hint_list_empty">No points yet. Click on the \'plus\' button to add a point.</string>
+    <string name="hint_list_empty">No points yet. Click on the \'add\' button to add a point.</string>
     <string name="hint_list_add_point">Add a point</string>
     <string name="create_hunt_create_points">Create Points</string>
     <string name="title_activity_create_hint">Create a Point</string>
     <string name="create_hint_title">Adding a Point</string>
-    <string name="create_hint_details">In this section you are required to edit a point in your hunt. Each point must have a title, hint text and of course a real world coordinate. Additionally, you can add to your point a picture, sound or video hints.</string>
+    <string name="create_hint_details">In this section you are required to edit a point in your
+        hunt. Each point must have a hint text and a real world coordinate. Additionally, you may
+        add to your point a picture, sound or video hints. Note: The hint should not be too trivial
+        for the player to solve.</string>
     <string name="create_hint_hint_text_hint">Hint text</string>
     <string name="create_hint_pick_point_title">Pick a Point</string>
     <string name="create_hint_pick_point_description">Click on the map to choose a point.</string>
     <string name="create_hint_add_hint">Add Point</string>
     <string name="create_hint_select_picture">Select a Picture</string>
-    <string name="create_hint_select_picture_details">Click on the button below to add a picture</string>
+    <string name="create_hint_select_picture_details">Click on the button below to add a picture.</string>
+    <string name="create_hint_select_video_details">Click on the button below to add a video.</string>
+    <string name="create_hint_select_audio_details">Click on the button below to add an audio.</string>
     <string name="create_hint_fields_error">One or more fields are missing or illegal!</string>
     <string name="title_activity_pick_point">Pick a Point</string>
     <string name="action_pick_point">Pick a Point</string>
     <string name="create_hint_file_manager_error">No file manager available.</string>
     <string name="create_hint_kitkat_file_error">Error loading file.</string>
     <string name="hint_list_not_enough_points_error">A hunt must have at least 2 points!</string>
-    <string name="hunt_create_edit_button">Edit your Points</string>
+    <string name="hunt_create_edit_points_button">Edit your Points</string>
     <string name="hint_list_data_loss_warning">Your changes will be lost! Do you want to save them?</string>
     <string name="hint_list_data_loss_warning_title">Unsaved Changes</string>
     <string name="hint_list_data_loss_warning_positive">OK</string>
     <string name="hint_list_data_loss_warning_negative">Cancel</string>
-    <string name="hint_list_data_loss_warning_no_save">You have less then one point and your changes will be lost! You have to create at least on more point to save.</string>
+    <string name="hint_list_data_loss_warning_no_save">You have less then one point and your changes
+        will be lost! You have to create at least on more point to save.</string>
     <string name="action_edit_point">Edit Point</string>
     <string name="action_discard_point">Discard Point</string>
     <string name="str_atv_places">Enter Place Here</string>
-    <string name="intent_hint_point_extra">HINT_POINT</string>
     <string name="create_hint_point_missing">Please select a point on the map</string>
+    <string name="hunt_list_pager_new_hunts_title">New Hunts</string>
+    <string name="hunt_list_pager_ongoing_hunts_title">Ongoing Hunts</string>
+    <string name="hunt_list_pager_finished_hunts_title">Finished Hunts</string>
+    <string name="hunt_activity_hint_number_title">Point #</string>
+    <string name="title_activity_settings">@string/action_settings</string>
+    <string name="settings_distance_units_default">Automatic</string>
+    <string name="hunt_create_edit_points_text">You have added %d points to your hunt.</string>
+    <string name="create_hint_invalid_input">A hunt must have a title, a description and at least 2
+        points!</string>
+    <string name="info_card_dismiss">Got it!</string>
+
+    <string-array name="settings_distance_units">
+        <item>@string/settings_distance_units_default</item>
+        <item>Kilometers</item>
+        <item>Miles</item>
+    </string-array>
+
+    <string name="title_activity_hunt_details_map">@string/hunt_details_map</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="hunt_details_navigate_start_point">Navigate to Start Point</string>
+    <string name="create_hint_select_audio">Select an Audio</string>
+    <string name="create_hint_select_video">Select a Video</string>
 
 </resources>

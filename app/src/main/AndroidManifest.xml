@@ -9,7 +9,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.Roboto">
         <activity
             android:name=".SplashScreenActivity"
             android:label="@string/app_name"
@@ -26,7 +26,8 @@
         <activity
             android:name=".HuntListActivity"
             android:label="@string/title_activity_hunt_list"
-            android:parentActivityName=".MainScreenActivity">
+            android:parentActivityName=".MainScreenActivity"
+            android:theme="@style/AppTheme.ActionBarNoShadow">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.geofind.geofind.MainScreenActivity" />
@@ -64,8 +65,8 @@
         </activity>
         <activity
             android:name=".HintListActivity"
-            android:label="@string/title_activity_hint_list"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_hint_list"
             android:parentActivityName=".CreateHuntActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -92,11 +93,24 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".HuntDetailsMapActivity"
+            android:label="@string/title_activity_hunt_details_map"
+            android:parentActivityName=".HuntDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.geofind.geofind.HuntDetailsActivity" />
+        </activity>
     </application>
 
-    <!-- For reading pictures, audio, video-->
+    <!-- For reading pictures, audio, video -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- Accessing the Internet-->
+    <!-- Accessing the Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

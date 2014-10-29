@@ -53,32 +53,38 @@
 
                     <TextView
                         android:id="@+id/item_hunt_list_description"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/hunt_details"
                         android:paddingTop="@dimen/item_hunt_list_description_top_padding"
-                        android:textColor="@android:color/darker_gray"
                         android:singleLine="true"
                         android:text="Description" />
 
                 </LinearLayout>
             </FrameLayout>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_hunt_list_map_height">
 
-            <ImageView
-                android:id="@+id/item_hunt_list_map_preview"
-                android:layout_width="fill_parent"
-                android:layout_height="@dimen/item_hunt_list_map_height"
-                android:scaleType="centerCrop" />
+                <ImageView
+                    android:id="@+id/item_hunt_list_map_preview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="invisible" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" />
+
+            </RelativeLayout>
 
             <Button
-                style="@android:style/Widget.Holo.Button.Borderless"
+                style="@style/bottom_card_button_start"
                 android:id="@+id/item_hunt_list_start_hunt_button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start|center"
                 android:text="@string/item_hunt_list_start_hunt"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/item_hunt_list_start_hunt_text_size"
                 android:drawableLeft="@drawable/ic_play_arrow_grey600_24dp" />
 
         </LinearLayout>

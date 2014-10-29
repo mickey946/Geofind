@@ -61,11 +61,6 @@ public class PickPointActivity extends ActionBarActivity {
             // send away the point
             Intent intent = new Intent();
 
-            /**
-             * TODO add the point to the Intent like following:
-             * intent.putExtra(getString(R.string.intent_hint_extra), hint);
-             */
-
             Point resultPoint = _mapManager.get_selectedPoint();
 
             if (resultPoint == null) {

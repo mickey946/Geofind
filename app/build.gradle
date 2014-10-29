@@ -26,9 +26,10 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+' // this will load the RecyclerView
     compile 'com.google.android.gms:play-services:6.1+'
 
-    // this will load SlidingUpPanel
+    // this will load external libraries
     repositories {
         mavenCentral()
     }
-    compile 'com.sothree.slidinguppanel:library:+'
+
+    compile 'com.sothree.slidinguppanel:library:+' // this will load SlidingUpPanel
 }

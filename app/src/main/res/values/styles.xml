@@ -5,14 +5,23 @@
         <!-- customize the color palette -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">#76ff03</item>
+        <item name="colorAccent">@color/themeAccent</item>
         <!-- Customize your theme here. -->
+
+    </style>
+
+    <style name="AppTheme.Roboto" parent="AppTheme">
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+    </style>
 
+    <style name="AppTheme.ActionBarNoShadow" parent="AppTheme">
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="AppTheme.ActionBarOverlay" parent="AppTheme">
@@ -91,7 +100,7 @@
     <style name="hunt_details">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:textColor">@color/text_details</item>
     </style>
 
     <style name="hunt_details_right" parent="hunt_details">
@@ -110,6 +119,10 @@
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textSize">@dimen/item_hunt_list_start_hunt_text_size</item>
+    </style>
+
+    <style name="bottom_card_button_start" parent="bottom_card_button">
+        <item name="android:gravity">start|center_vertical</item>
     </style>
 
     <style name="bottom_card_button_separator">
