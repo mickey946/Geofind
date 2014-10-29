@@ -1,18 +1,27 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context="com.geofind.geofind.HuntListActivity">
+    tools:context="com.geofind.geofind.HuntListActivity"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/recycler_view"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        tools:context=".HuntListActivity"
-        android:paddingBottom="@dimen/item_hunt_list_vertical_margin"
-        android:clipToPadding="false" />
+    <com.geofind.geofind.widget.SlidingTabLayout
+        android:background="@color/colorPrimary"
+        android:id="@+id/sliding_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-</RelativeLayout>
+    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pagerHuntList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--<android.support.v4.view.PagerTabStrip-->
+        <!--android:id="@+id/tabStrip"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_gravity="top" />-->
+
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

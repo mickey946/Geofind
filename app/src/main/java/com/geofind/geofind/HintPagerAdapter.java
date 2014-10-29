@@ -32,12 +32,6 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
      */
     private GeofenceManager geofence;
 
-    public HintPagerAdapter(FragmentManager fm) {
-        super(fm);
-        this.hints = new ArrayList<Hint>();
-        this.geofence = null;
-    }
-
     public HintPagerAdapter(FragmentManager fm, ArrayList<Hint> hints, GeofenceManager geofenceManager) {
         super(fm);
         this.hints = hints;
@@ -52,8 +46,8 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
-        args.putSerializable(HintFragment.TAG, hints.get(i));
-
+        args.putSerializable(HintFragment.HINT_TAG, hints.get(i));
+        args.putSerializable(HintFragment.INDEX_TAG, i);
         fragment.setArguments(args);
         Log.i(this.getClass().getName(), "set geofence to fragment valid:" + (geofence == null));
         fragment.set_geofenceManager(geofence);
@@ -82,12 +76,17 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         /**
          * The tag used to pass the hint from the adapter to the fragment.
          */
-        public static String TAG = "HINT";
+        public static String HINT_TAG = "HINT";
 
+        /**
+         * The tag used to pass the index of the hint from the adapter to the fragment.
+         */
+        public static String INDEX_TAG = "HINT_INDEX";
+		
         private GeofenceManager _geofenceManager;
 
         public void set_geofenceManager(GeofenceManager geofenceManager){
-            Log.i(TAG, "set geo fence valid:" + (geofenceManager == null));
+            Log.i("HintFragment", "set geo fence valid:" + (geofenceManager == null));
             this._geofenceManager = geofenceManager;
         }
 
@@ -98,11 +97,12 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
             // get the related hint
             Bundle bundle = getArguments();
-            final Hint hint = (Hint) bundle.getSerializable(TAG);
+            final Hint hint = (Hint) bundle.getSerializable(HINT_TAG);
+            int index = bundle.getInt(INDEX_TAG) + 1;
 
             // put hint details in the view
             TextView hintTitleTextView = (TextView) view.findViewById(R.id.item_hint_title);
-            hintTitleTextView.setText(hint.getTitle());
+            hintTitleTextView.setText(getString(R.string.hunt_activity_hint_number_title) + index);
 
             TextView hintDescriptionTextView = (TextView)
                     view.findViewById(R.id.item_hint_description);
@@ -132,7 +132,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
             revealButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "using geofence valid:" + (_geofenceManager == null));
+                    Log.i("HintFragment", "using geofence valid:" + (_geofenceManager == null));
                     _geofenceManager.removeGeofences(hint.getLocation());
                     Drawable drawable1 = getResources().getDrawable(R.drawable.ic_clear_grey600_24dp);
                     revealButton.setText(getResources().getText(R.string.item_hint_revealed));

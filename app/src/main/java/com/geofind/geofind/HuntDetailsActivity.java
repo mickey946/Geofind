@@ -1,6 +1,5 @@
 package com.geofind.geofind;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -10,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -53,7 +53,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
 
 
-
+            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
             final ImageView mapView = (ImageView) findViewById(R.id.hunt_details_map_preview);
             ViewTreeObserver vto = mapView.getViewTreeObserver();
@@ -67,7 +67,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
                             mapWidth = mapView.getWidth();
 
                             // should be called when imgMapPreview exists
-                            new StaticMap(mapView).execute(
+                            new StaticMap(mapView, progressBar).execute(
                                     new StaticMap.StaticMapDescriptor(
                                             hunt.getCenterPosition(), hunt.getRadius(),
                                             mapWidth,mapHeight));
@@ -80,7 +80,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
             {
                 // The recycler view doesn't create new tiles, so we reuse previous tile and assume
                 // the same dimension for image view
-                new StaticMap(mapView).execute(
+                new StaticMap(mapView, progressBar).execute(
                         new StaticMap.StaticMapDescriptor(
                                 hunt.getCenterPosition(), hunt.getRadius(),
                                 mapWidth,mapHeight));
@@ -89,9 +89,10 @@ public class HuntDetailsActivity extends ActionBarActivity {
             mapView.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(HuntDetailsActivity.this, HuntActivity.class);
+                    Intent intent = new Intent(HuntDetailsActivity.this,
+                            HuntDetailsMapActivity.class);
 
-                    // pass the hunt itself to the HuntDetailActivity
+                    // pass the hunt to the map
                     intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
 
                     startActivity(intent);
@@ -128,11 +129,14 @@ public class HuntDetailsActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent intent;
         switch (id) {
             case R.id.action_settings:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.action_start_hunt:
-                Intent intent = new Intent(this, HuntActivity.class);
+                intent = new Intent(this, HuntActivity.class);
 
                 // pass the hunt itself to the HuntDetailActivity
                 intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
