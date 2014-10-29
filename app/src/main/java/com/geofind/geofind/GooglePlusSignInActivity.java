@@ -51,34 +51,20 @@ public class GooglePlusSignInActivity extends Activity implements
         mConnectionProgressDialog.setMessage("Signing in...");
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        ShareButton = (Button) findViewById(R.id.post_button);
-        GetData = (Button)findViewById(R.id.get_data_button);
 
-        GetData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                if( mPlusClient.isConnected()){
-                    Person currentPerson = mPlusClient.getCurrentPerson();
-                    UserData.init(currentPerson, mPlusClient.getAccountName());
-                    Toast.makeText(getApplicationContext(), UserData.getEmail(),
-                            Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(getApplicationContext(), "Please Sign In", Toast.LENGTH_LONG).show();
-                }}
-        });
-        ShareButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Launch the Google+ share dialog with attribution to your app.
-                Intent shareIntent = new PlusShare.Builder(GooglePlusSignInActivity.this)
-                        .setType("text/plain")
-                        .setText("geofind sign in")
-                        .setContentUrl(Uri.parse("http://www.google.com"))
-                        .getIntent();
-                startActivityForResult(shareIntent, 0);
-            }
-        });
+//        ShareButton = (Button) findViewById(R.id.post_button);
+//        ShareButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Launch the Google+ share dialog with attribution to your app.
+//                Intent shareIntent = new PlusShare.Builder(GooglePlusSignInActivity.this)
+//                        .setType("text/plain")
+//                        .setText("geofind sign in")
+//                        .setContentUrl(Uri.parse("http://www.google.com"))
+//                        .getIntent();
+//                startActivityForResult(shareIntent, 0);
+//            }
+//        });
     }
     @Override
     protected void onStart() {
