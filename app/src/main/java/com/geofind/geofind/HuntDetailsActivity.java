@@ -53,7 +53,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
 
 
-            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.hunt_details_progress_bar);
 
             final ImageView mapView = (ImageView) findViewById(R.id.hunt_details_map_preview);
             ViewTreeObserver vto = mapView.getViewTreeObserver();
