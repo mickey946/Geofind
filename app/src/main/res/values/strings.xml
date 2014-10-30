@@ -13,7 +13,10 @@
     <string name="hunt_details_map_description">Get to the start point before playing. Click on the
         map to navigate there.</string>
     <string name="hunt_details_distances">Distances</string>
-    <string name="hunt_details_total_distance">Total distance: </string>
+    <string name="hunt_details_total_distance">Total distance:\ </string>
+    <string name="item_hunt_list_total_distance">Total Distance\ </string>
+    <string name="item_hunt_list_distance_unit_km">" km"</string>
+    <string name="item_hunt_list_distance_unit_miles">" miles"</string>
     <string name="hunt_details_distance_from_user">Distance from start point: </string>
     <string name="hunt_details_rating">Rating</string>
     <string name="hunt_details_comments_reviews">Comments and Reviews</string>
@@ -98,16 +101,16 @@
     <string name="hunt_list_pager_finished_hunts_title">Finished Hunts</string>
     <string name="hunt_activity_hint_number_title">Point #</string>
     <string name="title_activity_settings">@string/action_settings</string>
-    <string name="preferences_distance_units_default">Automatic</string>
+    <string name="preferences_distance_units_kilometers">Kilometers</string>
+    <string name="preferences_distance_units_miles">Miles</string>
     <string name="hunt_create_edit_points_text">You have added %d points to your hunt.</string>
     <string name="create_hint_invalid_input">A hunt must have a title, a description and at least 2
         points!</string>
     <string name="info_card_dismiss">Got it!</string>
 
     <string-array name="preferences_distance_units">
-        <item>@string/preferences_distance_units_default</item>
-        <item>Kilometers</item>
-        <item>Miles</item>
+        <item>@string/preferences_distance_units_kilometers</item>
+        <item>@string/preferences_distance_units_miles</item>
     </string-array>
 
     <string name="title_activity_hunt_details_map">@string/hunt_details_map</string>

@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -20,6 +21,10 @@ import java.util.ArrayList;
  * Edited by Ilia on 16/10/14.
  */
 public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHolder> {
+
+    private static final float METERS_TO_MILES = 0.000621371f;
+    private static final float METERS_TO_KILOMETERS = 0.001f;
+    private static final int DIGIT_PRECISION = 3;
 
     /**
      * The array of displayed hunts.
@@ -32,6 +37,11 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     private Context context;
 
     /**
+     * The distance unit of the hunts.
+     */
+    private String distanceUnit;
+
+    /**
      * This is true when the map image is drawn
      */
     private int mapWidth, mapHeight;
@@ -41,6 +51,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         this.context = context;
         this.mapHeight = -1;
         this.mapWidth = -1;
+        this.distanceUnit = context.getString(R.string.preferences_distance_units_kilometers);
     }
 
     /**
@@ -61,6 +72,14 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         this.hunts = hunts;
     }
 
+    public void setDistanceUnit(String distanceUnit) {
+        this.distanceUnit = distanceUnit;
+    }
+
+    public String getDistanceUnit() {
+        return distanceUnit;
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
     public HuntListAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -78,9 +97,26 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         // put the values of the hunt in all of the views
         viewHolder.context = context;
         viewHolder.textViewTitle.setText(hunts.get(i).getTitle());
-        viewHolder.textViewTotalDistance.setText(hunts.get(i).getTotalDistance().toString());
+
         viewHolder.ratingBar.setRating(hunts.get(i).getRating());
         viewHolder.textViewDescription.setText(hunts.get(i).getDescription());
+
+        // set the distance unit
+        Float totalDistance = hunts.get(i).getTotalDistance();
+        if (distanceUnit.equals(
+                context.getString(R.string.preferences_distance_units_kilometers))) {
+            totalDistance *= METERS_TO_KILOMETERS;
+            viewHolder.textViewDistanceUnit.setText(
+                    context.getText(R.string.item_hunt_list_distance_unit_km));
+        } else {
+            totalDistance *= METERS_TO_MILES;
+            viewHolder.textViewDistanceUnit.setText(
+                    context.getText(R.string.item_hunt_list_distance_unit_miles));
+        }
+
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(DIGIT_PRECISION);
+        viewHolder.textViewTotalDistance.setText(decimalFormat.format(totalDistance));
 
         ViewTreeObserver vto = viewHolder.itemView.getViewTreeObserver();
         if (mapHeight == -1 || mapWidth == -1) {
@@ -136,6 +172,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         public Context context;
         public TextView textViewTitle;
         public TextView textViewTotalDistance;
+        public TextView textViewDistanceUnit;
         public RatingBar ratingBar;
         public TextView textViewDescription;
         public Button startHuntButton;
@@ -152,6 +189,8 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             textViewTitle = (TextView) itemView.findViewById(R.id.item_hunt_list_title);
             textViewTotalDistance = (TextView)
                     itemView.findViewById(R.id.item_hunt_list_total_distance);
+            textViewDistanceUnit = (TextView)
+                    itemView.findViewById(R.id.item_hunt_list_distance_unit);
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_hunt_list_rating);
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
             startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
