@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
@@ -84,16 +87,15 @@ public class HuntActivity extends ActionBarActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
 
-
         // TODO retrieve the hints on the fly using the hunt
         hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
         hints.add(new Hint("Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
         hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
         hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
 
-
         setContentView(R.layout.activity_hunt);
 
+        // stabilize the layout
         View layout = findViewById(R.id.main_content);
         layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
@@ -114,6 +116,13 @@ public class HuntActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
+
+        // keep the screen awake (if needed)
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean keepScreenAwake = sharedPreferences.getBoolean("pref_stay_awake", false);
+        if (keepScreenAwake) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     @Override
@@ -223,7 +232,7 @@ public class HuntActivity extends ActionBarActivity {
         // ViewPager and its adapters use support library fragments, so we must use
         // getSupportFragmentManager.
         Log.i(TAG, "create geofence HinatAdapter valid:" + (geofence == null));
-        hintPagerAdapter = new HintPagerAdapter(getSupportFragmentManager(), hints, geofence );
+        hintPagerAdapter = new HintPagerAdapter(getSupportFragmentManager(), hints, geofence);
 
         // Set up the ViewPager, attaching the adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -280,7 +289,7 @@ public class HuntActivity extends ActionBarActivity {
     /**
      * Set up the geofence
      */
-    private void setUpGeofence(){
+    private void setUpGeofence() {
         Log.d(TAG, "setUpGeofence");
         geofence = new GeofenceManager(this);
 
@@ -307,7 +316,7 @@ public class HuntActivity extends ActionBarActivity {
 
         int unrevealedIndex = 0;
         while (unrevealedIndex < hints.size() &&
-                hints.get(unrevealedIndex).getState() != Hint.State.UNREVEALED){
+                hints.get(unrevealedIndex).getState() != Hint.State.UNREVEALED) {
             unrevealedIndex++;
         }
 
@@ -317,7 +326,7 @@ public class HuntActivity extends ActionBarActivity {
         geofence.setCancelCallback(new IndexCallback() {
             @Override
             public void executeCallback(int index) {
-                Log.d(TAG,"recieved from geofence cancel point index" + index);
+                Log.d(TAG, "recieved from geofence cancel point index" + index);
 
                 hints.get(index).setState(Hint.State.REVEALED);
                 Point hintPoint = hints.get(index).getLocation();
