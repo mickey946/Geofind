@@ -1,7 +1,9 @@
 package com.geofind.geofind;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -12,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import java.text.DecimalFormat;
 
 public class HuntDetailsActivity extends ActionBarActivity {
 
@@ -98,9 +102,37 @@ public class HuntDetailsActivity extends ActionBarActivity {
             });
 
             // hunt total distance
+            String distanceUnit = getCurrentDistanceUnit();
+            Float totalDistance = hunt.getTotalDistance();
+
+            // set distance units
+            TextView totalDistanceUnitTextView = (TextView)
+                    findViewById(R.id.hunt_details_total_distance_unit);
+            TextView distanceFromUserUnitTextView = (TextView)
+                    findViewById(R.id.hunt_details_distance_from_user_unit);
+
+            // km or miles
+            if (distanceUnit.equals(
+                    getString(R.string.preferences_distance_units_kilometers))) {
+                totalDistance *= Hunt.METERS_TO_KILOMETERS;
+                totalDistanceUnitTextView.setText(
+                        getText(R.string.item_hunt_list_distance_unit_km));
+                distanceFromUserUnitTextView.setText(
+                        getText(R.string.item_hunt_list_distance_unit_km));
+            } else {
+                totalDistance *= Hunt.METERS_TO_MILES;
+                totalDistanceUnitTextView.setText(
+                        getText(R.string.item_hunt_list_distance_unit_miles));
+                distanceFromUserUnitTextView.setText(
+                        getText(R.string.item_hunt_list_distance_unit_miles));
+            }
+
+            // set the formatted numbers
             TextView totalDistanceTextView = (TextView)
                     findViewById(R.id.hunt_details_total_distance);
-            totalDistanceTextView.setText(hunt.getTotalDistance().toString());
+            DecimalFormat decimalFormat = new DecimalFormat();
+            decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
+            totalDistanceTextView.setText(decimalFormat.format(totalDistance));
 
             // TODO distance from start point
 
@@ -112,6 +144,19 @@ public class HuntDetailsActivity extends ActionBarActivity {
         }
     }
 
+
+    /**
+     * Get the current distance unit that is saved in the settings file.
+     *
+     * @return A string representing the distance unit.
+     */
+    private String getCurrentDistanceUnit() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getString(
+                this.getString(R.string.pref_key_distance_units),
+                this.getString(R.string.preferences_distance_units_kilometers));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

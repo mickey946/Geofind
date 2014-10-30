@@ -22,9 +22,6 @@ import java.util.ArrayList;
  */
 public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHolder> {
 
-    private static final float METERS_TO_MILES = 0.000621371f;
-    private static final float METERS_TO_KILOMETERS = 0.001f;
-    private static final int DIGIT_PRECISION = 3;
 
     /**
      * The array of displayed hunts.
@@ -105,17 +102,17 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         Float totalDistance = hunts.get(i).getTotalDistance();
         if (distanceUnit.equals(
                 context.getString(R.string.preferences_distance_units_kilometers))) {
-            totalDistance *= METERS_TO_KILOMETERS;
+            totalDistance *= Hunt.METERS_TO_KILOMETERS;
             viewHolder.textViewDistanceUnit.setText(
                     context.getText(R.string.item_hunt_list_distance_unit_km));
         } else {
-            totalDistance *= METERS_TO_MILES;
+            totalDistance *= Hunt.METERS_TO_MILES;
             viewHolder.textViewDistanceUnit.setText(
                     context.getText(R.string.item_hunt_list_distance_unit_miles));
         }
 
         DecimalFormat decimalFormat = new DecimalFormat();
-        decimalFormat.setMaximumFractionDigits(DIGIT_PRECISION);
+        decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
         viewHolder.textViewTotalDistance.setText(decimalFormat.format(totalDistance));
 
         ViewTreeObserver vto = viewHolder.itemView.getViewTreeObserver();
