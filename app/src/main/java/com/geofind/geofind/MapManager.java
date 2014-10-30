@@ -51,7 +51,7 @@ public class MapManager implements LocationListener {
     private int _mapWidth, _mapHeight;
     // zoom handling object
     private Callable<Void> _zoomUpdate;
-    private MarkerCallback _markerCallback;
+    private IndexCallback _indexCallback;
     private HashMap<Marker, Integer> _markerMap;
 
     // Google map interface object
@@ -133,18 +133,17 @@ public class MapManager implements LocationListener {
 
     /**
      * Set callback for on marker click
-     *
-     * @param markerCallback the callback method
+     * @param indexCallback the callback method
      */
-    public void setMarkerCallback(MarkerCallback markerCallback) {
-        _markerCallback = markerCallback;
+    public void setMarkerCallback(IndexCallback indexCallback) {
+        _indexCallback = indexCallback;
         _mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // move camera to the current location
                 _mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-                _markerCallback.onMarkerClick(_markerMap.get(marker).intValue());
+                _indexCallback.executeCallback(_markerMap.get(marker).intValue());
 
                 return true;
             }
@@ -153,7 +152,6 @@ public class MapManager implements LocationListener {
 
     /**
      * Set general purpose on map click
-     *
      * @param onMapClick the callback method
      */
     public void setOnMapClick(final Callable onMapClick) {
@@ -192,6 +190,12 @@ public class MapManager implements LocationListener {
         if (minTime >= 0 && minDistance >= 0)
             locationManager.requestLocationUpdates(provider, minTime, minDistance, this);
 
+    }
+
+    public  void stopTrackCurrentLocation(){
+        LocationManager locationManager = (LocationManager)
+                _activity.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.removeUpdates(this);
     }
 
     // show or hide the location button
@@ -373,7 +377,7 @@ public class MapManager implements LocationListener {
         // 55 represents percentage of transparency. For 100% transparency, specify 00.
         // For 0% transparency ( ie, opaque ) , specify ff
         // The remaining 6 characters(00ff00) specify the fill color
-        circleOptions.fillColor(0x5500ff00);
+        circleOptions.fillColor(0x33aa0000);
 
         // Border width of the circle
         circleOptions.strokeWidth(2);

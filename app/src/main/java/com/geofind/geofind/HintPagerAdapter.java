@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,21 +26,29 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
      */
     private ArrayList<Hint> hints;
 
-    public HintPagerAdapter(FragmentManager fm, ArrayList<Hint> hints) {
+    /**
+     * The geofence manager instance for revealing the point
+     */
+    private GeofenceManager geofence;
+
+    public HintPagerAdapter(FragmentManager fm, ArrayList<Hint> hints, GeofenceManager geofenceManager) {
         super(fm);
         this.hints = hints;
+        Log.i(this.getClass().getName(), "set geofence to Hint adapter:" + (geofenceManager == null));
+        this.geofence = geofenceManager;
     }
 
     @Override
     public Fragment getItem(int i) {
         // create new Hint fragment
-        Fragment fragment = new HintFragment();
+        HintFragment fragment = new HintFragment();
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
         args.putSerializable(HintFragment.HINT_TAG, hints.get(i));
         args.putSerializable(HintFragment.INDEX_TAG, i);
         fragment.setArguments(args);
+        fragment.set_geofenceManager(geofence);
 
         return fragment;
     }
@@ -72,6 +81,18 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
          */
         public static String INDEX_TAG = "HINT_INDEX";
 
+        /**
+         * The geofence control class for revealing the hint point
+         */
+        private GeofenceManager _geofenceManager;
+
+        /**
+         * give the access to the geofence manager for revealing the hint point
+         */
+        public void set_geofenceManager(GeofenceManager geofenceManager){
+            this._geofenceManager = geofenceManager;
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                  @Nullable Bundle savedInstanceState) {
@@ -79,7 +100,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
             // get the related hint
             Bundle bundle = getArguments();
-            Hint hint = (Hint) bundle.getSerializable(HINT_TAG);
+            final Hint hint = (Hint) bundle.getSerializable(HINT_TAG);
             int index = bundle.getInt(INDEX_TAG) + 1;
 
             // put hint details in the view
@@ -90,7 +111,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                     view.findViewById(R.id.item_hint_description);
             hintDescriptionTextView.setText(hint.getText());
 
-            Button revealButton = (Button) view.findViewById(R.id.item_hint_reveal_button);
+            final Button revealButton = (Button) view.findViewById(R.id.item_hint_reveal_button);
             Drawable drawable = null;
             switch (hint.getState()) {
                 case REVEALED:
@@ -111,6 +132,24 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
             // set the needed drawable
             revealButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
+            revealButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    _geofenceManager.removeGeofences(hint.getLocation());
+                    /**
+                     * on revealing the point update it's text and icon
+                     */
+                    Drawable drawable1 = getResources().getDrawable(R.drawable.ic_clear_grey600_24dp);
+                    revealButton.setText(getResources().getText(R.string.item_hint_revealed));
+                    revealButton.setEnabled(false);
+                    revealButton.setCompoundDrawablesWithIntrinsicBounds(null, drawable1, null, null);
+                    /**
+                     * must be done for visualize the change
+                     */
+                    revealButton.invalidate();
+
+                }
+            });
 
             return view;
         }

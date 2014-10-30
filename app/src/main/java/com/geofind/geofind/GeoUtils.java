@@ -1,5 +1,7 @@
 package com.geofind.geofind;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -110,5 +112,35 @@ public abstract class GeoUtils {
         return perimeter;
     }
 
+    /**
+     * Returns the air-path distance in meters between the
+     * point in the path.
+     * Distance is defined using  the WGS84 ellipsoid.
+     *
+     * @param points the points of the path
+     * @return the approximate distance in meters
+     */
+    public static float calcPathLength(List<Point> points){
+        float len = 0;
+        for (int i = 0; i < points.size() - 1; i++) {
+            len += points.get(i).toLocation().distanceTo(points.get(i).toLocation());
+        }
 
+        return len;
+    }
+
+
+    /**
+     * Calculate the maximal distance from the starting point in meters.
+     * @param points the points of the path
+     * @return  the approximate distance in meters
+     */
+    public static float calcRadius(List<Point> points){
+        float len = 0;
+        Location startPoint = points.get(0).toLocation();
+        for (Point p : points){
+            len = Math.max(len,startPoint.distanceTo(p.toLocation()));
+        }
+        return  len;
+    }
 }

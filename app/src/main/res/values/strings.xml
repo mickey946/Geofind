@@ -90,6 +90,9 @@
     <string name="action_discard_point">Discard Point</string>
     <string name="str_atv_places">Enter Place Here</string>
     <string name="create_hint_point_missing">Please select a point on the map</string>
+    <string name="GeofenceResultIntent">GeofenceEnter</string>
+    <string name="PointIndexExtra">PointIndex</string>
+    <string name="PointIdIntentExtra">ID</string>
     <string name="hunt_list_pager_new_hunts_title">New Hunts</string>
     <string name="hunt_list_pager_ongoing_hunts_title">Ongoing Hunts</string>
     <string name="hunt_list_pager_finished_hunts_title">Finished Hunts</string>

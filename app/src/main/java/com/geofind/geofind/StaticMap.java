@@ -82,6 +82,9 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
         _view.setImageBitmap(bitmap);
     }
 
+    /**
+     * compose the URL address from which to download the map
+     */
     protected String composeAddress(StaticMapDescriptor desc) {
 
 
@@ -120,7 +123,6 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
     public static class StaticMapDescriptor {
         public static enum MapElement {None, Circle, Marker}
 
-        ;
         private LatLng center; // the center of the map
         private float radius; // the radius of the circle in meters
         private int width, height; // the resolution of the output image

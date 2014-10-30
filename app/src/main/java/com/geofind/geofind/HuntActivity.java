@@ -1,9 +1,13 @@
 package com.geofind.geofind;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -24,6 +28,7 @@ public class HuntActivity extends ActionBarActivity {
 
     public static final int MIN_UPDATE_TIME = 0; //TODO decide the correct values
     public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
+    public static final int GEOFENCE_RADIUS = 10;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
@@ -69,10 +74,23 @@ public class HuntActivity extends ActionBarActivity {
      */
     private MapManager mapManager;
 
+    /**
+     * This manages the geofence control
+     */
+    GeofenceManager geofence;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
+
+
+        // TODO retrieve the hints on the fly using the hunt
+        hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
+        hints.add(new Hint("Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
+        hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
+        hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
+
 
         setContentView(R.layout.activity_hunt);
 
@@ -81,19 +99,36 @@ public class HuntActivity extends ActionBarActivity {
 
         setUpHunt();
 
+        setUpGeofence();
+
         setUpPagerView();
 
         setUpSlidingUpPanel();
 
         setUpMap();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
+    }
+
+    @Override
+    protected void onPause() {
+        mapManager.stopTrackCurrentLocation();
+        super.onPause();
     }
 
     /**
      * Retrieve the hunt from the intent that started the activity and set it up.
      */
     private void setUpHunt() {
-        Intent intent = getIntent();
 
+        Intent intent = getIntent();
+        Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(
                     getResources().getString(R.string.intent_hunt_extra));
@@ -183,17 +218,12 @@ public class HuntActivity extends ActionBarActivity {
      * Set up the pager view.
      */
     private void setUpPagerView() {
-        // TODO retrieve the hints on the fly using the hunt
-        hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
-        hints.add(new Hint("Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
-        hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
-        hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
-
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
         // ViewPager and its adapters use support library fragments, so we must use
         // getSupportFragmentManager.
-        hintPagerAdapter = new HintPagerAdapter(getSupportFragmentManager(), hints);
+        Log.i(TAG, "create geofence HinatAdapter valid:" + (geofence == null));
+        hintPagerAdapter = new HintPagerAdapter(getSupportFragmentManager(), hints, geofence );
 
         // Set up the ViewPager, attaching the adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -224,15 +254,14 @@ public class HuntActivity extends ActionBarActivity {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
         mapManager = new MapManager(this, mapFragment);
-        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
-        mapManager.setMarkerCallback(new MarkerCallback() {
+        mapManager.setMarkerCallback(new IndexCallback() {
             /**
              * Slide to the point page at the given index.
              *
              * @param index The index of the point in the adapter.
              */
             @Override
-            public void onMarkerClick(int index) {
+            public void executeCallback(int index) {
                 viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
             }
         });
@@ -246,6 +275,67 @@ public class HuntActivity extends ActionBarActivity {
                         hint.getState());
             }
         }
+    }
+
+    /**
+     * Set up the geofence
+     */
+    private void setUpGeofence(){
+        Log.d(TAG, "setUpGeofence");
+        geofence = new GeofenceManager(this);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
+                int indx = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
+                Log.d(TAG, "recieved from geofence point index" + indx);
+                Log.d(TAG, "geofence point recieved: " + id);
+
+                // Mark the current hint as solved
+
+                hints.get(indx).setState(Hint.State.SOLVED);
+                mapManager.setMarker(hints.get(indx).getLocation().toLatLng(),
+                        getString(R.string.hunt_activity_hint_number_title) + indx,
+                        hints.get(indx).getState());
+
+                //TODO prepare for next hint
+
+                hintPagerAdapter.notifyDataSetChanged();
+            }
+        }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
+
+        int unrevealedIndex = 0;
+        while (unrevealedIndex < hints.size() &&
+                hints.get(unrevealedIndex).getState() != Hint.State.UNREVEALED){
+            unrevealedIndex++;
+        }
+
+        geofence.createGeofence(hints.get(unrevealedIndex).getLocation(),
+                GEOFENCE_RADIUS, unrevealedIndex);
+
+        geofence.setCancelCallback(new IndexCallback() {
+            @Override
+            public void executeCallback(int index) {
+                Log.d(TAG,"recieved from geofence cancel point index" + index);
+
+                hints.get(index).setState(Hint.State.REVEALED);
+                Point hintPoint = hints.get(index).getLocation();
+                mapManager.setMarker(hintPoint.toLatLng(),
+                        getString(R.string.hunt_activity_hint_number_title) + index, hints.get(index).getState());
+                mapManager.onLocationChanged(hintPoint.toLocation());
+
+
+                // Mark the current hint as solved
+
+                //TODO prepare for next hint
+
+                hintPagerAdapter.notifyDataSetChanged();
+
+            }
+        });
+
+
     }
 
     /**

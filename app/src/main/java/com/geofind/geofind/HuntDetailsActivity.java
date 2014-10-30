@@ -6,12 +6,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
-import com.google.android.gms.maps.MapFragment;
-
-import java.util.concurrent.Callable;
 
 public class HuntDetailsActivity extends ActionBarActivity {
 
@@ -19,7 +19,12 @@ public class HuntDetailsActivity extends ActionBarActivity {
      * The hunt on which the activity displays the details.
      */
     private Hunt hunt;
-    private MapManager _mapManager;
+
+    /**
+     * map image dimensions
+     */
+    int mapWidth = -1, mapHeight = -1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +50,42 @@ public class HuntDetailsActivity extends ActionBarActivity {
             TextView descriptionTextView = (TextView) findViewById(R.id.hunt_details_description);
             descriptionTextView.setText(hunt.getDescription());
 
-            MapFragment mapFragment =
-                    (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_details_map_preview);
-            _mapManager = new MapManager(this, mapFragment);
-            _mapManager.showMyLocationButton(false);
+            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.hunt_details_progress_bar);
 
-            _mapManager.drawCircle(hunt.getCenterPosition(), hunt.getRadius());
-            _mapManager.setOnMapClick(new Callable() {
+            final ImageView mapView = (ImageView) findViewById(R.id.hunt_details_map_preview);
+            ViewTreeObserver vto = mapView.getViewTreeObserver();
+            if (mapHeight == -1 || mapWidth == -1){
+                if (vto.isAlive()) {
+                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            mapHeight = mapView.getHeight();
+                            mapWidth = mapView.getWidth();
+
+                            // should be called when imgMapPreview exists
+                            new StaticMap(mapView, progressBar).execute(
+                                    new StaticMap.StaticMapDescriptor(
+                                            hunt.getCenterPosition(), hunt.getRadius(),
+                                            mapWidth,mapHeight));
+
+
+                        }
+                    });
+                }
+            }else
+            {
+                // The recycler view doesn't create new tiles, so we reuse previous tile and assume
+                // the same dimension for image view
+                new StaticMap(mapView, progressBar).execute(
+                        new StaticMap.StaticMapDescriptor(
+                                hunt.getCenterPosition(), hunt.getRadius(),
+                                mapWidth,mapHeight));
+            }
+
+            mapView.setOnClickListener( new View.OnClickListener() {
                 @Override
-                public Object call() throws Exception {
+                public void onClick(View v) {
                     Intent intent = new Intent(HuntDetailsActivity.this,
                             HuntDetailsMapActivity.class);
 
@@ -61,7 +93,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
                     intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
 
                     startActivity(intent);
-                    return null;
+
                 }
             });
 
@@ -99,7 +131,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
             case R.id.action_settings:
                 intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
-                break;
+                return true;
             case R.id.action_start_hunt:
                 intent = new Intent(this, HuntActivity.class);
 
@@ -108,7 +140,8 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
                 startActivity(intent);
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 }
