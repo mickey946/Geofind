@@ -119,7 +119,8 @@ public class HuntActivity extends ActionBarActivity {
 
         // keep the screen awake (if needed)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean keepScreenAwake = sharedPreferences.getBoolean("pref_stay_awake", false);
+        boolean keepScreenAwake =
+                sharedPreferences.getBoolean(SettingsActivity.ALWAYS_AWAKE, false);
         if (keepScreenAwake) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
