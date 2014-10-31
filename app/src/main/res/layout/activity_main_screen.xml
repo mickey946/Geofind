@@ -8,7 +8,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:src="@drawable/sailor_lake_by_jeff_p_blur"
-        android:scaleType="centerCrop" />
+        android:id="@+id/background_image"
+        android:scaleType="matrix" />
 
     <RelativeLayout
         android:layout_width="match_parent"
