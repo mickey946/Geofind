@@ -31,8 +31,6 @@ import java.util.ArrayList;
 
 public class HuntActivity extends ActionBarActivity {
 
-    public static final int MIN_UPDATE_TIME = 0; //TODO decide the correct values
-    public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
     public static final int GEOFENCE_RADIUS = 10;
 
     /**
@@ -86,7 +84,9 @@ public class HuntActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
+
 
         // TODO retrieve the hints on the fly using the hunt
         hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
@@ -94,7 +94,11 @@ public class HuntActivity extends ActionBarActivity {
         hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
         hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
 
+
         setContentView(R.layout.activity_hunt);
+
+        View layout = findViewById(R.id.main_content);
+        layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
         setUpHunt();
 
@@ -119,7 +123,7 @@ public class HuntActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
+        mapManager.focusOnCurrentLocation();
 
         // keep the screen awake (if needed)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
