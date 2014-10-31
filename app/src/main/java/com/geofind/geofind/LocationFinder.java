@@ -25,7 +25,8 @@ import java.util.concurrent.Callable;
  */
 public class LocationFinder implements
         GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener        {
+        GooglePlayServicesClient.OnConnectionFailedListener,
+        LocationListener{
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
@@ -41,6 +42,11 @@ public class LocationFinder implements
 
     Location currentLocation;
 
+    //Define an object that holds accuracy and frequency parameters
+    LocationRequest mLocationRequest;
+
+    // is it a single request or continues
+    private boolean _requireUpdates;
 
     public LocationFinder(Activity context, Callable<Void> locationFound){
         locationClient = new LocationClient(context,this,this);
@@ -50,16 +56,62 @@ public class LocationFinder implements
         currentLocation = null;
         this.locationFound = locationFound;
 
+
+        _requireUpdates = false;
+
     }
 
+    /**
+     * Start continues updates
+     * @param updateInterval the interval between the requests [milisec]
+     * @param fastestInterval the minimal interval between consecutive requests [milisec]
+     */
+    public void startPeriodicUpdates(long updateInterval, long fastestInterval){
+        // Create the LocationRequest object
+        mLocationRequest = LocationRequest.create();
+        // Use high accuracy
+        mLocationRequest.setPriority(
+                LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        mLocationRequest.setInterval(updateInterval);
+        mLocationRequest.setFastestInterval(fastestInterval);
+
+        _requireUpdates = true;
+        startLocation();
+
+    }
+
+    /**
+     * stop the update requests
+     */
+    public void stopPeriodicUpdates(){
+        if(_requireUpdates) {
+            _requireUpdates = false;
+            if (locationClient.isConnected()) {
+                locationClient.removeLocationUpdates(this);
+            }
+        }
+        stopLocation();
+    }
+
+    /**
+     * start location client
+     */
     public void startLocation(){
         locationClient.connect();
     }
 
+    /**
+     * stop location client
+     */
     public void stopLocation(){
         locationClient.disconnect();
     }
 
+    /**
+     * get the current location
+     * @return the current location or null if the location unavailable
+     */
     public Location getCurrentLocation(){
         return currentLocation;
     }
@@ -75,6 +127,10 @@ public class LocationFinder implements
         Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
 
         currentLocation = locationClient.getLastLocation();
+
+        if(_requireUpdates){
+            locationClient.requestLocationUpdates(mLocationRequest,this);
+        }
 
         try {
             locationFound.call();
@@ -134,4 +190,14 @@ public class LocationFinder implements
         }
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("LocationFinder", "Location changed");
+        currentLocation = location;
+        try {
+            locationFound.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

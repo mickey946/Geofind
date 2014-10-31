@@ -5,13 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.AutoCompleteTextView;
@@ -36,9 +33,12 @@ import java.util.concurrent.Callable;
 /**
  * Created by Ilia Marin on 05/10/2014.
  */
-public class MapManager implements LocationListener {
+public class MapManager {
 
     public static final String LOG_TAG = "MapManager";
+
+    private static final int DEFAULT_ZOOM = 10;
+
     // Markers
     protected MarkerOptions markerOptions;
     // Visualize objects
@@ -57,6 +57,9 @@ public class MapManager implements LocationListener {
     // Google map interface object
     private GoogleMap _mMap;
     private Point _selectedPoint;
+
+    //Current location provider
+    private LocationFinder _locationFinder;
 
 
     /**
@@ -122,10 +125,18 @@ public class MapManager implements LocationListener {
                 });
             }
         }
+        _locationFinder = new LocationFinder(_activity,new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                Log.d("MapManager", _locationFinder.getCurrentLocation().toString());
+                onLocationChanged(_locationFinder.getCurrentLocation());
+                return null;
+            }
+        });
         _mMap.setMyLocationEnabled(true);
         _offsetX = 0;
         _offsetY = 0;
-        _zoomLevel = 15;
+        _zoomLevel = DEFAULT_ZOOM;
         focusOnCurrentLocation();
 
 
@@ -171,31 +182,16 @@ public class MapManager implements LocationListener {
 
     //Single time focus
     public void focusOnCurrentLocation() {
-        focusOnCurrentLocation(-1, -1);
+        _locationFinder.startLocation();
     }
 
     // focus and keep tracking
-    public void focusOnCurrentLocation(long minTime, float minDistance) {
-
-        LocationManager locationManager = (LocationManager) _activity.getSystemService(Context.LOCATION_SERVICE);
-
-        Criteria criteria = new Criteria();
-        String provider = locationManager.getBestProvider(criteria, true);
-        Location location = locationManager.getLastKnownLocation(provider);
-
-        if (location != null) {
-            onLocationChanged(location);
-        }
-
-        if (minTime >= 0 && minDistance >= 0)
-            locationManager.requestLocationUpdates(provider, minTime, minDistance, this);
-
+    public void focusOnCurrentLocation(long updateInterval, long fastestInterval) {
+        _locationFinder.startPeriodicUpdates(updateInterval, fastestInterval);
     }
 
     public  void stopTrackCurrentLocation(){
-        LocationManager locationManager = (LocationManager)
-                _activity.getSystemService(Context.LOCATION_SERVICE);
-        locationManager.removeUpdates(this);
+        _locationFinder.stopPeriodicUpdates();
     }
 
     // show or hide the location button
@@ -292,7 +288,7 @@ public class MapManager implements LocationListener {
      * @param location the location to be focused on
      */
 
-    @Override
+
     public void onLocationChanged(Location location) {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
@@ -335,21 +331,6 @@ public class MapManager implements LocationListener {
 
         _mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, _zoomLevel));
         _mMap.animateCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-        // nothing to do here
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-        // nothing to do here
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-        // nothing to do here
     }
 
 
@@ -400,7 +381,7 @@ public class MapManager implements LocationListener {
                 }
             };
             // temporary zoom level
-            _zoomLevel = 15;
+            _zoomLevel = DEFAULT_ZOOM;
         } else {
             // calculate the zoom level
             _zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
