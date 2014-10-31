@@ -25,9 +25,7 @@ import java.util.concurrent.Callable;
  */
 public class LocationFinder implements
         GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener,
-        LocationListener{
-
+        GooglePlayServicesClient.OnConnectionFailedListener        {
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
@@ -52,12 +50,15 @@ public class LocationFinder implements
         currentLocation = null;
         this.locationFound = locationFound;
 
-        if (!mInProgress){
-            mInProgress = true;
-            locationClient.connect();
-        }
     }
 
+    public void startLocation(){
+        locationClient.connect();
+    }
+
+    public void stopLocation(){
+        locationClient.disconnect();
+    }
 
     public Location getCurrentLocation(){
         return currentLocation;
@@ -72,22 +73,14 @@ public class LocationFinder implements
         Log.d("LocationFinder", "onConnected");
         // Display the connection status
         Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
-//        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-//
-//        Criteria criteria = new Criteria();
-//        String provider = locationManager.getBestProvider(criteria, true);
-//        Location location = locationManager.getLastKnownLocation(provider);
-//        currentLocation = location;
 
+        currentLocation = locationClient.getLastLocation();
 
-
-     //   currentLocation = locationClient.getLastLocation();
-       // locationClient.disconnect();
-
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setNumUpdates(1);
-        locationClient.requestLocationUpdates(locationRequest, this);
-
+        try {
+            locationFound.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
     /*
@@ -137,23 +130,8 @@ public class LocationFinder implements
              * user with the error.
              */
             //context.showErrorDialog(connectionResult.getErrorCode());
+            Log.e("LocationFinder",connectionResult.toString());
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        currentLocation = location;
-        if (location != null){
-            Log.d("LocationFinder", location.toString());
-
-        }
-        else
-            Log.d("LocationFinder", "location is null");
-        try {
-            locationFound.call();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 }

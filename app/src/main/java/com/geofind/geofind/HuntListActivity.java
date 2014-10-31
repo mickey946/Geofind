@@ -73,6 +73,17 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
         slidingTabLayout.setViewPager(viewPager);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        locationFinder.startLocation();
+    }
+
+    @Override
+    protected void onStop() {
+        locationFinder.stopLocation();
+        super.onStart();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
