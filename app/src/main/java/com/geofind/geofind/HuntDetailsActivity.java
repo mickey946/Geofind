@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.util.concurrent.Callable;
 
 public class HuntDetailsActivity extends ActionBarActivity {
 
@@ -23,6 +25,11 @@ public class HuntDetailsActivity extends ActionBarActivity {
      * The hunt on which the activity displays the details.
      */
     private Hunt hunt;
+
+    /**
+     * The location finder used to determine user's current location.
+     */
+    LocationFinder locationFinder;
 
     /**
      * map image dimensions
@@ -102,13 +109,13 @@ public class HuntDetailsActivity extends ActionBarActivity {
             });
 
             // hunt total distance
-            String distanceUnit = getCurrentDistanceUnit();
+            final String distanceUnit = getCurrentDistanceUnit();
             Float totalDistance = hunt.getTotalDistance();
 
             // set distance units
             TextView totalDistanceUnitTextView = (TextView)
                     findViewById(R.id.hunt_details_total_distance_unit);
-            TextView distanceFromUserUnitTextView = (TextView)
+            final TextView distanceFromUserUnitTextView = (TextView)
                     findViewById(R.id.hunt_details_distance_from_user_unit);
 
             // km or miles
@@ -130,11 +137,34 @@ public class HuntDetailsActivity extends ActionBarActivity {
             // set the formatted numbers
             TextView totalDistanceTextView = (TextView)
                     findViewById(R.id.hunt_details_total_distance);
-            DecimalFormat decimalFormat = new DecimalFormat();
+            final DecimalFormat decimalFormat = new DecimalFormat();
             decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
             totalDistanceTextView.setText(decimalFormat.format(totalDistance));
 
-            // TODO distance from start point
+            locationFinder = new LocationFinder(this, new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    TextView distanceFromUserTextView = (TextView)
+                            findViewById(R.id.hunt_details_distance_from_user);
+
+                    float distanceFromUser = GeoUtils.calcDistance(
+                            locationFinder.currentLocation,
+                            new Point(hunt.getCenterPosition()));
+
+                    // km or miles
+                    if (distanceUnit.equals(
+                            getString(R.string.preferences_distance_units_kilometers))) {
+                        distanceFromUser *= Hunt.METERS_TO_KILOMETERS;
+                    } else {
+                        distanceFromUser *= Hunt.METERS_TO_MILES;
+                    }
+
+                    distanceFromUserTextView.setText(decimalFormat.format(distanceFromUser));
+
+                    distanceFromUserUnitTextView.setVisibility(View.VISIBLE);
+                    return null;
+                }
+            });
 
             // hunt rating
             RatingBar ratingBar = (RatingBar) findViewById(R.id.hunt_details_rating);
@@ -188,5 +218,17 @@ public class HuntDetailsActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        locationFinder.startLocation();
+    }
+
+    @Override
+    protected void onStop() {
+        locationFinder.stopLocation();
+        super.onStart();
     }
 }

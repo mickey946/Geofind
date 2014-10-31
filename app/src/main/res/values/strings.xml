@@ -146,5 +146,6 @@
     <string name="create_hint_remove_video">Remove selected video</string>
     <string name="create_hint_remove_audio">Remove selected audio</string>
     <string name="action_back_to_main">Main Menu</string>
+    <string name="hunt_details_waiting_for_location">Waiting for location...</string>
 
 </resources>

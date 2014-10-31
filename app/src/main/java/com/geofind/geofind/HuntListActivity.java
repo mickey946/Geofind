@@ -36,6 +36,9 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
      */
     SlidingTabLayout slidingTabLayout;
 
+    /**
+     * The location finder used to determine user's current location.
+     */
     LocationFinder locationFinder;
 
     @Override

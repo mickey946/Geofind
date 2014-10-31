@@ -19,14 +19,13 @@ import com.google.android.gms.location.LocationRequest;
 import java.util.concurrent.Callable;
 
 
-
 /**
  * Created by Ilia Marin on 30/10/2014.
  */
 public class LocationFinder implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
-        LocationListener{
+        LocationListener {
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
@@ -48,8 +47,8 @@ public class LocationFinder implements
     // is it a single request or continues
     private boolean _requireUpdates;
 
-    public LocationFinder(Activity context, Callable<Void> locationFound){
-        locationClient = new LocationClient(context,this,this);
+    public LocationFinder(Activity context, Callable<Void> locationFound) {
+        locationClient = new LocationClient(context, this, this);
         this.context = context;
         mInProgress = false;
         mConnected = false;
@@ -63,10 +62,11 @@ public class LocationFinder implements
 
     /**
      * Start continues updates
-     * @param updateInterval the interval between the requests [milisec]
+     *
+     * @param updateInterval  the interval between the requests [milisec]
      * @param fastestInterval the minimal interval between consecutive requests [milisec]
      */
-    public void startPeriodicUpdates(long updateInterval, long fastestInterval){
+    public void startPeriodicUpdates(long updateInterval, long fastestInterval) {
         // Create the LocationRequest object
         mLocationRequest = LocationRequest.create();
         // Use high accuracy
@@ -84,8 +84,8 @@ public class LocationFinder implements
     /**
      * stop the update requests
      */
-    public void stopPeriodicUpdates(){
-        if(_requireUpdates) {
+    public void stopPeriodicUpdates() {
+        if (_requireUpdates) {
             _requireUpdates = false;
             if (locationClient.isConnected()) {
                 locationClient.removeLocationUpdates(this);
@@ -97,24 +97,26 @@ public class LocationFinder implements
     /**
      * start location client
      */
-    public void startLocation(){
+    public void startLocation() {
         locationClient.connect();
     }
 
     /**
      * stop location client
      */
-    public void stopLocation(){
+    public void stopLocation() {
         locationClient.disconnect();
     }
 
     /**
      * get the current location
+     *
      * @return the current location or null if the location unavailable
      */
-    public Location getCurrentLocation(){
+    public Location getCurrentLocation() {
         return currentLocation;
     }
+
     /*
      * Called by Location Services when the request to connect the
      * client finishes successfully. At this point, you can
@@ -125,8 +127,8 @@ public class LocationFinder implements
 
         currentLocation = locationClient.getLastLocation();
 
-        if(_requireUpdates){
-            locationClient.requestLocationUpdates(mLocationRequest,this);
+        if (_requireUpdates) {
+            locationClient.requestLocationUpdates(mLocationRequest, this);
         }
 
         try {
@@ -136,6 +138,7 @@ public class LocationFinder implements
         }
 
     }
+
     /*
      * Called by Location Services if the connection to the
      * location client drops because of an error.
@@ -149,6 +152,7 @@ public class LocationFinder implements
         locationClient = null;
         mConnected = false;
     }
+
     /*
      * Called by Location Services if the attempt to
      * Location Services fails.
@@ -183,7 +187,7 @@ public class LocationFinder implements
              * user with the error.
              */
             //context.showErrorDialog(connectionResult.getErrorCode());
-            Log.e("LocationFinder",connectionResult.toString());
+            Log.e("LocationFinder", connectionResult.toString());
         }
     }
 

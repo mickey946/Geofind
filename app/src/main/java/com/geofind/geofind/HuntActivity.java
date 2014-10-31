@@ -94,11 +94,7 @@ public class HuntActivity extends ActionBarActivity {
         hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
         hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
 
-
         setContentView(R.layout.activity_hunt);
-
-        View layout = findViewById(R.id.main_content);
-        layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
         setUpHunt();
 
