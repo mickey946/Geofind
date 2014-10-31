@@ -39,7 +39,12 @@ public class HuntFinishActivity extends ActionBarActivity {
             case R.id.action_settings:
                 intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
-                break;
+                return true;
+            case R.id.action_back_to_main:
+                intent = new Intent(this, MainScreenActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
