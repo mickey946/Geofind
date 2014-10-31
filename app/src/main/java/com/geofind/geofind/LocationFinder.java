@@ -122,9 +122,6 @@ public class LocationFinder implements
      */
     @Override
     public void onConnected(Bundle dataBundle) {
-        Log.d("LocationFinder", "onConnected");
-        // Display the connection status
-        Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
 
         currentLocation = locationClient.getLastLocation();
 
