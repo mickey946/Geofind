@@ -3,10 +3,12 @@ package com.geofind.geofind;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -130,6 +132,28 @@ public class MainScreenActivity extends Activity {
         displayRect.set(0, 0, background.getDrawable().getIntrinsicWidth(),
                 background.getDrawable().getIntrinsicHeight());
         matrix.mapRect(displayRect);
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (valueAnimator != null) {
+            valueAnimator.resume();
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @Override
+    protected void onPause() {
+        super.onPause();
+        valueAnimator.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        valueAnimator.cancel();
     }
 
     /**
