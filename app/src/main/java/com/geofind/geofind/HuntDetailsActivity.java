@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,7 +64,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
             final ImageView mapView = (ImageView) findViewById(R.id.hunt_details_map_preview);
             ViewTreeObserver vto = mapView.getViewTreeObserver();
-            if (mapHeight == -1 || mapWidth == -1){
+            if (mapHeight == -1 || mapWidth == -1) {
                 if (vto.isAlive()) {
                     vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
@@ -78,23 +77,22 @@ public class HuntDetailsActivity extends ActionBarActivity {
                             new StaticMap(mapView, progressBar).execute(
                                     new StaticMap.StaticMapDescriptor(
                                             hunt.getCenterPosition(), hunt.getRadius(),
-                                            mapWidth,mapHeight));
+                                            mapWidth, mapHeight));
 
 
                         }
                     });
                 }
-            }else
-            {
+            } else {
                 // The recycler view doesn't create new tiles, so we reuse previous tile and assume
                 // the same dimension for image view
                 new StaticMap(mapView, progressBar).execute(
                         new StaticMap.StaticMapDescriptor(
                                 hunt.getCenterPosition(), hunt.getRadius(),
-                                mapWidth,mapHeight));
+                                mapWidth, mapHeight));
             }
 
-            mapView.setOnClickListener( new View.OnClickListener() {
+            mapView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(HuntDetailsActivity.this,
