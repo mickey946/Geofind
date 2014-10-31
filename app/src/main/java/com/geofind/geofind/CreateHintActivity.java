@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
@@ -197,8 +200,31 @@ public class CreateHintActivity extends ActionBarActivity {
                 Uri selectedImageUri = data.getData();
 
                 try {
+                    // Crop the center of the bitmap that fits the view
+                    Bitmap inputBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
+                            selectedImageUri);
+                    Bitmap displayBitmap;
+
+                    if (inputBitmap.getWidth() >= inputBitmap.getHeight()) {
+                        displayBitmap = Bitmap.createBitmap(
+                                inputBitmap,
+                                inputBitmap.getWidth() / 2 - inputBitmap.getHeight() / 2,
+                                0,
+                                inputBitmap.getHeight(),
+                                inputBitmap.getHeight()
+                        );
+                    } else {
+                        displayBitmap = Bitmap.createBitmap(
+                                inputBitmap,
+                                0,
+                                inputBitmap.getHeight() / 2 - inputBitmap.getWidth() / 2,
+                                inputBitmap.getWidth(),
+                                inputBitmap.getWidth()
+                        );
+                    }
+
                     // set the image as Hint Picture drawable
-                    imageView.setImageURI(selectedImageUri);
+                    imageView.setImageBitmap(displayBitmap);
 
                     // convert the image to a byte array
                     byte[] imageByteArray = uriToByteArray(selectedImageUri);
@@ -210,6 +236,14 @@ public class CreateHintActivity extends ActionBarActivity {
                 } finally {
                     // show the image in the hint activity
                     imageView.setVisibility(View.VISIBLE);
+
+                    // show the remove button
+                    Button removeButton = (Button) findViewById(R.id.create_hint_remove_picture);
+                    removeButton.setVisibility(View.VISIBLE);
+
+                    // hide the select button
+                    Button selectButton = (Button) findViewById(R.id.create_hint_select_picture);
+                    selectButton.setVisibility(View.GONE);
                 }
             }
 
@@ -235,9 +269,16 @@ public class CreateHintActivity extends ActionBarActivity {
                             Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 } finally {
-
                     // show the video in the hint activity
                     videoView.setVisibility(View.VISIBLE);
+
+                    // show the remove button
+                    Button removeButton = (Button) findViewById(R.id.create_hint_remove_video);
+                    removeButton.setVisibility(View.VISIBLE);
+
+                    // hide the select button
+                    Button selectButton = (Button) findViewById(R.id.create_hint_select_video);
+                    selectButton.setVisibility(View.GONE);
                 }
             }
 
@@ -267,6 +308,14 @@ public class CreateHintActivity extends ActionBarActivity {
                 } finally {
                     // show the audio in the hint activity
                     audioView.setVisibility(View.VISIBLE);
+
+                    // show the remove button
+                    Button removeButton = (Button) findViewById(R.id.create_hint_remove_audio);
+                    removeButton.setVisibility(View.VISIBLE);
+
+                    // hide the select button
+                    Button selectButton = (Button) findViewById(R.id.create_hint_select_audio);
+                    selectButton.setVisibility(View.GONE);
                 }
             }
         }
@@ -398,5 +447,53 @@ public class CreateHintActivity extends ActionBarActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PREF_CREATE_HINT_POINT_DISMISS, true);
         editor.apply();
+    }
+
+    public void removeSelectedImage(View view) {
+        // hide the image view
+        ImageView imageView = (ImageView) findViewById(R.id.create_hint_image);
+        imageView.setVisibility(View.GONE);
+
+        // hide the remove button
+        Button removeButton = (Button) findViewById(R.id.create_hint_remove_picture);
+        removeButton.setVisibility(View.GONE);
+
+        // show the select button
+        Button selectButton = (Button) findViewById(R.id.create_hint_select_picture);
+        selectButton.setVisibility(View.VISIBLE);
+
+        // TODO remove the image from the Hint
+    }
+
+    public void removeSelectedVideo(View view) {
+        // hide the image view
+        VideoView videoView = (VideoView) findViewById(R.id.create_hint_video);
+        videoView.setVisibility(View.GONE);
+
+        // hide the remove button
+        Button removeButton = (Button) findViewById(R.id.create_hint_remove_video);
+        removeButton.setVisibility(View.GONE);
+
+        // show the select button
+        Button selectButton = (Button) findViewById(R.id.create_hint_select_video);
+        selectButton.setVisibility(View.VISIBLE);
+
+        // TODO remove the video from the Hint
+    }
+
+    public void removeSelectedAudio(View view) {
+        // hide the image view
+        VideoView audioView = (VideoView) findViewById(R.id.create_hint_audio);
+        audioView.setVisibility(View.GONE);
+
+        // hide the remove button
+        Button removeButton = (Button) findViewById(R.id.create_hint_remove_audio);
+        removeButton.setVisibility(View.GONE);
+
+        // show the select button
+        Button selectButton = (Button) findViewById(R.id.create_hint_select_audio);
+        selectButton.setVisibility(View.VISIBLE);
+
+        // TODO remove the audio from the Hint
     }
 }
