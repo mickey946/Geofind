@@ -26,8 +26,6 @@ import java.util.ArrayList;
 
 public class HuntActivity extends ActionBarActivity {
 
-    public static final int MIN_UPDATE_TIME = 0; //TODO decide the correct values
-    public static final float MIN_UPDATE_DISTANCE = 30.f; //TODO decide the correct values
     public static final int GEOFENCE_RADIUS = 10;
 
     /**
@@ -113,13 +111,7 @@ public class HuntActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mapManager.focusOnCurrentLocation(MIN_UPDATE_TIME, MIN_UPDATE_DISTANCE);
-    }
-
-    @Override
-    protected void onPause() {
-        mapManager.stopTrackCurrentLocation();
-        super.onPause();
+        mapManager.focusOnCurrentLocation();
     }
 
     /**

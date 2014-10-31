@@ -1,6 +1,10 @@
 package com.geofind.geofind;
 
+import android.app.Activity;
+import android.content.Context;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -142,5 +146,9 @@ public abstract class GeoUtils {
             len = Math.max(len,startPoint.distanceTo(p.toLocation()));
         }
         return  len;
+    }
+
+    public static float calcDistance( Location currentLocation, Point p){
+        return currentLocation.distanceTo(p.toLocation());
     }
 }
