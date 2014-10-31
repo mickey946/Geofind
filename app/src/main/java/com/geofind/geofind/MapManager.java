@@ -20,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -60,7 +61,6 @@ public class MapManager {
 
     //Current location provider
     private LocationFinder _locationFinder;
-
 
     /**
      * Map Manager constructor for usage with AutoComplete
@@ -125,10 +125,9 @@ public class MapManager {
                 });
             }
         }
-        _locationFinder = new LocationFinder(_activity,new Callable<Void>() {
+        _locationFinder = new LocationFinder(_activity, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                Log.d("MapManager", _locationFinder.getCurrentLocation().toString());
                 onLocationChanged(_locationFinder.getCurrentLocation());
                 return null;
             }
@@ -144,6 +143,7 @@ public class MapManager {
 
     /**
      * Set callback for on marker click
+     *
      * @param indexCallback the callback method
      */
     public void setMarkerCallback(IndexCallback indexCallback) {
@@ -163,6 +163,7 @@ public class MapManager {
 
     /**
      * Set general purpose on map click
+     *
      * @param onMapClick the callback method
      */
     public void setOnMapClick(final Callable onMapClick) {
@@ -190,7 +191,7 @@ public class MapManager {
         _locationFinder.startPeriodicUpdates(updateInterval, fastestInterval);
     }
 
-    public  void stopTrackCurrentLocation(){
+    public void stopTrackCurrentLocation() {
         _locationFinder.stopPeriodicUpdates();
     }
 
@@ -321,6 +322,7 @@ public class MapManager {
      * The main purpose of this function is to overcome the bug of animateCamera when the target
      * point didn't change (in this case, it won't enter the onFinish callback and won't scroll the
      * map - happens when collapsing the panel from an anchor point and the map is already focused).
+     *
      * @param location The location to be focused on.
      */
     public void onLocationChangedAnchored(Location location) {

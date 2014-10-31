@@ -26,9 +26,6 @@ import java.util.ArrayList;
 
 public class HuntActivity extends ActionBarActivity {
 
-    // the intervals are in miliseconds
-    public static final long UPDATE_INTERVAL = 10000; //TODO decide the correct values
-    public static final long MAX_UPDATE_INTERVAL = 1000; //TODO decide the correct values
     public static final int GEOFENCE_RADIUS = 10;
 
     /**
@@ -114,13 +111,7 @@ public class HuntActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mapManager.focusOnCurrentLocation(UPDATE_INTERVAL, MAX_UPDATE_INTERVAL);
-    }
-
-    @Override
-    protected void onPause() {
-        mapManager.stopTrackCurrentLocation();
-        super.onPause();
+        mapManager.focusOnCurrentLocation();
     }
 
     /**
