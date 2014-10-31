@@ -1,37 +1,42 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<FrameLayout
     android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    android:background="@color/colorPrimary"
-    tools:context=".MainScreenActivity">
-
-    <TextView
-        style="@style/padding_top_bottom_left_right"
-        android:id="@+id/main_screen_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:gravity="top"
-        android:text="@string/app_name"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/logo_text_size"
-        android:textStyle="bold" />
-
-    <LinearLayout
-        android:id="@+id/main_screen_main_buttons"
+    <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom"
-        android:orientation="vertical">
+        android:layout_height="fill_parent"
+        android:src="@drawable/sailor_lake_by_jeff_p_blur"
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        tools:context=".MainScreenActivity">
+
+        <TextView
+            style="@style/padding_top_bottom_left_right"
+            android:id="@+id/main_screen_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="top"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/logo_text_size"
+            android:textStyle="bold" />
 
         <LinearLayout
+            android:id="@+id/main_screen_main_buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_alignParentBottom="true"
+            android:gravity="bottom"
+            android:orientation="vertical">
 
-            <Button
+
+        <Button
                 style="@style/main_bottom_button_half"
                 android:drawableTop="@drawable/ic_play_arrow_white_48dp"
                 android:onClick="openHuntList"
@@ -42,12 +47,7 @@
                 android:drawableTop="@drawable/ic_add_white_48dp"
                 android:onClick="openHuntCreation"
                 android:text="@string/main_screen_create_hunt" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal">
 
             <Button
                 style="@style/main_bottom_button_half"
@@ -59,9 +59,10 @@
                 android:drawableTop="@drawable/ic_settings_white_48dp"
                 android:onClick="openSettings"
                 android:text="@string/action_settings" />
+
+
         </LinearLayout>
 
-    </LinearLayout>
 
-
-</RelativeLayout>
+    </RelativeLayout>
+</FrameLayout>

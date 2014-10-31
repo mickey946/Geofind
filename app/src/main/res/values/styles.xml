@@ -70,6 +70,7 @@
 
     <style name="main_bottom_button_half" parent="main_bottom_button">
         <item name="android:layout_weight">.50</item>
+        <item name="android:layout_width">fill_parent</item>
     </style>
 
     <!--Inner padding in a cardview-->
