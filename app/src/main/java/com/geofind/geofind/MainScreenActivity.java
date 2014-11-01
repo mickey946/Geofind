@@ -134,20 +134,22 @@ public class MainScreenActivity extends Activity {
         matrix.mapRect(displayRect);
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onResume() {
         super.onResume();
-        if (valueAnimator != null) {
-            valueAnimator.resume();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (valueAnimator != null) {
+                valueAnimator.resume();
+            }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onPause() {
         super.onPause();
-        valueAnimator.pause();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            valueAnimator.pause();
+        }
     }
 
     @Override

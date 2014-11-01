@@ -106,63 +106,8 @@ public class HuntDetailsActivity extends ActionBarActivity {
                 }
             });
 
-            // hunt total distance
-            final String distanceUnit = getCurrentDistanceUnit();
-            Float totalDistance = hunt.getTotalDistance();
-
-            // set distance units
-            TextView totalDistanceUnitTextView = (TextView)
-                    findViewById(R.id.hunt_details_total_distance_unit);
-            final TextView distanceFromUserUnitTextView = (TextView)
-                    findViewById(R.id.hunt_details_distance_from_user_unit);
-
-            // km or miles
-            if (distanceUnit.equals(
-                    getString(R.string.preferences_distance_units_kilometers))) {
-                totalDistance *= Hunt.METERS_TO_KILOMETERS;
-                totalDistanceUnitTextView.setText(
-                        getText(R.string.item_hunt_list_distance_unit_km));
-                distanceFromUserUnitTextView.setText(
-                        getText(R.string.item_hunt_list_distance_unit_km));
-            } else {
-                totalDistance *= Hunt.METERS_TO_MILES;
-                totalDistanceUnitTextView.setText(
-                        getText(R.string.item_hunt_list_distance_unit_miles));
-                distanceFromUserUnitTextView.setText(
-                        getText(R.string.item_hunt_list_distance_unit_miles));
-            }
-
-            // set the formatted numbers
-            TextView totalDistanceTextView = (TextView)
-                    findViewById(R.id.hunt_details_total_distance);
-            final DecimalFormat decimalFormat = new DecimalFormat();
-            decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
-            totalDistanceTextView.setText(decimalFormat.format(totalDistance));
-
-            locationFinder = new LocationFinder(this, new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    TextView distanceFromUserTextView = (TextView)
-                            findViewById(R.id.hunt_details_distance_from_user);
-
-                    float distanceFromUser = GeoUtils.calcDistance(
-                            locationFinder.currentLocation,
-                            new Point(hunt.getCenterPosition()));
-
-                    // km or miles
-                    if (distanceUnit.equals(
-                            getString(R.string.preferences_distance_units_kilometers))) {
-                        distanceFromUser *= Hunt.METERS_TO_KILOMETERS;
-                    } else {
-                        distanceFromUser *= Hunt.METERS_TO_MILES;
-                    }
-
-                    distanceFromUserTextView.setText(decimalFormat.format(distanceFromUser));
-
-                    distanceFromUserUnitTextView.setVisibility(View.VISIBLE);
-                    return null;
-                }
-            });
+            // total distance and distance from user are calculated in onResume to be in sync with
+            // the settings.
 
             // hunt rating
             RatingBar ratingBar = (RatingBar) findViewById(R.id.hunt_details_rating);
@@ -219,14 +164,73 @@ public class HuntDetailsActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        locationFinder.startLocation();
-    }
-
-    @Override
     protected void onStop() {
         locationFinder.stopLocation();
         super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // hunt total distance
+        final String distanceUnit = getCurrentDistanceUnit();
+        Float totalDistance = hunt.getTotalDistance();
+
+        // set distance units
+        TextView totalDistanceUnitTextView = (TextView)
+                findViewById(R.id.hunt_details_total_distance_unit);
+        final TextView distanceFromUserUnitTextView = (TextView)
+                findViewById(R.id.hunt_details_distance_from_user_unit);
+
+        // km or miles
+        if (distanceUnit.equals(
+                getString(R.string.preferences_distance_units_kilometers))) {
+            totalDistance *= Hunt.METERS_TO_KILOMETERS;
+            totalDistanceUnitTextView.setText(
+                    getText(R.string.item_hunt_list_distance_unit_km));
+            distanceFromUserUnitTextView.setText(
+                    getText(R.string.item_hunt_list_distance_unit_km));
+        } else {
+            totalDistance *= Hunt.METERS_TO_MILES;
+            totalDistanceUnitTextView.setText(
+                    getText(R.string.item_hunt_list_distance_unit_miles));
+            distanceFromUserUnitTextView.setText(
+                    getText(R.string.item_hunt_list_distance_unit_miles));
+        }
+
+        // set the formatted numbers
+        TextView totalDistanceTextView = (TextView)
+                findViewById(R.id.hunt_details_total_distance);
+        final DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
+        totalDistanceTextView.setText(decimalFormat.format(totalDistance));
+
+        // distance from the user
+        locationFinder = new LocationFinder(this, new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                TextView distanceFromUserTextView = (TextView)
+                        findViewById(R.id.hunt_details_distance_from_user);
+
+                float distanceFromUser = GeoUtils.calcDistance(
+                        locationFinder.currentLocation,
+                        new Point(hunt.getCenterPosition()));
+
+                // km or miles
+                if (distanceUnit.equals(
+                        getString(R.string.preferences_distance_units_kilometers))) {
+                    distanceFromUser *= Hunt.METERS_TO_KILOMETERS;
+                } else {
+                    distanceFromUser *= Hunt.METERS_TO_MILES;
+                }
+
+                distanceFromUserTextView.setText(decimalFormat.format(distanceFromUser));
+
+                distanceFromUserUnitTextView.setVisibility(View.VISIBLE);
+                return null;
+            }
+        });
+        locationFinder.startLocation();
     }
 }
