@@ -35,4 +35,5 @@
     <string name="pref_key_licences">pref_key_licences</string>
     <string name="pref_key_about">pref_key_about</string>
     <integer name="bitmap_compression_quality">70</integer>
+    <string name="pref_analyticks_key">pref_analytics</string>
 </resources>
