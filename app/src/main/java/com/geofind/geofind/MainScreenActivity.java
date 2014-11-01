@@ -5,6 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import java.util.ArrayList;
+
 
 public class MainScreenActivity extends Activity {
 
@@ -12,6 +17,15 @@ public class MainScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+
+
+        // Get tracker.
+        Tracker t = ((GeoFindApp) getApplicationContext()).getTracker(
+                GeoFindApp.TrackerName.APP_TRACKER);
+        t.setScreenName("GeoFindApp");
+        t.send(new HitBuilders.AppViewBuilder().build());
+
+
     }
 
     /**
