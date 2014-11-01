@@ -1,10 +1,9 @@
 package com.geofind.geofind;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,120 +12,154 @@ import java.util.ArrayList;
  */
 public class Hunt implements Serializable {
 
-    /**
-     * Title of the hunt.
-     */
-    private String title;
-
-    /**
-     * Rating of the hunt. Must be between 0 and 5.
-     */
-    private Float rating;
-
-    /**
-     * Total distance of the hunt. Calculated by summing the aerial distance between each two
-     * successive points.
-     */
-    private Float totalDistance;
-
-    /**
-     * Description of the hunt.
-     */
-    private String description;
-
-    /**
-     * The center point of the hunt.
-     */
-    private SerializableLatLng firstPoint; // TODO discuss if we need to change to Point
-
-    /**
-     * The radius in meters of the hunt.
-     */
-    private Float radius;
-
-    /**
-     * The hints of this hunt.
-     */
-    private ArrayList<Hint> hints;
-
-    /**
-     * The creator Google user ID.
-     */
-    private String creatorID; // TODO change to the appropriate type
+    private String _title;
+    private String _description;
+    private String _creatorID;
+    private String _parseID;
+    private Point _firstPoint;
+    private float _radius;
+    private float _totalDistance;
+    private float _rating;
+    private float _totalRating;
+    private int _numOfRaters;
+    private ArrayList<Hint> _hints;
+    private ArrayList<Comment> _comments;
 
     /**
      * Constructor for HuntListActivity.
      */
-    public Hunt(String title, float rating, float totalDistance, String description,
-                LatLng firstPoint, float radius) {
-        this.title = title;
-        this.rating = rating;
-        this.totalDistance = totalDistance;
-        this.description = description;
-        this.firstPoint = new SerializableLatLng(firstPoint);
-        this.radius = radius;
-
-        // TODO discuss if we need to add the creator name in the preview
+    public Hunt(String title, String description, String creatorID, ParseGeoPoint firstPoint,
+                float rating, float radius, float totalDistance) {
+        _title = title;
+        _description = description;
+        _creatorID = creatorID;
+        _firstPoint = new Point(firstPoint);
+        _rating = rating;
+        _radius = radius;
+        _totalDistance = totalDistance;
     }
 
     /**
      * Constructor for CreateHuntActivity.
      */
-    public Hunt(String title, String description, ArrayList<Hint> hints, String creatorID) {
-        this.title = title;
-        this.description = description;
-        this.hints = hints;
-        this.creatorID = creatorID;
+    public Hunt(String title, String description, String creatorID, ArrayList<Hint> hints) {
+        _title = title;
+        _description = description;
+        _creatorID = creatorID;
+        _firstPoint = hints.get(0).getLocation();
+        //TODO Calculate radius - Ilia?
+        _radius = 50;
+        //TODO Calculate totalDistance - ilia?
+        _totalDistance = 15;
+        _rating = 0;
+        _totalRating = 0;
+        _numOfRaters = 0;
+        _hints = hints;
+        _comments = new ArrayList<Comment>();
+    }
 
-        // TODO calculate total distance and radius
-        // TODO assign first point from the Hints list
+    public Hunt(ParseObject remoteHunt) {
+        _title = remoteHunt.getString("title");
+        _description = remoteHunt.getString("description");
+        _creatorID = remoteHunt.getString("creatorID");
+        _parseID = remoteHunt.getObjectId();
+        _firstPoint = new Point(remoteHunt.getParseGeoPoint("firstPoint"));
+        _radius = (float) remoteHunt.getDouble("radius");
+        _totalDistance = (float) remoteHunt.getDouble("totalDistance");
+        _totalRating = (float) remoteHunt.getDouble("totalRating");
+
+
+        //TODO need to figure out how to retrieve hints on the fly.
+        /*_hints = new ArrayList<Hint>();
+
+        ArrayList<ParseObject> remoteHints = (ArrayList<ParseObject>) remoteHunt.get("hints");
+        for (ParseObject remoteHint : remoteHints) {
+            _hints.add(new Hint(remoteHint));
+        }
+
+        ArrayList<ParseObject> remoteComments = (ArrayList<ParseObject>) remoteHunt.get("comments");
+        for (ParseObject remoteComment : remoteComments) {
+            _comments.add(new Comment(remoteComment));
+        }*/
     }
 
     public String getTitle() {
-        return title;
-    }
-
-    public Float getRating() {
-        return rating;
+        return _title;
     }
 
     public String getDescription() {
-        return description;
+        return _description;
     }
 
-    public Float getTotalDistance() {
-        return totalDistance;
+    public String getCreator() {
+        return _creatorID;
+    }
+
+    public String getParseID() {
+        return _parseID;
     }
 
     public LatLng getCenterPosition() {
-        return firstPoint.getLocation();
+        return _firstPoint.toLatLng();
     }
 
-    public Float getRadius() {
-        return radius;
+    public float getRadius() {
+        return _radius;
     }
 
-    public class SerializableLatLng implements Serializable {
-        // mark it transient so defaultReadObject()/defaultWriteObject() ignore it
-        private transient com.google.android.gms.maps.model.LatLng mLocation;
-
-        public SerializableLatLng(LatLng location) {
-            mLocation = location;
-        }
-
-        public LatLng getLocation() {
-            return mLocation;
-        }
-
-        private void writeObject(ObjectOutputStream out) throws IOException {
-            out.defaultWriteObject();
-            out.writeDouble(mLocation.latitude);
-            out.writeDouble(mLocation.longitude);
-        }
-
-        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-            in.defaultReadObject();
-            mLocation = new LatLng(in.readDouble(), in.readDouble());
-        }
+    public Float getTotalDistance() {
+        return _totalDistance;
     }
+
+    public float getRating() {
+        if (_numOfRaters != 0) {
+            _rating = _totalRating / _numOfRaters;
+        }
+        return _rating;
+    }
+
+    public float getTotalRating() {
+        return _totalRating;
+    }
+
+    public int getNumOfRaters() {
+        return _numOfRaters;
+    }
+
+    public ArrayList<Hint> getHints() {
+        return _hints;
+    }
+
+    public ParseObject toParseObject() {
+        ParseObject remoteHunt = new ParseObject("Hunt");
+
+        remoteHunt.put("title", _title);
+        remoteHunt.put("description", _description);
+        remoteHunt.put("creatorID", _creatorID);
+        remoteHunt.put("firstPoint", _firstPoint.toParseGeoPoint());
+        remoteHunt.put("radius", _radius);
+        remoteHunt.put("totalDistance", _totalDistance);
+        remoteHunt.put("rating", _rating);
+        remoteHunt.put("totalRating", _totalDistance);
+        remoteHunt.put("numOfRaters", _numOfRaters);
+
+        ArrayList<ParseObject> remoteComments = new ArrayList<ParseObject>();
+
+        for (Comment comment : _comments) {
+            remoteComments.add(comment.toParseObject());
+        }
+
+        remoteHunt.put("comments", remoteComments);
+
+        ArrayList<ParseObject> remoteHints = new ArrayList<ParseObject>();
+
+        for (Hint hint : _hints) {
+            remoteHints.add(hint.toParseObject());
+        }
+
+        remoteHunt.put("hints", remoteHints);
+
+        return remoteHunt;
+    }
+
 }
