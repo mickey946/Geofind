@@ -36,34 +36,31 @@
             android:gravity="bottom"
             android:orientation="vertical">
 
-
-        <Button
-                style="@style/main_bottom_button_half"
+            <Button
+                style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_play_arrow_white_48dp"
                 android:onClick="openHuntList"
                 android:text="@string/main_screen_play_hunt" />
 
             <Button
-                style="@style/main_bottom_button_half"
+                style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_add_white_48dp"
                 android:onClick="openHuntCreation"
                 android:text="@string/main_screen_create_hunt" />
 
 
             <Button
-                style="@style/main_bottom_button_half"
+                style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_games_controller_white"
                 android:text="@string/main_screen_google_play_games" />
 
             <Button
-                style="@style/main_bottom_button_half"
+                style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_settings_white_48dp"
                 android:onClick="openSettings"
                 android:text="@string/action_settings" />
 
-
         </LinearLayout>
-
 
     </RelativeLayout>
 </FrameLayout>
