@@ -4,13 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_back_to_main"
-        android:title="@string/action_back_to_main"
-        android:icon="@drawable/ic_done_white_48dp"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_share"
         android:title="@string/action_share"
         android:icon="@drawable/ic_share_white_48dp"

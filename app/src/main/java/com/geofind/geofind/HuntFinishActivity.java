@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+
+import com.melnykov.fab.FloatingActionButton;
 
 
 public class HuntFinishActivity extends ActionBarActivity {
@@ -18,6 +22,34 @@ public class HuntFinishActivity extends ActionBarActivity {
         Hunt hunt = (Hunt) intent.getSerializableExtra(getString(R.string.intent_hunt_extra));
 
         setTitle(hunt.getTitle());
+
+        // get the floating action button
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        // hide the floating action button when reviewing the hunt
+        EditText reviewTitleEditText = (EditText) findViewById(R.id.hunt_finish_review_title);
+        reviewTitleEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
+            }
+        });
+
+        EditText reviewEditText = (EditText) findViewById(R.id.hunt_finish_review);
+        reviewEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
+            }
+        });
     }
 
 
@@ -40,12 +72,19 @@ public class HuntFinishActivity extends ActionBarActivity {
                 intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_back_to_main:
-                intent = new Intent(this, MainScreenActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Close all the activities in the current stack and go back to the main menu.
+     *
+     * @param view The current view.
+     */
+
+    public void goToMainScreen(View view) {
+        Intent intent = new Intent(this, MainScreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }

@@ -4,13 +4,6 @@
     tools:context="com.geofind.geofind.HintListActivity">
 
     <item
-        android:id="@+id/action_add_point"
-        android:title="@string/hint_list_add_point"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_add_white_48dp"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_submit_points"
         android:title="@string/action_add_points"
         android:orderInCategory="100"
