@@ -66,13 +66,13 @@
         android:key="pref_key_analytics_settings">
 
         <CheckBoxPreference
-            android:key="pref_analytics"
+            android:key="@string/pref_analytics"
             android:title="Analytics"
             android:summary="Send anonymous statistic about app usage."
             android:defaultValue="true" />
 
         <CheckBoxPreference
-            android:key="pref_crash_logs"
+            android:key="@string/pref_crash_logs"
             android:title="Crash Logs"
             android:summary="Send anonymous crash reports of this app."
             android:defaultValue="true" />

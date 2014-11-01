@@ -18,4 +18,5 @@
     <string name="intent_hunt_point_extra">HUNT_POINT</string>
     <string name="intent_hunt_radius_extra">HUNT_RADIUS</string>
     <integer name="bitmap_compression_quality">70</integer>
+    <string name="pref_analyticks_key">pref_analytics</string>
 </resources>
