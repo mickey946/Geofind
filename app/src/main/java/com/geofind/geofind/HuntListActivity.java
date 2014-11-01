@@ -73,10 +73,6 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
         slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
-
-
-        ArrayList a = new ArrayList(1);
-        a.get(10);
     }
 
     @Override

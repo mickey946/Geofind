@@ -17,6 +17,15 @@
     <!--<screenName name="com.google.android.gms.analytics.samples.mobileplayground.EcommerceFragment">-->
         <!--AnalyticsSampleApp EcommerceSampleScreen-->
     <!--</screenName>-->
+
+    <screenName name="com.geofind.geofind.CreateHuntActivity">
+        Geofind CreateHuntActivity
+    </screenName>
+
+    <screenName name="com.geofind.geofind.CreateHintActivity">
+        Geofind CreateHintActivity
+    </screenName>
+
     <!--  The following value should be replaced with correct property id. -->
     <string name="ga_trackingId">UA-56204480-2</string>
 </resources>
