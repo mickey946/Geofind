@@ -5,11 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.ArrayList;
-
 
 public class MainScreenActivity extends Activity {
 
