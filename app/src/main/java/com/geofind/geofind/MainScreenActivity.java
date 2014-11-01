@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.parse.Parse;
+
 
 public class MainScreenActivity extends Activity {
 
@@ -12,6 +14,7 @@ public class MainScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+        Parse.initialize(this, "s5kJQcPb2ipcKOylJ6bgRkB1ZPsoskxEzNYca1ME", "19BXDIKmyJTq5BXcd3mFyjth0prmkuak0ze686yp");
     }
 
     /**

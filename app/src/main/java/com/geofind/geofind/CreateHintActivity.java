@@ -38,6 +38,8 @@ public class CreateHintActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private int mapWidth = -1, mapHeight = -1;
     private Point hintPoint;
+    //TODO limit the size of these arrays to 10MB.
+    byte[] imageByteArray, videoByteArray, audioByteArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +64,7 @@ public class CreateHintActivity extends ActionBarActivity {
         if (intent != null) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-                hint = (Hint) bundle.getSerializable(
-                        getResources().getString(R.string.intent_hint_extra));
+                hint = (Hint) bundle.getSerializable(getResources().getString(R.string.intent_hint_extra));
                 index = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
                 if (hint != null) { // the user is editing and existing hint
                     hintTextTextView.setText(hint.getText());
@@ -86,20 +87,17 @@ public class CreateHintActivity extends ActionBarActivity {
                         mapHeight = Map.getHeight();
                         mapWidth = Map.getWidth();
                         if (hint == null) {
-                            staticMap.execute(
-                                    new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
+                            staticMap.execute(new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
                         } else {
-                            staticMap.execute(
-                                    new StaticMap.StaticMapDescriptor(
-                                            hint.getLocation().toLatLng(), mapWidth, mapHeight));
+                            staticMap.execute(new StaticMap.StaticMapDescriptor(
+                                    hint.getLocation().toLatLng(), mapWidth, mapHeight));
                         }
 
                     }
                 });
             }
         } else {
-            staticMap.execute(
-                    new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
+            staticMap.execute(new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
         }
     }
 
@@ -133,14 +131,12 @@ public class CreateHintActivity extends ActionBarActivity {
         boolean legal = !hintTextTextView.getText().toString().trim().equals("");
 
         if (!legal) {
-            Toast.makeText(this, getString(R.string.create_hint_fields_error),
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.create_hint_fields_error), Toast.LENGTH_LONG).show();
         }
 
         if (hintPoint == null) {
             legal = false;
-            Toast.makeText(this, getString(R.string.create_hint_point_missing),
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.create_hint_point_missing), Toast.LENGTH_LONG).show();
         }
 
         return legal;
@@ -152,7 +148,9 @@ public class CreateHintActivity extends ActionBarActivity {
      */
     public void submitHint() {
         if (checkInput()) { // check if the user filled all required fields
-            Hint hint = new Hint(hintTextTextView.getText().toString(), hintPoint);
+
+            Hint hint = new Hint(hintTextTextView.getText().toString(), hintPoint, imageByteArray,
+                    videoByteArray, audioByteArray);
 
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();
@@ -201,8 +199,7 @@ public class CreateHintActivity extends ActionBarActivity {
                     imageView.setImageURI(selectedImageUri);
 
                     // convert the image to a byte array
-                    byte[] imageByteArray = uriToByteArray(selectedImageUri);
-                    // TODO: use imageByteArray to save in parse
+                    imageByteArray = uriToByteArray(selectedImageUri);
 
                 } catch (Exception e) {
                     Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
@@ -227,8 +224,7 @@ public class CreateHintActivity extends ActionBarActivity {
                     videoView.setMediaController(mediaController);
 
                     // convert the video to a byte array
-                    byte[] videoByteArray = uriToByteArray(selectedVideoUri);
-                    // TODO: use videoByteArray to save in parse
+                    videoByteArray = uriToByteArray(selectedVideoUri);
 
                 } catch (Exception e) {
                     Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
@@ -257,12 +253,10 @@ public class CreateHintActivity extends ActionBarActivity {
                     audioView.setMediaController(mediaController);
 
                     // convert the video to a byte array
-                    byte[] audioByteArray = uriToByteArray(selectedAudioUri);
-                    // TODO: use audioByteArray to save in parse
+                    audioByteArray = uriToByteArray(selectedAudioUri);
 
                 } catch (Exception e) {
-                    Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 } finally {
                     // show the audio in the hint activity
@@ -290,8 +284,7 @@ public class CreateHintActivity extends ActionBarActivity {
             startActivityForResult(intent,
                     getResources().getInteger(R.integer.intent_picture_result));
         } else { // No file manager available
-            Toast.makeText(this, getString(R.string.create_hint_file_manager_error),
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.create_hint_file_manager_error), Toast.LENGTH_LONG).show();
         }
     }
 

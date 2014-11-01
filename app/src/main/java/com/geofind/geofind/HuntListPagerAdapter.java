@@ -11,10 +11,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
@@ -55,17 +61,48 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
+        //TODO need to get data on user - List of Finished Hunts, List of OngoingHunts.
         // create new Hint fragment
-        Fragment fragment = new HuntListFragment();
+        final Fragment fragment = new HuntListFragment();
 
         // create and fill the hunts array to display them.
-        // TODO retrieve the hunts from parse
-        ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        hunts.add(new Hunt("Title1", 1, 1, "Hunt1", new LatLng(31.76831, 35.21371), 500));
-        hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831, 35.21371), 1000));
-        hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831, 35.21371), 200));
-        hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831, 35.21371), 10000));
-        hunts.add(new Hunt("Title5", 5, 5, "Hunt5", new LatLng(31.76831, 35.21371), 800));
+
+
+        final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
+
+        query.selectKeys(Arrays.asList("title", "description", "creatorID", "firstPoint",
+                "radius", "totalDistance", "totalRating", "numOfRaters"));
+
+
+        //TODO activate this switch when data on user is available.
+        /*switch (i) {
+            case NEW_HUNTS:
+                query.whereNotEqualTo("objectId", );
+
+            case ONGOING_HUNTS:
+                query.whereEqualTo("objectId", );
+
+            case FINISHED_HUNTS:
+                query.whereEqualTo("objectId", );
+        }*/
+
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (ParseObject parseObject : parseObjects) {
+                        hunts.add(new Hunt(parseObject));
+                    }
+                    ((HuntListFragment) fragment).setHunts(hunts);
+                } else {
+                    Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
@@ -109,6 +146,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         public static final String HUNT_LIST_TAG = "HUNT_LIST";
 
         public Context context;
+        public HuntListAdapter adapter;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,7 +166,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
             // create an adapter
-            HuntListAdapter adapter = new HuntListAdapter(hunts, context);
+            adapter = new HuntListAdapter(hunts, context);
 
             // set adapter
             recyclerView.setAdapter(adapter);
@@ -137,6 +175,11 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
             recyclerView.setItemAnimator(new DefaultItemAnimator());
 
             return view;
+        }
+
+        public void setHunts(ArrayList<Hunt> hunts) {
+            adapter.setHunts(hunts);
+            adapter.notifyDataSetChanged();
         }
     }
 }
