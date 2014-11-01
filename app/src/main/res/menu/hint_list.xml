@@ -7,7 +7,7 @@
         android:id="@+id/action_submit_points"
         android:title="@string/action_add_points"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_done_white_48dp"
+        android:icon="@drawable/ic_done_white_24dp"
         app:showAsAction="ifRoom" />
 
 </menu>

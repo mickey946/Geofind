@@ -7,7 +7,7 @@
         android:id="@+id/action_pick_point"
         android:title="@string/action_pick_point"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_done_white_48dp"
+        android:icon="@drawable/ic_done_white_24dp"
         app:showAsAction="ifRoom" />
 
 </menu>

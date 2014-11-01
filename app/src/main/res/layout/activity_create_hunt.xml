@@ -131,7 +131,8 @@
                             style="@style/bottom_card_button"
                             android:id="@+id/create_hunt_create_points_button"
                             android:onClick="openHintCreation"
-                            android:text="@string/create_hunt_create_points" />
+                            android:text="@string/create_hunt_create_points"
+                            android:drawableLeft="@drawable/ic_pin_drop_grey600_24dp" />
 
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
