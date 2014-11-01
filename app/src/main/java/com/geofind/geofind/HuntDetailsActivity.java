@@ -165,6 +165,9 @@ public class HuntDetailsActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
 
+        if (hunt == null)
+            return;
+
         // hunt total distance
         final String distanceUnit = getCurrentDistanceUnit();
         Float totalDistance = hunt.getTotalDistance();
