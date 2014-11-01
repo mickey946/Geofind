@@ -16,20 +16,6 @@ public class GeoFindApp extends Application {
 
     // The following line should be changed to include the correct property id.
     private static final String PROPERTY_ID = "UA-56204480-2";
-
-    /**
-     * Enum used to identify the tracker that needs to be used for tracking.
-     *
-     * A single tracker is usually enough for most purposes. In case you do need multiple trackers,
-     * storing them all in Application object helps ensure that they are created only once per
-     * application instance.
-     */
-    public enum TrackerName {
-        APP_TRACKER, // Tracker used only in this app.
-        GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
-      //  ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
-    }
-
     HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
 
     public GeoFindApp() {
@@ -42,9 +28,9 @@ public class GeoFindApp extends Application {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Tracker tracker = getTracker(TrackerName.GLOBAL_TRACKER);
         tracker.enableAutoActivityTracking(sharedPreferences.getBoolean(
-                getString(R.string.pref_analytics),true));
+                getString(R.string.pref_analytics), true));
         tracker.enableExceptionReporting(sharedPreferences.getBoolean(
-                getString(R.string.pref_crash_logs),true));
+                getString(R.string.pref_crash_logs), true));
         tracker.setSessionTimeout(300);
     }
 
@@ -57,6 +43,19 @@ public class GeoFindApp extends Application {
 
         }
         return mTrackers.get(trackerId);
+    }
+
+    /**
+     * Enum used to identify the tracker that needs to be used for tracking.
+     * <p/>
+     * A single tracker is usually enough for most purposes. In case you do need multiple trackers,
+     * storing them all in Application object helps ensure that they are created only once per
+     * application instance.
+     */
+    public enum TrackerName {
+        APP_TRACKER, // Tracker used only in this app.
+        GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
+        //  ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
     }
 
 }

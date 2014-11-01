@@ -15,8 +15,6 @@ import com.geofind.geofind.widget.SlidingTabLayout;
 
 import java.util.concurrent.Callable;
 
-import java.util.ArrayList;
-
 
 public class HuntListActivity extends ActionBarActivity implements ActionBar.TabListener {
 

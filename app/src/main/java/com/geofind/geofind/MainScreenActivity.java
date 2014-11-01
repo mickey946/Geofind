@@ -17,15 +17,6 @@ public class MainScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
-
-
-        // Get tracker.
-        Tracker t = ((GeoFindApp) getApplicationContext()).getTracker(
-                GeoFindApp.TrackerName.APP_TRACKER);
-        t.setScreenName("GeoFindApp");
-        t.send(new HitBuilders.AppViewBuilder().build());
-
-
     }
 
     /**
