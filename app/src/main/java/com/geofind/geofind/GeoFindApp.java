@@ -26,7 +26,7 @@ public class GeoFindApp extends Application {
     public void onCreate() {
         super.onCreate();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Tracker tracker = getTracker(TrackerName.GLOBAL_TRACKER);
+        Tracker tracker = getTracker(TrackerName.APP_TRACKER);
         tracker.enableAutoActivityTracking(sharedPreferences.getBoolean(
                 getString(R.string.pref_analytics), true));
         tracker.enableExceptionReporting(sharedPreferences.getBoolean(
@@ -47,15 +47,9 @@ public class GeoFindApp extends Application {
 
     /**
      * Enum used to identify the tracker that needs to be used for tracking.
-     * <p/>
-     * A single tracker is usually enough for most purposes. In case you do need multiple trackers,
-     * storing them all in Application object helps ensure that they are created only once per
-     * application instance.
      */
     public enum TrackerName {
-        APP_TRACKER, // Tracker used only in this app.
-        GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
-        //  ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
+        APP_TRACKER // Tracker used only in this app.
     }
 
 }
