@@ -148,14 +148,18 @@ public class MainScreenActivity extends Activity {
     protected void onPause() {
         super.onPause();
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            valueAnimator.pause();
+            if (valueAnimator != null) {
+                valueAnimator.pause();
+            }
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        valueAnimator.cancel();
+        if (valueAnimator != null) {
+            valueAnimator.cancel();
+        }
     }
 
     /**
