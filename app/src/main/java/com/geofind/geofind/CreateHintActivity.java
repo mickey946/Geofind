@@ -197,7 +197,7 @@ public class CreateHintActivity extends ActionBarActivity {
             if (resultCode == RESULT_OK) { // The user picked a picture
                 ImageView imageView = (ImageView) findViewById(R.id.create_hint_image);
 
-                Uri selectedImageUri = data.getData();
+                final Uri selectedImageUri = data.getData();
 
                 try {
                     // Crop the center of the bitmap that fits the view
@@ -226,6 +226,18 @@ public class CreateHintActivity extends ActionBarActivity {
                     // set the image as Hint Picture drawable
                     imageView.setImageBitmap(displayBitmap);
 
+                    // clicking on the image enlarges it
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getApplicationContext(),
+                                    ContentViewActivity.class);
+                            intent.putExtra(ContentViewActivity.IMAGE_URI,
+                                    selectedImageUri.toString());
+                            startActivity(intent);
+                        }
+                    });
+
                     // convert the image to a byte array
                     byte[] imageByteArray = uriToByteArray(selectedImageUri);
                     // TODO: use imageByteArray to save in parse
@@ -250,17 +262,10 @@ public class CreateHintActivity extends ActionBarActivity {
         } else if (requestCode == getResources().getInteger(R.integer.intent_video_result)) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) { // The user picked a video
-                VideoView videoView = (VideoView) findViewById(R.id.create_hint_video);
 
-                Uri selectedVideoUri = data.getData();
-                try {
-                    videoView.setVideoURI(selectedVideoUri);
+                final Uri selectedVideoUri = data.getData();
 
-                    MediaController mediaController = new MediaController(this);
-                    mediaController.setAnchorView(videoView);
-                    videoView.setMediaController(mediaController);
-
-                    // convert the video to a byte array
+                try { // convert the video to a byte array
                     byte[] videoByteArray = uriToByteArray(selectedVideoUri);
                     // TODO: use videoByteArray to save in parse
 
@@ -269,9 +274,6 @@ public class CreateHintActivity extends ActionBarActivity {
                             Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 } finally {
-                    // show the video in the hint activity
-                    videoView.setVisibility(View.VISIBLE);
-
                     // show the remove button
                     Button removeButton = (Button) findViewById(R.id.create_hint_remove_video);
                     removeButton.setVisibility(View.VISIBLE);
@@ -279,24 +281,32 @@ public class CreateHintActivity extends ActionBarActivity {
                     // hide the select button
                     Button selectButton = (Button) findViewById(R.id.create_hint_select_video);
                     selectButton.setVisibility(View.GONE);
+
+                    // Reveal the play video button
+                    View playVideoView = findViewById(R.id.create_hint_play_video_layout);
+                    playVideoView.setVisibility(View.VISIBLE);
+
+                    Button playVideoButton = (Button) findViewById(R.id.create_hint_play_video);
+                    playVideoButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getApplicationContext(),
+                                    ContentViewActivity.class);
+                            intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URI,
+                                    selectedVideoUri.toString());
+                            startActivity(intent);
+                        }
+                    });
                 }
             }
 
         } else if (requestCode == getResources().getInteger(R.integer.intent_audio_result)) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) { // The user picked an audio
-                VideoView audioView = (VideoView) findViewById(R.id.create_hint_audio);
 
-                Uri selectedAudioUri = data.getData();
+                final Uri selectedAudioUri = data.getData();
 
                 try {
-
-                    audioView.setVideoURI(selectedAudioUri);
-
-                    MediaController mediaController = new MediaController(this);
-                    mediaController.setAnchorView(audioView);
-                    audioView.setMediaController(mediaController);
-
                     // convert the video to a byte array
                     byte[] audioByteArray = uriToByteArray(selectedAudioUri);
                     // TODO: use audioByteArray to save in parse
@@ -306,9 +316,6 @@ public class CreateHintActivity extends ActionBarActivity {
                             Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 } finally {
-                    // show the audio in the hint activity
-                    audioView.setVisibility(View.VISIBLE);
-
                     // show the remove button
                     Button removeButton = (Button) findViewById(R.id.create_hint_remove_audio);
                     removeButton.setVisibility(View.VISIBLE);
@@ -316,6 +323,22 @@ public class CreateHintActivity extends ActionBarActivity {
                     // hide the select button
                     Button selectButton = (Button) findViewById(R.id.create_hint_select_audio);
                     selectButton.setVisibility(View.GONE);
+
+                    // Reveal the play video button
+                    View playVideoView = findViewById(R.id.create_hint_play_audio_layout);
+                    playVideoView.setVisibility(View.VISIBLE);
+
+                    Button playAudioButton = (Button) findViewById(R.id.create_hint_play_audio);
+                    playAudioButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getApplicationContext(),
+                                    ContentViewActivity.class);
+                            intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URI,
+                                    selectedAudioUri.toString());
+                            startActivity(intent);
+                        }
+                    });
                 }
             }
         }
@@ -466,9 +489,9 @@ public class CreateHintActivity extends ActionBarActivity {
     }
 
     public void removeSelectedVideo(View view) {
-        // hide the image view
-        VideoView videoView = (VideoView) findViewById(R.id.create_hint_video);
-        videoView.setVisibility(View.GONE);
+        // hide the play video button
+        View playVideoView = findViewById(R.id.create_hint_play_video_layout);
+        playVideoView.setVisibility(View.GONE);
 
         // hide the remove button
         Button removeButton = (Button) findViewById(R.id.create_hint_remove_video);
@@ -482,9 +505,9 @@ public class CreateHintActivity extends ActionBarActivity {
     }
 
     public void removeSelectedAudio(View view) {
-        // hide the image view
-        VideoView audioView = (VideoView) findViewById(R.id.create_hint_audio);
-        audioView.setVisibility(View.GONE);
+        // hide the play audio button
+        View playVideoView = findViewById(R.id.create_hint_play_audio_layout);
+        playVideoView.setVisibility(View.GONE);
 
         // hide the remove button
         Button removeButton = (Button) findViewById(R.id.create_hint_remove_audio);

@@ -225,12 +225,22 @@
                                 style="@style/hunt_details"
                                 android:text="@string/create_hint_select_video_details" />
 
-                            <VideoView
-                                android:layout_width="fill_parent"
-                                android:layout_height="@dimen/hunt_details_map_height"
-                                android:visibility="gone"
-                                android:id="@+id/create_hint_video" />
+                        </LinearLayout>
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:id="@+id/create_hint_play_video_layout"
+                            android:visibility="gone">
+
+                            <View style="@style/bottom_card_button_separator" />
+
+                            <Button
+                                style="@style/bottom_card_button"
+                                android:id="@+id/create_hint_play_video"
+                                android:text="@string/create_hint_play_video"
+                                android:drawableLeft="@drawable/ic_play_arrow_grey600_24dp" />
                         </LinearLayout>
 
                         <View style="@style/bottom_card_button_separator" />
@@ -281,12 +291,22 @@
                                 style="@style/hunt_details"
                                 android:text="@string/create_hint_select_audio_details" />
 
-                            <VideoView
-                                android:layout_width="fill_parent"
-                                android:layout_height="@dimen/hunt_details_map_height"
-                                android:visibility="gone"
-                                android:id="@+id/create_hint_audio" />
+                        </LinearLayout>
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:id="@+id/create_hint_play_audio_layout"
+                            android:visibility="gone">
+
+                            <View style="@style/bottom_card_button_separator" />
+
+                            <Button
+                                style="@style/bottom_card_button"
+                                android:id="@+id/create_hint_play_audio"
+                                android:text="@string/create_hint_play_audio"
+                                android:drawableLeft="@drawable/ic_play_arrow_grey600_24dp" />
                         </LinearLayout>
 
                         <View style="@style/bottom_card_button_separator" />

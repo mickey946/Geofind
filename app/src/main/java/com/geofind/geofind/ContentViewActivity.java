@@ -1,19 +1,84 @@
 package com.geofind.geofind;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.MediaController;
+import android.widget.VideoView;
 
 
 public class ContentViewActivity extends ActionBarActivity {
+
+    /**
+     * Intent tag for passing image uri (image stored in user's device).
+     */
+    public static final String IMAGE_URI = "IMAGE_URI";
+
+    /**
+     * Intent tag for passing video or audio uri (video or audio stored in user's device).
+     */
+    public static final String VIDEO_AUDIO_URI = "VIDEO_AUDIO_URI";
+
+    /**
+     * Intent tag for passing image parse id (image stored in parse).
+     */
+    public static final String IMAGE_PARSE_ID = "IMAGE_PARSE_ID";
+
+    /**
+     * Intent tag for passing video or audio parse id (video or audio stored in parse).
+     */
+    public static final String VIDEO_AUDIO_PARSE_ID = "VIDEO_AUDIO_PARSE_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_content_view);
 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+        String selectedImageUriString = bundle.getString(IMAGE_URI);
+        String selectedVideoAudioString = bundle.getString(VIDEO_AUDIO_URI);
+
+        if (selectedImageUriString != null) { // user views his selected image
+            setUpImageView(selectedImageUriString);
+        } else if (selectedVideoAudioString != null) { // user vies his selected video or audio
+            setUpVideoAudioView(selectedVideoAudioString);
+        }
+
         // TODO retrieve files from parse
+    }
+
+    /**
+     * Set up the image view to show the hint image.
+     *
+     * @param selectedImageUriString The hint image uri.toString().
+     */
+    private void setUpImageView(String selectedImageUriString) {
+        Uri selectedImageUri = Uri.parse(selectedImageUriString);
+        ImageView imageView = (ImageView) findViewById(R.id.content_image_view);
+        imageView.setImageURI(selectedImageUri);
+        imageView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Set up the video view to show the video or the audio of the hint.
+     *
+     * @param selectedVideoAudioString The hint video or audio uri.toString().
+     */
+    private void setUpVideoAudioView(String selectedVideoAudioString) {
+        Uri selectedVideoAudio = Uri.parse(selectedVideoAudioString);
+        VideoView videoView = (VideoView) findViewById(R.id.content_video_view);
+        videoView.setVideoURI(selectedVideoAudio);
+        videoView.setVisibility(View.VISIBLE);
+        MediaController mediaController = new MediaController(this);
+        mediaController.setAnchorView(videoView);
+        videoView.setMediaController(mediaController);
     }
 
     @Override

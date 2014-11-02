@@ -2,9 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.geofind.geofind.ContentViewActivity">
+    tools:context="com.geofind.geofind.ContentViewActivity"
+    android:background="@android:color/black">
 
-    <ImageView
+<ImageView
         android:id="@+id/content_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
