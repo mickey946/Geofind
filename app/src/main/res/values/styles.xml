@@ -17,7 +17,7 @@
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
-        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyleBold</item>
     </style>
 
     <style name="AppTheme.ActionBarNoShadow" parent="AppTheme">
@@ -35,6 +35,10 @@
 
     <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="RobotoButtonStyleBold" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <!--Padding-->
@@ -63,13 +67,15 @@
 
     <!-- Main screen main buttons. -->
     <style name="main_bottom_button" parent="android:Widget.Holo.Light.Button">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">90dp</item>
         <item name="android:textColor">@android:color/white</item>
+        <!--<item name="android:textStyle">bold</item>-->
     </style>
 
     <style name="main_bottom_button_half" parent="main_bottom_button">
         <item name="android:layout_weight">.50</item>
+        <item name="android:layout_width">0dp</item>
     </style>
 
     <!--Inner padding in a cardview-->

@@ -36,12 +36,24 @@
                             android:text="Title"
                             android:textSize="@dimen/item_hunt_list_title_size" />
 
-                        <TextView
-                            android:id="@+id/item_hunt_list_total_distance"
+                        <LinearLayout
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="right"
-                            android:text="Total Distance" />
+                            android:orientation="horizontal"
+                            android:gravity="end">
+
+                            <TextView
+                                android:id="@+id/item_hunt_list_total_distance"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/item_hunt_list_total_distance" />
+
+                            <TextView
+                                android:id="@+id/item_hunt_list_distance_unit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="KM" />
+                        </LinearLayout>
 
                     </LinearLayout>
 

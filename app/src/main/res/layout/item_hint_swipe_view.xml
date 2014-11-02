@@ -118,7 +118,6 @@
                                 android:id="@+id/item_hint_picture"
                                 android:layout_width="fill_parent"
                                 android:layout_height="@dimen/hunt_details_map_height"
-                                android:src="@drawable/sample_map"
                                 android:scaleType="centerCrop" />
                         </LinearLayout>
 

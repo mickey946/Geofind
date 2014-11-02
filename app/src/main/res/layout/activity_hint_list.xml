@@ -1,29 +1,45 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context="com.geofind.geofind.HintListActivity">
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/recycler_view"
-        android:layout_width="fill_parent"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".HintListActivity"
-        android:paddingBottom="@dimen/item_hunt_list_vertical_margin"
-        android:clipToPadding="false" />
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
 
-    <TextView
-        style="@style/hunt_activity_hint_title"
-        android:id="@+id/hint_list_empty"
-        android:gravity="center"
-        android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/hint_list_empty"
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/recycler_view"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            tools:context=".HintListActivity"
+            android:paddingBottom="@dimen/item_hunt_list_vertical_margin"
+            android:clipToPadding="false" />
+
+        <TextView
+            style="@style/hunt_activity_hint_title"
+            android:id="@+id/hint_list_empty"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="@string/hint_list_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_add_white_24dp"
+        fab:fab_colorNormal="@color/colorPrimary"
+        fab:fab_colorPressed="@color/colorPrimaryDark"
+        fab:fab_colorRipple="@color/colorPrimary"
+        android:onClick="openHintCreation" />
 
-</RelativeLayout>
+</FrameLayout>

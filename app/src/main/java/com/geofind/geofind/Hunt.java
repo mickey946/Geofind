@@ -13,6 +13,10 @@ import java.util.ArrayList;
  */
 public class Hunt implements Serializable {
 
+    public static final float METERS_TO_MILES = 0.000621371f;
+    public static final float METERS_TO_KILOMETERS = 0.001f;
+    public static final int DIGIT_PRECISION = 3;
+
     /**
      * Title of the hunt.
      */

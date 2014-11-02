@@ -13,16 +13,17 @@ import java.util.List;
 
 /**
  * Created by Ilia Marin on 16/10/2014.
- *
+ * <p/>
  * This file contains general usage geographical calculation function
  */
 public abstract class GeoUtils {
 
     /**
      * Calculates the zoom level for static maps
+     *
      * @param center the center of the map
      * @param radius the required radius around the center in KiloMeters
-     * @param width the width of the display rectangle
+     * @param width  the width of the display rectangle
      * @param height the height of the display rectangle
      * @return the required zoom level
      */
@@ -60,8 +61,9 @@ public abstract class GeoUtils {
 
     /**
      * Calculate the zoom level (formula from GoogleMap website)
-     * @param mapPx map dimension in pixels
-     * @param worldPx the world dimension in pixels as given by Google
+     *
+     * @param mapPx    map dimension in pixels
+     * @param worldPx  the world dimension in pixels as given by Google
      * @param fraction the part of the world to display
      * @return the required zoom level
      */
@@ -73,10 +75,11 @@ public abstract class GeoUtils {
     /**
      * Calculate the coordinates of a point the located at specific angle on a distance from
      * specified point.
-     * @param lat the latitude of the center
-     * @param lng the longitude of the center
+     *
+     * @param lat    the latitude of the center
+     * @param lng    the longitude of the center
      * @param radius the distance in KM
-     * @param angle the required angle in degrees
+     * @param angle  the required angle in degrees
      * @return the request point
      */
     public static LatLng calcPointOnArc(double lat, double lng, float radius, int angle) {
@@ -94,8 +97,9 @@ public abstract class GeoUtils {
 
     /**
      * Creates a list of points which are located on a circle around the center
-     * @param center the center of the circle
-     * @param radius the radius around the center in KiloMeters
+     *
+     * @param center     the center of the circle
+     * @param radius     the radius around the center in KiloMeters
      * @param resolution the maximal distance in degrees between two consecutive points
      * @return the list of the point on the circle
      */
@@ -124,7 +128,7 @@ public abstract class GeoUtils {
      * @param points the points of the path
      * @return the approximate distance in meters
      */
-    public static float calcPathLength(List<Point> points){
+    public static float calcPathLength(List<Point> points) {
         float len = 0;
         for (int i = 0; i < points.size() - 1; i++) {
             len += points.get(i).toLocation().distanceTo(points.get(i).toLocation());
@@ -136,19 +140,20 @@ public abstract class GeoUtils {
 
     /**
      * Calculate the maximal distance from the starting point in meters.
+     *
      * @param points the points of the path
-     * @return  the approximate distance in meters
+     * @return the approximate distance in meters
      */
-    public static float calcRadius(List<Point> points){
+    public static float calcRadius(List<Point> points) {
         float len = 0;
         Location startPoint = points.get(0).toLocation();
-        for (Point p : points){
-            len = Math.max(len,startPoint.distanceTo(p.toLocation()));
+        for (Point p : points) {
+            len = Math.max(len, startPoint.distanceTo(p.toLocation()));
         }
-        return  len;
+        return len;
     }
 
-    public static float calcDistance( Location currentLocation, Point p){
+    public static float calcDistance(Location currentLocation, Point p) {
         return currentLocation.distanceTo(p.toLocation());
     }
 }
