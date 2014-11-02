@@ -97,8 +97,8 @@ public class GeofenceManager implements
         _pointIndex = pointIndex;
         SimpleGeofence simpleGeofence = new SimpleGeofence(
                 ID,
-                point.get_latitude(),
-                point.get_longitude(),
+                point.getLatitude(),
+                point.getLongitude(),
                 radius,
                 Geofence.NEVER_EXPIRE,
                 Geofence.GEOFENCE_TRANSITION_ENTER);
@@ -122,7 +122,7 @@ public class GeofenceManager implements
      * Helping method for consistent id
      */
     private String composeID(Point p) {
-        return "GeoFind_" + p.get_latitude() + "_" + p.get_longitude();
+        return "GeoFind_" + p.getLatitude() + "_" + p.getLongitude();
     }
 
     /*
