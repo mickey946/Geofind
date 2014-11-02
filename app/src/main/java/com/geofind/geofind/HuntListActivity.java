@@ -15,7 +15,6 @@ import com.geofind.geofind.widget.SlidingTabLayout;
 
 import java.util.concurrent.Callable;
 
-
 public class HuntListActivity extends ActionBarActivity implements ActionBar.TabListener {
 
     /**
@@ -37,6 +36,9 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
      */
     SlidingTabLayout slidingTabLayout;
 
+    /**
+     * The location finder used to determine user's current location.
+     */
     LocationFinder locationFinder;
 
     @Override

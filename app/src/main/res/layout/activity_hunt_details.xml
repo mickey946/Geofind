@@ -1,5 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.geofind.geofind.HuntDetailsActivity">
@@ -71,19 +72,24 @@
                                 android:text="@string/hunt_details_map_description" />
                         </LinearLayout>
 
-                        <ImageView
-                            android:id="@+id/hunt_details_map_preview"
-                            android:layout_width="fill_parent"
-                            android:layout_height="@dimen/hunt_details_map_height"
-                            android:src="@drawable/sample_map"
-                            android:scaleType="centerCrop"
-                            android:visibility="invisible"/>
-                        <ProgressBar
-                            android:id="@+id/hunt_details_progress_bar"
-                            style="?android:attr/progressBarStyleLarge"
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true" />
+                            android:layout_height="@dimen/item_hunt_list_map_height">
+
+                            <ImageView
+                                android:id="@+id/hunt_details_map_preview"
+                                android:layout_width="fill_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:visibility="invisible" />
+
+                            <ProgressBar
+                                android:id="@+id/hunt_details_progress_bar"
+                                style="?android:attr/progressBarStyleLarge"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true" />
+                        </RelativeLayout>
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
@@ -116,11 +122,27 @@
                                 style="@style/hunt_details_right"
                                 android:text="@string/hunt_details_total_distance" />
 
-                            <TextView
-                                style="@style/hunt_details"
-                                android:id="@+id/hunt_details_total_distance"
-                                android:gravity="right"
-                                android:text="Number" />
+                            <LinearLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_details"
+                                    android:id="@+id/hunt_details_total_distance"
+                                    android:text="Number" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_details"
+                                    android:id="@+id/hunt_details_total_distance_unit"
+                                    android:text=" km" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -134,11 +156,28 @@
                                 android:layout_width="wrap_content"
                                 android:text="@string/hunt_details_distance_from_user" />
 
-                            <TextView
-                                style="@style/hunt_details"
-                                android:id="@+id/hunt_details_distance_from_user"
-                                android:gravity="right"
-                                android:text="Number" />
+                            <LinearLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_details"
+                                    android:id="@+id/hunt_details_distance_from_user"
+                                    android:text="@string/hunt_details_waiting_for_location" />
+
+                                <TextView
+                                    android:visibility="gone"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_details"
+                                    android:id="@+id/hunt_details_distance_from_user_unit"
+                                    android:text=" km" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -205,5 +244,16 @@
         </LinearLayout>
     </ScrollView>
 
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_play_arrow_white_24dp"
+        fab:fab_colorNormal="@color/colorPrimary"
+        fab:fab_colorPressed="@color/colorPrimaryDark"
+        fab:fab_colorRipple="@color/colorPrimary"
+        android:onClick="startHunt" />
 
-</RelativeLayout>
+</FrameLayout>

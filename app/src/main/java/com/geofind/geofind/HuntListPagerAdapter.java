@@ -1,7 +1,9 @@
 package com.geofind.geofind;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -148,6 +151,29 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         public Context context;
         public HuntListAdapter adapter;
 
+        /**
+         * Get the current distance unit that is saved in the settings file.
+         *
+         * @return A string representing the distance unit.
+         */
+        private String getCurrentDistanceUnit() {
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(context);
+            return sharedPreferences.getString(
+                    this.getString(R.string.pref_key_distance_units),
+                    this.getString(R.string.preferences_distance_units_kilometers));
+        }
+
+        @Override
+        public void onResume() {
+            String distanceUnit = getCurrentDistanceUnit();
+            if (!adapter.getDistanceUnit().equals(distanceUnit)) {
+                adapter.setDistanceUnit(distanceUnit);
+                adapter.notifyDataSetChanged();
+            }
+            super.onResume();
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -167,6 +193,10 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
             // create an adapter
             adapter = new HuntListAdapter(hunts, context);
+
+            // set the distance unit
+            String distanceUnit = getCurrentDistanceUnit();
+            adapter.setDistanceUnit(distanceUnit);
 
             // set adapter
             recyclerView.setAdapter(adapter);
