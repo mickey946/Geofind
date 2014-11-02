@@ -95,18 +95,18 @@ public class SettingsActivity extends ActionBarActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             // this method is called after the key is set so it must exists.
-            boolean value = sharedPreferences.getBoolean(key,false);
 
             if (key.equals(getString(R.string.pref_analytics))){
-
                 Tracker tracker = ((GeoFindApp) getActivity().getApplicationContext()).
                         getTracker(GeoFindApp.TrackerName.APP_TRACKER);
-                tracker.enableAutoActivityTracking(value);
+                tracker.enableAutoActivityTracking(
+                        sharedPreferences.getBoolean(key,false));
             }
             else if (key.equals(getString(R.string.pref_crash_logs))) {
                 Tracker tracker = ((GeoFindApp) getActivity().getApplicationContext()).
                         getTracker(GeoFindApp.TrackerName.APP_TRACKER);
-                tracker.enableExceptionReporting(value);
+                tracker.enableExceptionReporting(
+                        sharedPreferences.getBoolean(key,false));
             }
 
 
