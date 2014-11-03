@@ -101,6 +101,7 @@ public class ContentViewActivity extends ActionBarActivity {
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
         videoView.setVideoURI(selectedVideoAudio);
+        videoView.start();
     }
 
     @Override

@@ -16,11 +16,9 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +29,8 @@ import java.util.List;
 public class CreateHintActivity extends ActionBarActivity {
 
     private static final String PREF_CREATE_HINT_POINT_DISMISS = "PREF_CREATE_HINT_POINT_DISMISS";
+
+    public static final int MAX_FILE_SIZE = 10000000;
 
     private SharedPreferences sharedPreferences;
 
@@ -199,7 +199,17 @@ public class CreateHintActivity extends ActionBarActivity {
 
                 final Uri selectedImageUri = data.getData();
 
+                boolean isTooBig = false;
                 try {
+                    // convert the image to a byte array
+                    byte[] imageByteArray = uriToByteArray(selectedImageUri);
+                    if (imageByteArray == null) { // file is too big
+                        isTooBig = true;
+                        Toast.makeText(this, getString(R.string.create_hint_max_file_error),
+                                Toast.LENGTH_LONG).show();
+                    }
+                    // TODO: use imageByteArray to save in parse
+
                     // Crop the center of the bitmap that fits the view
                     Bitmap inputBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
                             selectedImageUri);
@@ -238,24 +248,23 @@ public class CreateHintActivity extends ActionBarActivity {
                         }
                     });
 
-                    // convert the image to a byte array
-                    byte[] imageByteArray = uriToByteArray(selectedImageUri);
-                    // TODO: use imageByteArray to save in parse
 
                 } catch (Exception e) {
                     Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
                             Toast.LENGTH_LONG).show();
                 } finally {
-                    // show the image in the hint activity
-                    imageView.setVisibility(View.VISIBLE);
+                    if (!isTooBig) {
+                        // show the image in the hint activity
+                        imageView.setVisibility(View.VISIBLE);
 
-                    // show the remove button
-                    Button removeButton = (Button) findViewById(R.id.create_hint_remove_picture);
-                    removeButton.setVisibility(View.VISIBLE);
+                        // show the remove button
+                        Button removeButton = (Button) findViewById(R.id.create_hint_remove_picture);
+                        removeButton.setVisibility(View.VISIBLE);
 
-                    // hide the select button
-                    Button selectButton = (Button) findViewById(R.id.create_hint_select_picture);
-                    selectButton.setVisibility(View.GONE);
+                        // hide the select button
+                        Button selectButton = (Button) findViewById(R.id.create_hint_select_picture);
+                        selectButton.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -265,8 +274,14 @@ public class CreateHintActivity extends ActionBarActivity {
 
                 final Uri selectedVideoUri = data.getData();
 
+                boolean isTooBig = false;
                 try { // convert the video to a byte array
                     byte[] videoByteArray = uriToByteArray(selectedVideoUri);
+                    if (videoByteArray == null) { // file is too big
+                        isTooBig = true;
+                        Toast.makeText(this, getString(R.string.create_hint_max_file_error),
+                                Toast.LENGTH_LONG).show();
+                    }
                     // TODO: use videoByteArray to save in parse
 
                 } catch (Exception e) {
@@ -274,29 +289,31 @@ public class CreateHintActivity extends ActionBarActivity {
                             Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 } finally {
-                    // show the remove button
-                    Button removeButton = (Button) findViewById(R.id.create_hint_remove_video);
-                    removeButton.setVisibility(View.VISIBLE);
+                    if (!isTooBig) {
+                        // show the remove button
+                        Button removeButton = (Button) findViewById(R.id.create_hint_remove_video);
+                        removeButton.setVisibility(View.VISIBLE);
 
-                    // hide the select button
-                    Button selectButton = (Button) findViewById(R.id.create_hint_select_video);
-                    selectButton.setVisibility(View.GONE);
+                        // hide the select button
+                        Button selectButton = (Button) findViewById(R.id.create_hint_select_video);
+                        selectButton.setVisibility(View.GONE);
 
-                    // Reveal the play video button
-                    View playVideoView = findViewById(R.id.create_hint_play_video_layout);
-                    playVideoView.setVisibility(View.VISIBLE);
+                        // Reveal the play video button
+                        View playVideoView = findViewById(R.id.create_hint_play_video_layout);
+                        playVideoView.setVisibility(View.VISIBLE);
 
-                    Button playVideoButton = (Button) findViewById(R.id.create_hint_play_video);
-                    playVideoButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(getApplicationContext(),
-                                    ContentViewActivity.class);
-                            intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URI,
-                                    selectedVideoUri.toString());
-                            startActivity(intent);
-                        }
-                    });
+                        Button playVideoButton = (Button) findViewById(R.id.create_hint_play_video);
+                        playVideoButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getApplicationContext(),
+                                        ContentViewActivity.class);
+                                intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URI,
+                                        selectedVideoUri.toString());
+                                startActivity(intent);
+                            }
+                        });
+                    }
                 }
             }
 
@@ -306,9 +323,15 @@ public class CreateHintActivity extends ActionBarActivity {
 
                 final Uri selectedAudioUri = data.getData();
 
+                boolean isTooBig = false;
                 try {
                     // convert the video to a byte array
                     byte[] audioByteArray = uriToByteArray(selectedAudioUri);
+                    if (audioByteArray == null) { // file is too big
+                        isTooBig = true;
+                        Toast.makeText(this, getString(R.string.create_hint_max_file_error),
+                                Toast.LENGTH_LONG).show();
+                    }
                     // TODO: use audioByteArray to save in parse
 
                 } catch (Exception e) {
@@ -316,29 +339,31 @@ public class CreateHintActivity extends ActionBarActivity {
                             Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 } finally {
-                    // show the remove button
-                    Button removeButton = (Button) findViewById(R.id.create_hint_remove_audio);
-                    removeButton.setVisibility(View.VISIBLE);
+                    if (!isTooBig) {
+                        // show the remove button
+                        Button removeButton = (Button) findViewById(R.id.create_hint_remove_audio);
+                        removeButton.setVisibility(View.VISIBLE);
 
-                    // hide the select button
-                    Button selectButton = (Button) findViewById(R.id.create_hint_select_audio);
-                    selectButton.setVisibility(View.GONE);
+                        // hide the select button
+                        Button selectButton = (Button) findViewById(R.id.create_hint_select_audio);
+                        selectButton.setVisibility(View.GONE);
 
-                    // Reveal the play video button
-                    View playVideoView = findViewById(R.id.create_hint_play_audio_layout);
-                    playVideoView.setVisibility(View.VISIBLE);
+                        // Reveal the play video button
+                        View playVideoView = findViewById(R.id.create_hint_play_audio_layout);
+                        playVideoView.setVisibility(View.VISIBLE);
 
-                    Button playAudioButton = (Button) findViewById(R.id.create_hint_play_audio);
-                    playAudioButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(getApplicationContext(),
-                                    ContentViewActivity.class);
-                            intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URI,
-                                    selectedAudioUri.toString());
-                            startActivity(intent);
-                        }
-                    });
+                        Button playAudioButton = (Button) findViewById(R.id.create_hint_play_audio);
+                        playAudioButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getApplicationContext(),
+                                        ContentViewActivity.class);
+                                intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URI,
+                                        selectedAudioUri.toString());
+                                startActivity(intent);
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -427,9 +452,17 @@ public class CreateHintActivity extends ActionBarActivity {
 
         // read the file 1024 bytes at a time and write them to the OutputStream
         byte[] b = new byte[1024];
+        int totatlBytesRead = 0;
         int bytesRead;
         while ((bytesRead = inputStream.read(b)) != -1) {
+            totatlBytesRead += bytesRead;
             byteArrayOutputStream.write(b, 0, bytesRead);
+            if (totatlBytesRead > MAX_FILE_SIZE) {
+                // close the streams
+                byteArrayOutputStream.close();
+                inputStream.close();
+                return null;
+            }
         }
 
         // get byte array from the stream

@@ -152,5 +152,6 @@
     <string name="title_activity_content_view">Hint Media</string>
     <string name="create_hint_play_video">Play selected video</string>
     <string name="create_hint_play_audio">Play selected audio</string>
+    <string name="create_hint_max_file_error">Max file size is 10MB</string>
 
 </resources>
