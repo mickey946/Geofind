@@ -1,8 +1,10 @@
 package com.geofind.geofind;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +35,21 @@ public class ContentViewActivity extends ActionBarActivity {
      * Intent tag for passing video or audio parse id (video or audio stored in parse).
      */
     public static final String VIDEO_AUDIO_PARSE_ID = "VIDEO_AUDIO_PARSE_ID";
+
+    /**
+     * A tag used to preserve video or audio playback position on orientation change.
+     */
+    private static final String POS_TAG = "POS";
+
+    /**
+     * A tag used to preserve video or audio playback on orientation change.
+     */
+    private static final String PLAYING_TAG = "PLAYING";
+
+    /**
+     * The video view that shows hint video or audio.
+     */
+    VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +90,28 @@ public class ContentViewActivity extends ActionBarActivity {
      */
     private void setUpVideoAudioView(String selectedVideoAudioString) {
         Uri selectedVideoAudio = Uri.parse(selectedVideoAudioString);
-        VideoView videoView = (VideoView) findViewById(R.id.content_video_view);
-        videoView.setVideoURI(selectedVideoAudio);
+        videoView = (VideoView) findViewById(R.id.content_video_view);
         videoView.setVisibility(View.VISIBLE);
         MediaController mediaController = new MediaController(this);
         mediaController.setAnchorView(videoView);
         videoView.setMediaController(mediaController);
+        videoView.setVideoURI(selectedVideoAudio);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        videoView.seekTo(savedInstanceState.getInt(POS_TAG));
+        if (savedInstanceState.getBoolean(PLAYING_TAG)) {
+            videoView.start();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(POS_TAG, videoView.getCurrentPosition());
+        outState.putBoolean(PLAYING_TAG, videoView.isPlaying());
     }
 
     @Override
