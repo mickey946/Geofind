@@ -74,9 +74,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
-
-        query.selectKeys(Arrays.asList("title", "description", "creatorID", "firstPoint",
-                "radius", "totalDistance", "totalRating", "numOfRaters"));
+        //query.include("firstPoint");
 
 
         //TODO activate this switch when data on user is available.

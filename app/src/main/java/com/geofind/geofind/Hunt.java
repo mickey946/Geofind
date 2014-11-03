@@ -71,6 +71,8 @@ public class Hunt implements Serializable {
         _radius = (float) remoteHunt.getDouble("radius");
         _totalDistance = (float) remoteHunt.getDouble("totalDistance");
         _totalRating = (float) remoteHunt.getDouble("totalRating");
+        _hints = new ArrayList<Hint>();
+        _comments = new ArrayList<Comment>();
 
 
         //TODO need to figure out how to retrieve hints on the fly.
@@ -157,6 +159,9 @@ public class Hunt implements Serializable {
 
         ArrayList<ParseObject> remoteHints = new ArrayList<ParseObject>();
 
+        //set first hint to solved
+        _hints.get(0).setState(Hint.State.SOLVED);
+
         for (Hint hint : _hints) {
             remoteHints.add(hint.toParseObject());
         }
@@ -164,6 +169,7 @@ public class Hunt implements Serializable {
         remoteHunt.put("hints", remoteHints);
 
         return remoteHunt;
+
     }
 
 }
