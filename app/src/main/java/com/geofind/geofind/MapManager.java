@@ -291,7 +291,7 @@ public class MapManager {
 
 
     public void onLocationChanged(Location location) {
-        double latitude = location.getLatitude();
+        double latitude = location.getLatitude() + 0;
         double longitude = location.getLongitude();
 
         LatLng latLng = new LatLng(latitude, longitude);

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -91,6 +92,8 @@ public class HuntActivity extends ActionBarActivity {
      */
     GeofenceManager geofence;
 
+    private long startTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -137,10 +140,19 @@ public class HuntActivity extends ActionBarActivity {
         if (keepScreenAwake) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+
+
+        startTime = SystemClock.elapsedRealtime();
+
+
     }
 
     @Override
     protected void onPause() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long currentTime = SystemClock.elapsedRealtime();
+        long pasedTime = sharedPreferences.getLong("HuntTime",0);
+        sharedPreferences.edit().putLong("HuntTime",pasedTime + currentTime-startTime );
         mapManager.stopTrackCurrentLocation();
         super.onPause();
     }
@@ -217,7 +229,7 @@ public class HuntActivity extends ActionBarActivity {
         slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
+                Log.v(TAG, "onPanelSlide, offset " + slideOffset);
                 android.support.v7.app.ActionBar actionBar = getSupportActionBar();
                 if (slideOffset >= SLIDING_UP_PANEL_ANCHOR_POINT - 0.01f) {
                     // In APIs lower than 17, hiding the action bar changes the layout size and
@@ -233,14 +245,14 @@ public class HuntActivity extends ActionBarActivity {
             @Override
             public void onPanelExpanded(View panel) {
                 // when the panel is expanded the map is not visible, so there is nothing to show
-                Log.i(TAG, "onPanelExpanded");
+                Log.v(TAG, "onPanelExpanded");
             }
 
             @Override
             public void onPanelCollapsed(View panel) {
                 // when the panel had collapsed, the user would like to see the map rather than the
                 // point
-                Log.i(TAG, "onPanelCollapsed");
+                Log.v(TAG, "onPanelCollapsed");
                 mapManager.setMapOffset(0, 0);
                 focusOnPoint(viewPager.getCurrentItem());
             }
@@ -249,7 +261,7 @@ public class HuntActivity extends ActionBarActivity {
             public void onPanelAnchored(View panel) {
                 // when the user anchors the panel, he sees both the hint and both the map, so it's
                 // good to assume that he wants to focus on the point (if it is visible)
-                Log.i(TAG, "onPanelAnchored");
+                Log.v(TAG, "onPanelAnchored");
 
                 int height = findViewById(R.id.main_content).getMeasuredHeight();
                 float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
@@ -371,6 +383,7 @@ public class HuntActivity extends ActionBarActivity {
                 // Mark the current hint as solved
 
                 hints.get(indx).setState(Hint.State.SOLVED);
+                hintPagerAdapter.invalidateFragment(indx);
                 mapManager.setMarker(hints.get(indx).getLocation().toLatLng(),
                         getString(R.string.hunt_activity_hint_number_title) + indx,
                         hints.get(indx).getState());
@@ -496,6 +509,10 @@ public class HuntActivity extends ActionBarActivity {
         } else {
             Intent intent = new Intent(HuntActivity.this, HuntFinishActivity.class);
             // TODO pass arguments for statistics
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            long currentTime = SystemClock.elapsedRealtime();
+            long passedTime = sharedPreferences.getLong("HuntTime",0);
+            intent.putExtra("HuntTime", passedTime + currentTime - startTime);
             intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
             startActivity(intent);
             HuntActivity.this.finish();
