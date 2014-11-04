@@ -5,13 +5,13 @@
 
     <item
         android:id="@+id/action_navigate"
-        android:icon="@drawable/ic_navigation_white_48dp"
+        android:icon="@drawable/ic_navigation_white_24dp"
         android:title="@string/hunt_details_navigate_start_point"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_start_hunt"
-        android:icon="@drawable/ic_play_arrow_white_48dp"
+        android:icon="@drawable/ic_play_arrow_white_24dp"
         android:title="@string/item_hunt_list_start_hunt"
         app:showAsAction="ifRoom" />
 

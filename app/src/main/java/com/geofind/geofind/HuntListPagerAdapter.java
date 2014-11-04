@@ -1,7 +1,9 @@
 package com.geofind.geofind;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -61,7 +63,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         // create and fill the hunts array to display them.
         // TODO retrieve the hunts from parse
         ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        hunts.add(new Hunt("Title1", 1, 1, "Hunt1", new LatLng(31.76831, 35.21371), 500));
+        hunts.add(new Hunt("Title1", 1, 1000, "Hunt1", new LatLng(31.76831, 35.21371), 500));
         hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831, 35.21371), 1000));
         hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831, 35.21371), 200));
         hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831, 35.21371), 10000));
@@ -109,6 +111,30 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         public static final String HUNT_LIST_TAG = "HUNT_LIST";
 
         public Context context;
+        HuntListAdapter adapter;
+
+        /**
+         * Get the current distance unit that is saved in the settings file.
+         *
+         * @return A string representing the distance unit.
+         */
+        private String getCurrentDistanceUnit() {
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(context);
+            return sharedPreferences.getString(
+                    this.getString(R.string.pref_key_distance_units),
+                    this.getString(R.string.preferences_distance_units_kilometers));
+        }
+
+        @Override
+        public void onResume() {
+            String distanceUnit = getCurrentDistanceUnit();
+            if (!adapter.getDistanceUnit().equals(distanceUnit)) {
+                adapter.setDistanceUnit(distanceUnit);
+                adapter.notifyDataSetChanged();
+            }
+            super.onResume();
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,7 +154,11 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
             // create an adapter
-            HuntListAdapter adapter = new HuntListAdapter(hunts, context);
+            adapter = new HuntListAdapter(hunts, context);
+
+            // set the distance unit
+            String distanceUnit = getCurrentDistanceUnit();
+            adapter.setDistanceUnit(distanceUnit);
 
             // set adapter
             recyclerView.setAdapter(adapter);

@@ -13,4 +13,5 @@
         android:title="Temporary finish"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
 </menu>

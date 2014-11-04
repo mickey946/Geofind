@@ -17,5 +17,23 @@
     <string name="intent_hint_point_extra">HINT_POINT</string>
     <string name="intent_hunt_point_extra">HUNT_POINT</string>
     <string name="intent_hunt_radius_extra">HUNT_RADIUS</string>
+    <string name="pref_key_general_settings">pref_key_general_settings</string>
+    <string name="pref_key_sound">pref_sound</string>
+    <string name="pref_key_device_settings">pref_key_device_settings</string>
+    <string name="pref_key_stay_awake">pref_stay_awake</string>
+    <string name="pref_key_background">pref_background</string>
+    <string name="pref_key_offline">pref_offline</string>
+    <string name="pref_key_units_settings">pref_key_units_settings</string>
+    <string name="pref_key_distance_units">pref_key_distance_units</string>
+    <string name="pref_key_account_settings">pref_key_account_settings</string>
+    <string name="pref_key_account_profile">pref_key_account_profile</string>
+    <string name="pref_key_account_sign_in_out">pref_key_account_sign_out</string>
+    <string name="pref_key_analytics_settings">pref_key_analytics_settings</string>
+    <string name="pref_key_analytics">pref_analytics</string>
+    <string name="pref_key_crash_logs">pref_crash_logs</string>
+    <string name="pref_key_about_settings">pref_key_about_settings</string>
+    <string name="pref_key_licences">pref_key_licences</string>
+    <string name="pref_key_about">pref_key_about</string>
     <integer name="bitmap_compression_quality">70</integer>
+    <string name="pref_analyticks_key">pref_analytics</string>
 </resources>

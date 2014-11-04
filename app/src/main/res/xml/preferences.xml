@@ -2,93 +2,94 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="General Settings"
-        android:key="pref_key_general_settings">
+        android:title="@string/preferences_general_settings_title"
+        android:key="@string/pref_key_general_settings">
 
         <CheckBoxPreference
-            android:key="pref_sound"
-            android:title="Sound Effects"
-            android:summary="Play sound effects during the game."
+            android:key="@string/pref_key_sound"
+            android:title="@string/preferences_sound_effects_title"
+            android:summary="@string/preferences_sound_effects_summary"
             android:defaultValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Device Settings"
-        android:key="pref_key_device_settings">
+        android:title="@string/preferences_device_settings_title"
+        android:key="@string/pref_key_device_settings">
+
         <CheckBoxPreference
-            android:key="pref_stay_awake"
-            android:title="Always Awake"
-            android:summary="The screen would stay awake while playing a hunt."
+            android:key="@string/pref_key_stay_awake"
+            android:title="@string/preferences_always_awake_title"
+            android:summary="@string/preferences_always_awake_summary"
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="pref_background"
-            android:title="Work In Background"
-            android:summary="The hunt would continue to run when it's window is closed."
+            android:key="@string/pref_key_background"
+            android:title="@string/preferences_work_in_background_title"
+            android:summary="@string/preferences_work_in_background_summary"
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="pref_offline"
-            android:title="Play Offline"
-            android:summary="Download entire hunt's data before starting to play."
+            android:key="@string/pref_key_offline"
+            android:title="@string/preferences_play_offline_title"
+            android:summary="@string/preferences_play_offline_summary"
             android:defaultValue="false" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Units"
-        android:key="pref_key_units_settings">
+        android:title="@string/preferences_units_title"
+        android:key="@string/pref_key_units_settings">
 
         <ListPreference
-            android:key="pref_key_distance_units"
-            android:title="Distance units"
-            android:entries="@array/settings_distance_units"
-            android:entryValues="@array/settings_distance_units"
-            android:defaultValue="@string/settings_distance_units_default" />
+            android:key="@string/pref_key_distance_units"
+            android:title="@string/preferences_distance_units_title"
+            android:entries="@array/preferences_distance_units"
+            android:entryValues="@array/preferences_distance_units"
+            android:defaultValue="@string/preferences_distance_units_kilometers" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Account Settings"
-        android:key="pref_key_account_settings">
+        android:title="@string/preferences_account_settings_title"
+        android:key="@string/pref_key_account_settings">
 
         <Preference
-            android:title="Google+ Profile"
-            android:key="pref_key_account_profile" />
+            android:title="@string/preferences_google_plus_title"
+            android:key="@string/pref_key_account_profile" />
         <Preference
-            android:title="Sign Out"
-            android:key="pref_key_account_sign_out" />
+            android:title="@string/preferences_account_sign_out_title"
+            android:key="@string/pref_key_account_sign_in_out" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Improve Geofind"
-        android:key="pref_key_analytics_settings">
+        android:title="@string/preferences_improve_geofind_title"
+        android:key="@string/pref_key_analytics_settings">
 
         <CheckBoxPreference
-            android:key="pref_analytics"
-            android:title="Analytics"
-            android:summary="Send anonymous statistic about app usage."
+            android:key="@string/pref_key_analytics"
+            android:title="@string/preferences_analytics_title"
+            android:summary="@string/preferences_analytics_summary"
             android:defaultValue="true" />
 
         <CheckBoxPreference
-            android:key="pref_crash_logs"
-            android:title="Crash Logs"
-            android:summary="Send anonymous crash reports of this app."
+            android:key="@string/pref_key_crash_logs"
+            android:title="@string/preferences_crash_logs_title"
+            android:summary="@string/preferences_crash_logs_summary"
             android:defaultValue="true" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="About"
-        android:key="pref_key_about_settings">
+        android:title="@string/preferences_about_title"
+        android:key="@string/pref_key_about_settings">
 
         <Preference
-            android:title="Open Source Licences"
-            android:key="pref_key_licences" />
+            android:title="@string/preferences_open_source_licences_title"
+            android:key="@string/pref_key_licences" />
         <Preference
-            android:title="About Geofind"
-            android:key="pref_key_about" />
+            android:title="@string/preferences_about_geofind_title"
+            android:key="@string/pref_key_about" />
 
     </PreferenceCategory>
 

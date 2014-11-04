@@ -1,7 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     tools:context="com.geofind.geofind.HuntFinishActivity">
 
     <ScrollView
@@ -73,11 +74,27 @@
                                 style="@style/hunt_details_right"
                                 android:text="@string/hunt_details_total_distance" />
 
-                            <TextView
-                                style="@style/hunt_details"
-                                android:id="@+id/hunt_details_total_distance"
-                                android:gravity="right"
-                                android:text="Number" />
+                            <LinearLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_details"
+                                    android:id="@+id/hunt_details_total_distance"
+                                    android:text="Number" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/text_details"
+                                    android:id="@+id/hunt_details_total_distance_unit"
+                                    android:text=" km" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -195,6 +212,7 @@
                             android:gravity="center"
                             android:text="@string/hunt_finish_submit_review"
                             android:textColor="@android:color/black"
+                            android:drawableLeft="@drawable/ic_comment_grey600_24dp"
                             android:textSize="@dimen/item_hunt_list_start_hunt_text_size" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -203,4 +221,16 @@
         </LinearLayout>
     </ScrollView>
 
-</RelativeLayout>
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_done_white_24dp"
+        fab:fab_colorNormal="@color/colorPrimary"
+        fab:fab_colorPressed="@color/colorPrimaryDark"
+        fab:fab_colorRipple="@color/colorPrimary"
+        android:onClick="goToMainScreen" />
+
+</FrameLayout>

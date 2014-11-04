@@ -98,14 +98,7 @@ public class HintListActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Intent intent;
         switch (id) {
-            case R.id.action_add_point:
-                intent = new Intent(this, CreateHintActivity.class);
-                startActivityForResult(intent,
-                        getResources().getInteger(R.integer.intent_hint_result));
-                return true;
-
             case R.id.action_submit_points:
                 submitPoints();
                 return true;
@@ -200,7 +193,7 @@ public class HintListActivity extends ActionBarActivity {
         }
 
         // set icon
-        builder.setIcon(getResources().getDrawable(R.drawable.ic_warning_grey600_48dp));
+        builder.setIcon(getResources().getDrawable(R.drawable.ic_warning_grey600_24dp));
 
         // set positive button
         builder.setPositiveButton(getString(R.string.hint_list_data_loss_warning_positive),
@@ -229,5 +222,15 @@ public class HintListActivity extends ActionBarActivity {
         AlertDialog dialog = builder.create();
 
         dialog.show();
+    }
+
+    /**
+     * Open hint creation activity.
+     *
+     * @param view The current view.
+     */
+    public void openHintCreation(View view) {
+        Intent intent = new Intent(this, CreateHintActivity.class);
+        startActivityForResult(intent, getResources().getInteger(R.integer.intent_hint_result));
     }
 }
