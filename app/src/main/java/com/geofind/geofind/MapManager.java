@@ -133,6 +133,7 @@ public class MapManager implements LocationListener {
 
     /**
      * Set callback for on marker click
+     *
      * @param markerCallback the callback method
      */
     public void setMarkerCallback(MarkerCallback markerCallback) {
@@ -152,16 +153,17 @@ public class MapManager implements LocationListener {
 
     /**
      * Set general purpose on map click
+     *
      * @param onMapClick the callback method
      */
-    public void setOnMapClick(final Callable onMapClick){
+    public void setOnMapClick(final Callable onMapClick) {
         _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 try {
                     onMapClick.call();
                 } catch (Exception e) {
-                    Log.e(LOG_TAG,"OnMapClick exception" + e.toString());
+                    Log.e(LOG_TAG, "OnMapClick exception" + e.toString());
                     e.printStackTrace();
                 }
             }
@@ -231,7 +233,7 @@ public class MapManager implements LocationListener {
                 }
                 Marker marker = _mMap.addMarker(markerOptions);
 
-                new ReverseGeocodingTask(_activity.getBaseContext(),marker).execute(latLng);
+                new ReverseGeocodingTask(_activity.getBaseContext(), marker).execute(latLng);
             }
         });
     }
@@ -288,20 +290,47 @@ public class MapManager implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
         LatLng latLng = new LatLng(latitude, longitude);
 
-        _mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        _mMap.moveCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
-        _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
+        _mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, _zoomLevel),
+                new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() { // wait for the animation to end so we won't break it
+                        _mMap.animateCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
+                    }
 
-        if (_atvLocation != null) {
+                    @Override
+                    public void onCancel() {
+                        // do nothing
+                    }
+                });
+
+        if (_atvLocation != null)
+
+        {
             _atvLocation.setText(""); // text is set programmatically.
             _atvLocation.setHint("Lat: " + latitude + " Long:" + longitude);
         }
+    }
+
+    /**
+     * A clone of onLocationChanged, except it does not animate the movement to a new point.
+     * The main purpose of this function is to overcome the bug of animateCamera when the target
+     * point didn't change (in this case, it won't enter the onFinish callback and won't scroll the
+     * map - happens when collapsing the panel from an anchor point and the map is already focused).
+     * @param location The location to be focused on.
+     */
+    public void onLocationChangedAnchored(Location location) {
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+
+        LatLng latLng = new LatLng(latitude, longitude);
+
+        _mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, _zoomLevel));
+        _mMap.animateCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
     }
 
     @Override
@@ -322,8 +351,9 @@ public class MapManager implements LocationListener {
 
     /**
      * Draw a circle on the map
+     *
      * @param position center of the circle
-     * @param radius the radius of circle in meters
+     * @param radius   the radius of circle in meters
      */
     public void drawCircle(final LatLng position, final float radius) {
         // Instantiating CircleOptions to draw a circle around the marker
@@ -378,7 +408,7 @@ public class MapManager implements LocationListener {
         l.setLatitude(position.latitude);
         l.setLongitude(position.longitude);
 
-        onLocationChanged(l);
+        onLocationChangedAnchored(l);
     }
 
     public Point get_selectedPoint() {

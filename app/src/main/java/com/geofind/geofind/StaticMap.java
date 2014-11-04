@@ -3,7 +3,9 @@ package com.geofind.geofind;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -19,18 +21,27 @@ import java.util.List;
 public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bitmap> {
 
 
-    // the google maps api address
+    /**
+     * The google maps api address
+     */
     private final static String base_address = "https://maps.googleapis.com/maps/api/staticmap?";
     private static final int RESOLUTION = 20;
     private static final String CIRCLE_FILL_COLOR = "0xAA000033";
     private static final String CIRCLE_BORDER_COLOR = "0xFFFFFF00";
 
-    // the image view for output
+    /**
+     * The image view for output
+     */
     private ImageView _view;
 
-    public StaticMap(ImageView view) {
-        _view = view;
+    /**
+     * The progress bar that is visible till the image loads
+     */
+    private ProgressBar progressBar;
 
+    public StaticMap(ImageView view, ProgressBar progressBar) {
+        _view = view;
+        this.progressBar = progressBar;
     }
 
     @Override
@@ -40,6 +51,7 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
 
     /**
      * An asynchronous method that downloads the map
+     *
      * @param staticMapDescriptors the parameters of the map
      * @return the image of the map
      */
@@ -60,10 +72,13 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
 
     /**
      * Set the downloaded image to ImageView
+     *
      * @param bitmap the downloaded image
      */
     @Override
     protected void onPostExecute(Bitmap bitmap) {
+        progressBar.setVisibility(View.GONE);
+        _view.setVisibility(View.VISIBLE);
         _view.setImageBitmap(bitmap);
     }
 
@@ -73,15 +88,15 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
         // compose url of the map
         String address = base_address + "size=" + desc.width + "x" + desc.height;
 
-        switch (desc.mapElement){
+        switch (desc.mapElement) {
             case None:
                 break;
             case Circle:
                 // Calculate zoom level
-                int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, desc.width,desc.height);
+                int zoom = GeoUtils.getBoundsZoomLevel(desc.center, desc.radius, desc.width, desc.height);
 
                 address += "&center=" + desc.center.latitude + "," + desc.center.longitude + "&" +
-                        "zoom=" + zoom ;
+                        "zoom=" + zoom;
 
 
                 // Append the circle encoding
@@ -103,14 +118,16 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
      * Description of the static map
      */
     public static class StaticMapDescriptor {
-        public static enum MapElement { None, Circle, Marker};
+        public static enum MapElement {None, Circle, Marker}
+
+        ;
         private LatLng center; // the center of the map
         private float radius; // the radius of the circle in meters
         private int width, height; // the resolution of the output image
         private MapElement mapElement;
 
 
-        public StaticMapDescriptor(int width,int height){
+        public StaticMapDescriptor(int width, int height) {
             this.mapElement = MapElement.None;
             this.width = width;
             this.height = height;
@@ -124,7 +141,7 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
             this.radius = radius / 1000; // Meters to KiloMeters
         }
 
-        public StaticMapDescriptor(LatLng point, int width, int height){
+        public StaticMapDescriptor(LatLng point, int width, int height) {
             this.mapElement = MapElement.Marker;
             this.center = point;
             this.width = width;

@@ -1,20 +1,38 @@
 package com.geofind.geofind;
 
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
+import com.geofind.geofind.widget.SlidingTabLayout;
 
 
-public class HuntListActivity extends ActionBarActivity {
+public class HuntListActivity extends ActionBarActivity implements ActionBar.TabListener {
+
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
+     * three primary sections of the app. We use a {@link android.support.v4.app.FragmentPagerAdapter}
+     * derivative, which will keep every loaded fragment in memory. If this becomes too memory
+     * intensive, it may be best to switch to a {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    HuntListPagerAdapter huntListPagerAdapter;
+
+    /**
+     * The {@link android.support.v4.view.ViewPager} that will display the three primary sections of
+     * the app, one at a time.
+     */
+    ViewPager viewPager;
+
+    /**
+     * The {@link com.geofind.geofind.widget.SlidingTabLayout} that will display the tabs.
+     */
+    SlidingTabLayout slidingTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,29 +43,20 @@ public class HuntListActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        // get a reference to recyclerView
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        // Create the adapter that will return a fragment for each of the three primary sections
+        // of the activity.
+        huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this);
 
-        // create and fill the hunts array to display them.
-        // TODO retrieve the hunts from parse
-        ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        hunts.add(new Hunt("Title1", 1, 1, "Hunt1", new LatLng(31.76831, 35.21371), 500));
-        hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831, 35.21371), 1000));
-        hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831, 35.21371), 200));
-        hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831, 35.21371), 10000));
-        hunts.add(new Hunt("Title5", 5, 5, "Hunt5", new LatLng(31.76831, 35.21371), 800));
+        viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
+        viewPager.setAdapter(huntListPagerAdapter);
 
-        // set layoutManger
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
 
-        // create an adapter
-        HuntListAdapter adapter = new HuntListAdapter(hunts, this);
-
-        // set adapter
-        recyclerView.setAdapter(adapter);
-
-        // set item animator to DefaultAnimator
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        Resources resources = getResources();
+        slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
+        slidingTabLayout.setDistributeEvenly(true);
+        slidingTabLayout.setViewPager(viewPager);
     }
 
 
@@ -64,9 +73,28 @@ public class HuntListActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
     }
 }

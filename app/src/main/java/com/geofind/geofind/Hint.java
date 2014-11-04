@@ -12,22 +12,19 @@ public class Hint implements Serializable {
         UNREVEALED, REVEALED, SOLVED
     }
 
-    private String title;
     private String text;
     private State state;
     private Point location;
 
     // TODO add picture, recording and video (ParseFile)
 
-    public Hint(String title, String text, Point location) {
-        this.title = title;
+    public Hint(String text, Point location) {
         this.text = text;
         this.state = State.UNREVEALED; // a default state for a hint
         this.location = location;
     }
 
-    public Hint(String title, String text, Point location, State state) {
-        this.title = title;
+    public Hint(String text, Point location, State state) {
         this.text = text;
         this.location = location;
         this.state = state;
@@ -35,10 +32,6 @@ public class Hint implements Serializable {
 
     public String getText() {
         return text;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public Point getLocation() {

@@ -1,17 +1,11 @@
 package com.geofind.geofind;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -19,20 +13,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
-import java.io.FileDescriptor;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 
 public class CreateHintActivity extends ActionBarActivity {
 
-    private TextView hintTitleTextView;
+    private static final String PREF_CREATE_HINT_POINT_DISMISS = "PREF_CREATE_HINT_POINT_DISMISS";
+
+    private SharedPreferences sharedPreferences;
+
     private TextView hintTextTextView;
     private Hint hint = null;
     private Integer index = null;
     private ImageView Map;
+    private ProgressBar progressBar;
     private int mapWidth = -1, mapHeight = -1;
     private Point hintPoint;
 
@@ -45,7 +48,14 @@ public class CreateHintActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        hintTitleTextView = (TextView) findViewById(R.id.create_hint_title);
+        // get the preferences of the activity
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        // check and hide information cards if needed
+        if (isPointInfoDismissed()) {
+            hidePointInfo();
+        }
+
         hintTextTextView = (TextView) findViewById(R.id.create_hint_description);
 
         Intent intent = getIntent();
@@ -56,16 +66,16 @@ public class CreateHintActivity extends ActionBarActivity {
                         getResources().getString(R.string.intent_hint_extra));
                 index = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
                 if (hint != null) { // the user is editing and existing hint
-                    hintTitleTextView.setText(hint.getTitle());
                     hintTextTextView.setText(hint.getText());
                     hintPoint = hint.getLocation();
                 }
             }
         }
 
-
+        // load the picked point map
         Map = (ImageView) findViewById(R.id.create_hint_map);
-
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        final StaticMap staticMap = new StaticMap(Map, progressBar);
         ViewTreeObserver vto = Map.getViewTreeObserver();
         if (mapHeight == -1 || mapWidth == -1) {
             if (vto.isAlive()) {
@@ -76,10 +86,10 @@ public class CreateHintActivity extends ActionBarActivity {
                         mapHeight = Map.getHeight();
                         mapWidth = Map.getWidth();
                         if (hint == null) {
-                            new StaticMap(Map).execute(
+                            staticMap.execute(
                                     new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
                         } else {
-                            new StaticMap(Map).execute(
+                            staticMap.execute(
                                     new StaticMap.StaticMapDescriptor(
                                             hint.getLocation().toLatLng(), mapWidth, mapHeight));
                         }
@@ -88,11 +98,9 @@ public class CreateHintActivity extends ActionBarActivity {
                 });
             }
         } else {
-            new StaticMap(Map).execute(
+            staticMap.execute(
                     new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
         }
-
-
     }
 
 
@@ -122,15 +130,14 @@ public class CreateHintActivity extends ActionBarActivity {
      * @return whether the user filled all the required fields or not
      */
     public boolean checkInput() {
-        boolean legal = !hintTitleTextView.getText().toString().trim().equals("")
-                && !hintTextTextView.getText().toString().trim().equals("");
+        boolean legal = !hintTextTextView.getText().toString().trim().equals("");
 
         if (!legal) {
             Toast.makeText(this, getString(R.string.create_hint_fields_error),
                     Toast.LENGTH_LONG).show();
         }
 
-        if (hintPoint == null){
+        if (hintPoint == null) {
             legal = false;
             Toast.makeText(this, getString(R.string.create_hint_point_missing),
                     Toast.LENGTH_LONG).show();
@@ -145,8 +152,7 @@ public class CreateHintActivity extends ActionBarActivity {
      */
     public void submitHint() {
         if (checkInput()) { // check if the user filled all required fields
-            Hint hint = new Hint(hintTitleTextView.getText().toString(),
-                    hintTextTextView.getText().toString(), hintPoint);
+            Hint hint = new Hint(hintTextTextView.getText().toString(), hintPoint);
 
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();
@@ -156,9 +162,7 @@ public class CreateHintActivity extends ActionBarActivity {
 
             //close this Activity
             finish();
-        } else {
-            // do not exit
-        }
+        } // else: do not exit
     }
 
     public void openPointPicker(View view) {
@@ -173,16 +177,18 @@ public class CreateHintActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         // Check which request we're responding to
         if (requestCode == getResources().getInteger(R.integer.intent_point_result)) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) { // The user picked a point
                 Bundle bundle = data.getExtras();
                 hintPoint = (Point) bundle.getSerializable(getString(R.string.intent_hint_extra));
-                new StaticMap(Map).execute(
+                Map.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+                new StaticMap(Map, progressBar).execute(
                         new StaticMap.StaticMapDescriptor(hintPoint.toLatLng(), mapWidth, mapHeight));
             }
+
         } else if (requestCode == getResources().getInteger(R.integer.intent_picture_result)) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) { // The user picked a picture
@@ -190,35 +196,87 @@ public class CreateHintActivity extends ActionBarActivity {
 
                 Uri selectedImageUri = data.getData();
 
-                if (Build.VERSION.SDK_INT < 19) { // doesn't work on KitKat (issued bug)
-                    String selectedImagePath = getPath(selectedImageUri);
+                try {
                     // set the image as Hint Picture drawable
-                    imageView.setImageDrawable(Drawable.createFromPath(selectedImagePath));
-                } else {
-                    ParcelFileDescriptor parcelFileDescriptor;
-                    try {
-                        // set the image as Hint Picture drawable
-                        parcelFileDescriptor =
-                                getContentResolver().openFileDescriptor(selectedImageUri, "r");
-                        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-                        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-                        imageView.setImageBitmap(bitmap);
-                        parcelFileDescriptor.close();
+                    imageView.setImageURI(selectedImageUri);
 
-                    } catch (Exception e) {
-                        Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
-                                Toast.LENGTH_LONG).show();
-                    }
+                    // convert the image to a byte array
+                    byte[] imageByteArray = uriToByteArray(selectedImageUri);
+                    // TODO: use imageByteArray to save in parse
+
+                } catch (Exception e) {
+                    Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
+                            Toast.LENGTH_LONG).show();
+                } finally {
+                    // show the image in the hint activity
+                    imageView.setVisibility(View.VISIBLE);
                 }
+            }
 
-                // show the image in the hint activity
-                imageView.setVisibility(View.VISIBLE);
+        } else if (requestCode == getResources().getInteger(R.integer.intent_video_result)) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) { // The user picked a video
+                VideoView videoView = (VideoView) findViewById(R.id.create_hint_video);
 
-                // TODO add the picture to the Hint object
+                Uri selectedVideoUri = data.getData();
+                try {
+                    videoView.setVideoURI(selectedVideoUri);
+
+                    MediaController mediaController = new MediaController(this);
+                    mediaController.setAnchorView(videoView);
+                    videoView.setMediaController(mediaController);
+
+                    // convert the video to a byte array
+                    byte[] videoByteArray = uriToByteArray(selectedVideoUri);
+                    // TODO: use videoByteArray to save in parse
+
+                } catch (Exception e) {
+                    Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
+                            Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                } finally {
+
+                    // show the video in the hint activity
+                    videoView.setVisibility(View.VISIBLE);
+                }
+            }
+
+        } else if (requestCode == getResources().getInteger(R.integer.intent_audio_result)) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) { // The user picked an audio
+                VideoView audioView = (VideoView) findViewById(R.id.create_hint_audio);
+
+                Uri selectedAudioUri = data.getData();
+
+                try {
+
+                    audioView.setVideoURI(selectedAudioUri);
+
+                    MediaController mediaController = new MediaController(this);
+                    mediaController.setAnchorView(audioView);
+                    audioView.setMediaController(mediaController);
+
+                    // convert the video to a byte array
+                    byte[] audioByteArray = uriToByteArray(selectedAudioUri);
+                    // TODO: use audioByteArray to save in parse
+
+                } catch (Exception e) {
+                    Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
+                            Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                } finally {
+                    // show the audio in the hint activity
+                    audioView.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
 
+    /**
+     * Open image selection.
+     *
+     * @param view The current view.
+     */
     public void openImageSelection(View view) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -235,27 +293,110 @@ public class CreateHintActivity extends ActionBarActivity {
             Toast.makeText(this, getString(R.string.create_hint_file_manager_error),
                     Toast.LENGTH_LONG).show();
         }
-
-        // TODO save the image to the Hint
     }
 
-    // TODO add sound and video pickers and savers
+    /**
+     * Open video selection.
+     *
+     * @param view The current view.
+     */
+    public void openVideoSelection(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("video/*");
+
+        // Verify the intent resolves
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+
+        // Start an activity if it's safe
+        if (activities.size() > 0) {
+            startActivityForResult(intent,
+                    getResources().getInteger(R.integer.intent_video_result));
+        } else { // No file manager available
+            Toast.makeText(this, getString(R.string.create_hint_file_manager_error),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
 
     /**
-     * Helper to retrieve the path of an image URI.
+     * Open audio selection.
+     *
+     * @param view The current view.
      */
-    private String getPath(Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String path = cursor.getString(column_index);
-            cursor.close();
-            return path;
-        } else {
-            return uri.getPath();
+    public void openAudioSelection(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("audio/*");
+
+        // Verify the intent resolves
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+
+        // Start an activity if it's safe
+        if (activities.size() > 0) {
+            startActivityForResult(intent,
+                    getResources().getInteger(R.integer.intent_audio_result));
+        } else { // No file manager available
+            Toast.makeText(this, getString(R.string.create_hint_file_manager_error),
+                    Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Convert a file given by it's uri to a byte array.
+     *
+     * @param uri The uri of the given file.
+     * @return A byte array representing the file.
+     * @throws IOException On a read error.
+     */
+    public byte[] uriToByteArray(Uri uri) throws IOException {
+        // open streams
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        // read the file 1024 bytes at a time and write them to the OutputStream
+        byte[] b = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(b)) != -1) {
+            byteArrayOutputStream.write(b, 0, bytesRead);
+        }
+
+        // get byte array from the stream
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+
+        // close the streams
+        byteArrayOutputStream.close();
+        inputStream.close();
+
+        return bytes;
+    }
+
+    /**
+     * Check if the card view was set to be hidden (dismissed) before.
+     *
+     * @return whether the card was dismissed in the past.
+     */
+    private boolean isPointInfoDismissed() {
+        return sharedPreferences.getBoolean(PREF_CREATE_HINT_POINT_DISMISS, false);
+    }
+
+    /**
+     * Hide point info card view.
+     */
+    private void hidePointInfo() {
+        View infoCard = findViewById(R.id.create_hint_point_info);
+        infoCard.setVisibility(View.GONE);
+    }
+
+    /**
+     * Dismiss the Point card view info and save so it won't show again.
+     *
+     * @param view The current view.
+     */
+    public void dismissPointInfo(View view) {
+        hidePointInfo();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PREF_CREATE_HINT_POINT_DISMISS, true);
+        editor.apply();
     }
 }

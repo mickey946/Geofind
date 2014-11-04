@@ -57,7 +57,7 @@
             <Button
                 style="@style/main_bottom_button_half"
                 android:drawableTop="@drawable/ic_settings_white_48dp"
-                android:onClick="openHuntList"
+                android:onClick="openSettings"
                 android:text="@string/action_settings" />
         </LinearLayout>
 
