@@ -28,6 +28,7 @@
         <activity
             android:name=".HuntListActivity"
             android:label="@string/title_activity_hunt_list"
+            android:theme="@style/AppTheme.ActionBarNoShadow"
             android:parentActivityName=".MainScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -95,8 +96,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <activity
-            android:name=".GooglePlusSignInActivity"
-            android:label="@string/title_activity_google_plus_sign_in" >
+            android:name=".GooglePlusSignInActivity">
         </activity>
 
         <!--google play services settings-->

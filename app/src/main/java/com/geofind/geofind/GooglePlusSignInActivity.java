@@ -44,51 +44,54 @@ public class GooglePlusSignInActivity extends Activity implements
                 .setActions("http://schemas.google.com/AddActivity", "http://schemas.google.com/BuyActivity")
                 .build();
 
-        setContentView(R.layout.activity_google_plus_sign_in);
+        setContentView(R.layout.activity_splash_screen);
 
         // Progress bar to be displayed if the connection failure is not resolved.
         mConnectionProgressDialog = new ProgressDialog(this);
         mConnectionProgressDialog.setMessage("Signing in...");
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-//        ShareButton = (Button) findViewById(R.id.post_button);
-//        GetData = (Button)findViewById(R.id.get_data_button);
-//
-//        GetData.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // TODO Auto-generated method stub
-//                if( mPlusClient.isConnected()){
-//                    Person currentPerson = mPlusClient.getCurrentPerson();
-//
-//                    Toast.makeText(getApplicationContext(), UserData.getEmail(),
-//                            Toast.LENGTH_LONG).show();
-//                }else{
-//                    Toast.makeText(getApplicationContext(), "Please Sign In", Toast.LENGTH_LONG).show();
-//                }}
-//        });
-//        ShareButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Launch the Google+ share dialog with attribution to your app.
-//                Intent shareIntent = new PlusShare.Builder(GooglePlusSignInActivity.this)
-//                        .setType("text/plain")
-//                        .setText("geofind sign in")
-//                        .setContentUrl(Uri.parse("http://www.google.com"))
-//                        .getIntent();
-//                startActivityForResult(shareIntent, 0);
-//            }
-//        });
+        //findViewById(R.id.sign_in_button).setOnClickListener(this);
+
     }
     @Override
     protected void onStart() {
         super.onStart();
         mPlusClient.connect();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!mPlusClient.isConnected()) {
+            if (mConnectionResult == null) {
+                mConnectionProgressDialog.show();
+            } else {
+                try {
+                    mConnectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
+                } catch (SendIntentException e) {
+                    // Try connecting again.
+                    mConnectionResult = null;
+                    mPlusClient.connect();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mConnectionProgressDialog != null){
+            mConnectionProgressDialog.dismiss();
+        }
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
         mPlusClient.disconnect();
+        if (mConnectionProgressDialog != null){
+            mConnectionProgressDialog.dismiss();
+        }
     }
     @Override
     public void onConnectionFailed(ConnectionResult result) {
@@ -140,19 +143,7 @@ public class GooglePlusSignInActivity extends Activity implements
     }
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.sign_in_button && !mPlusClient.isConnected()) {
-            if (mConnectionResult == null) {
-                mConnectionProgressDialog.show();
-            } else {
-                try {
-                    mConnectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
-                } catch (SendIntentException e) {
-                    // Try connecting again.
-                    mConnectionResult = null;
-                    mPlusClient.connect();
-                }
-            }
-        }
+
     }
 
 }
