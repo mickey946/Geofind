@@ -29,9 +29,9 @@ dependencies {
     repositories {
         mavenCentral()
     }
-    compile 'com.sothree.slidinguppanel:library:+'
+    compile 'com.sothree.slidinguppanel:library:+' // this will load SlidingUpPanel
     compile 'com.melnykov:floatingactionbutton:1.0.6+' // this will load floating action button
-    // this will load SlidingUpPanel
     compile files('src/main/libs/Parse-1.7.1.jar')
+    compile 'com.github.chrisbanes.photoview:library:1.2.3+' // this will load gesture views
     compile files('src/main/libs/bolts-android-1.1.3.jar')
 }

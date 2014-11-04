@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.geofind.geofind.widget.SlidingTabLayout;
+import com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout;
 
 import java.util.concurrent.Callable;
 
@@ -32,7 +32,7 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
     ViewPager viewPager;
 
     /**
-     * The {@link com.geofind.geofind.widget.SlidingTabLayout} that will display the tabs.
+     * The {@link com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout} that will display the tabs.
      */
     SlidingTabLayout slidingTabLayout;
 
