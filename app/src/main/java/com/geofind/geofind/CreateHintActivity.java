@@ -16,11 +16,9 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,8 +41,8 @@ public class CreateHintActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private int mapWidth = -1, mapHeight = -1;
     private Point hintPoint;
-    //TODO limit the size of these arrays to 10MB.
     byte[] imageByteArray, videoByteArray, audioByteArray;
+    private Uri imageUri, videoUri, audioUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,8 +152,22 @@ public class CreateHintActivity extends ActionBarActivity {
     public void submitHint() {
         if (checkInput()) { // check if the user filled all required fields
 
-            Hint hint = new Hint(hintTextTextView.getText().toString(), hintPoint, imageByteArray,
-                    videoByteArray, audioByteArray);
+            String imageStr = null, videoStr = null, audioStr = null;
+
+            if (imageUri != null) {
+                imageStr = imageUri.toString();
+            }
+
+            if (videoUri != null) {
+                videoStr = videoUri.toString();
+            }
+
+            if (audioUri != null) {
+                audioStr = audioUri.toString();
+            }
+
+            Hint hint = new Hint(hintTextTextView.getText().toString(), hintPoint,
+                    imageStr, videoStr, audioStr);
 
             // send away the hint (and it's index, if present)
             Intent intent = new Intent();
@@ -198,17 +210,17 @@ public class CreateHintActivity extends ActionBarActivity {
                 ImageView imageView = (ImageView) findViewById(R.id.create_hint_image);
 
                 final Uri selectedImageUri = data.getData();
+                imageUri = selectedImageUri;
 
                 boolean isTooBig = false;
                 try {
                     // convert the image to a byte array
-                    byte[] imageByteArray = uriToByteArray(selectedImageUri);
+                    imageByteArray = uriToByteArray(selectedImageUri);
                     if (imageByteArray == null) { // file is too big
                         isTooBig = true;
                         Toast.makeText(this, getString(R.string.create_hint_max_file_error),
                                 Toast.LENGTH_LONG).show();
                     }
-                    // TODO: use imageByteArray to save in parse
 
                     // Crop the center of the bitmap that fits the view
                     Bitmap inputBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
@@ -273,16 +285,16 @@ public class CreateHintActivity extends ActionBarActivity {
             if (resultCode == RESULT_OK) { // The user picked a video
 
                 final Uri selectedVideoUri = data.getData();
+                videoUri = selectedVideoUri;
 
                 boolean isTooBig = false;
                 try { // convert the video to a byte array
-                    byte[] videoByteArray = uriToByteArray(selectedVideoUri);
+                    videoByteArray = uriToByteArray(selectedVideoUri);
                     if (videoByteArray == null) { // file is too big
                         isTooBig = true;
                         Toast.makeText(this, getString(R.string.create_hint_max_file_error),
                                 Toast.LENGTH_LONG).show();
                     }
-                    // TODO: use videoByteArray to save in parse
 
                 } catch (Exception e) {
                     Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
@@ -322,17 +334,17 @@ public class CreateHintActivity extends ActionBarActivity {
             if (resultCode == RESULT_OK) { // The user picked an audio
 
                 final Uri selectedAudioUri = data.getData();
+                audioUri = selectedAudioUri;
 
                 boolean isTooBig = false;
                 try {
                     // convert the video to a byte array
-                    byte[] audioByteArray = uriToByteArray(selectedAudioUri);
+                    audioByteArray = uriToByteArray(selectedAudioUri);
                     if (audioByteArray == null) { // file is too big
                         isTooBig = true;
                         Toast.makeText(this, getString(R.string.create_hint_max_file_error),
                                 Toast.LENGTH_LONG).show();
                     }
-                    // TODO: use audioByteArray to save in parse
 
                 } catch (Exception e) {
                     Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error), Toast.LENGTH_LONG).show();
@@ -516,7 +528,6 @@ public class CreateHintActivity extends ActionBarActivity {
         Button selectButton = (Button) findViewById(R.id.create_hint_select_picture);
         selectButton.setVisibility(View.VISIBLE);
 
-        // TODO remove the image from the Hint
     }
 
     public void removeSelectedVideo(View view) {
@@ -532,7 +543,6 @@ public class CreateHintActivity extends ActionBarActivity {
         Button selectButton = (Button) findViewById(R.id.create_hint_select_video);
         selectButton.setVisibility(View.VISIBLE);
 
-        // TODO remove the video from the Hint
     }
 
     public void removeSelectedAudio(View view) {
@@ -548,6 +558,5 @@ public class CreateHintActivity extends ActionBarActivity {
         Button selectButton = (Button) findViewById(R.id.create_hint_select_audio);
         selectButton.setVisibility(View.VISIBLE);
 
-        // TODO remove the audio from the Hint
     }
 }

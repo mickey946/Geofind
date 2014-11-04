@@ -1,11 +1,18 @@
 package com.geofind.geofind;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.FindCallback;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseException;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mickey on 01/10/14.
@@ -51,10 +58,8 @@ public class Hunt implements Serializable {
         _description = description;
         _creatorID = creatorID;
         _firstPoint = hints.get(0).getLocation();
-        //TODO Calculate radius - Ilia?
-        _radius = 50;
-        //TODO Calculate totalDistance - ilia?
-        _totalDistance = 15;
+        _radius = GeoUtils.calcRadius(hints);
+        _totalDistance = GeoUtils.calcPathLength(hints);
         _rating = 0;
         _totalRating = 0;
         _numOfRaters = 0;
@@ -71,8 +76,27 @@ public class Hunt implements Serializable {
         _radius = (float) remoteHunt.getDouble("radius");
         _totalDistance = (float) remoteHunt.getDouble("totalDistance");
         _totalRating = (float) remoteHunt.getDouble("totalRating");
+        _numOfRaters = remoteHunt.getInt("numOfRaters");
         _hints = new ArrayList<Hint>();
         _comments = new ArrayList<Comment>();
+
+
+        final List<ParseObject> remoteComments = remoteHunt.getList("comments");
+        ParseObject.fetchAllInBackground(remoteComments, new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (ParseObject remoteComment : remoteComments) {
+                        _comments.add(new Comment(remoteComment));
+                        Log.v("Parse Comment List fetching: ", "Success");
+                    }
+                } else {
+                    Log.v("Parse Comment List fetching: ", "failed");
+                }
+            }
+        });
+
+
 
 
         //TODO need to figure out how to retrieve hints on the fly.
@@ -119,9 +143,9 @@ public class Hunt implements Serializable {
 
     public float getRating() {
         if (_numOfRaters != 0) {
-            _rating = _totalRating / _numOfRaters;
+            return _totalRating / _numOfRaters;
         }
-        return _rating;
+        return 0;
     }
 
     public float getTotalRating() {
@@ -136,7 +160,11 @@ public class Hunt implements Serializable {
         return _hints;
     }
 
-    public ParseObject toParseObject() {
+    public void addHint(Hint newHint) {
+        _hints.add(newHint);
+    }
+
+    public ParseObject toParseObject(Context c) {
         ParseObject remoteHunt = new ParseObject("Hunt");
 
         remoteHunt.put("title", _title);
@@ -146,7 +174,7 @@ public class Hunt implements Serializable {
         remoteHunt.put("radius", _radius);
         remoteHunt.put("totalDistance", _totalDistance);
         remoteHunt.put("rating", _rating);
-        remoteHunt.put("totalRating", _totalDistance);
+        remoteHunt.put("totalRating", _totalRating);
         remoteHunt.put("numOfRaters", _numOfRaters);
 
         ArrayList<ParseObject> remoteComments = new ArrayList<ParseObject>();
@@ -163,7 +191,7 @@ public class Hunt implements Serializable {
         _hints.get(0).setState(Hint.State.SOLVED);
 
         for (Hint hint : _hints) {
-            remoteHints.add(hint.toParseObject());
+            remoteHints.add(hint.toParseObject(c));
         }
 
         remoteHunt.put("hints", remoteHints);

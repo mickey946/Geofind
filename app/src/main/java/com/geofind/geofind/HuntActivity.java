@@ -26,6 +26,8 @@ import com.google.android.gms.maps.MapFragment;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
+import com.parse.ParseFile;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import com.parse.ParseObject;
@@ -78,7 +80,6 @@ public class HuntActivity extends ActionBarActivity {
     /**
      * The hints that would be displayed and used.
      */
-    //ArrayList<Hint> hints = new ArrayList<Hint>();
     ArrayList<Hint> hints = new ArrayList<Hint>();
     /**
      * The map manager controller
@@ -204,12 +205,6 @@ public class HuntActivity extends ActionBarActivity {
             } catch(ParseException e) {
                 Log.v("Parse Hint List fetching: ", "failed");
             }
-
-            hints.get(0).setState(Hint.State.SOLVED);
-
-
-
-
         }
     }
 
@@ -382,7 +377,7 @@ public class HuntActivity extends ActionBarActivity {
 
                 //TODO prepare for next hint
 
-                hintPagerAdapter.notifyDataSetChanged();
+                revealNext(indx);
             }
         }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
@@ -411,7 +406,7 @@ public class HuntActivity extends ActionBarActivity {
 
                 //TODO prepare for next hint
 
-                hintPagerAdapter.notifyDataSetChanged();
+                revealNext(index);
 
             }
         });
@@ -493,4 +488,20 @@ public class HuntActivity extends ActionBarActivity {
             super.onBackPressed(); // if the panel is collapsed, proceed as usual
         }
     }
+
+    private void revealNext(int i) {
+        if (hints.size() > i + 1) {
+            geofence.createGeofence(hints.get(i + 1).getLocation(),
+                    GEOFENCE_RADIUS, i + 1);
+        } else {
+            Intent intent = new Intent(HuntActivity.this, HuntFinishActivity.class);
+            // TODO pass arguments for statistics
+            intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+            startActivity(intent);
+            HuntActivity.this.finish();
+        }
+
+        hintPagerAdapter.notifyDataSetChanged();
+    }
+
 }

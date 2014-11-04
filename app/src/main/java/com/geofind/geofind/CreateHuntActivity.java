@@ -198,7 +198,7 @@ public class CreateHuntActivity extends ActionBarActivity {
 
         Hunt hunt = new Hunt(huntTitle, huntDescription, creatorID, hints);
 
-        ParseObject remoteHunt = hunt.toParseObject();
+        ParseObject remoteHunt = hunt.toParseObject(getApplicationContext());
 
         remoteHunt.saveInBackground(new SaveCallback() {
             @Override

@@ -125,13 +125,13 @@ public abstract class GeoUtils {
      * point in the path.
      * Distance is defined using  the WGS84 ellipsoid.
      *
-     * @param points the points of the path
+     * @param hints the hints that hold the points of the path
      * @return the approximate distance in meters
      */
-    public static float calcPathLength(List<Point> points) {
+    public static float calcPathLength(List<Hint> hints) {
         float len = 0;
-        for (int i = 0; i < points.size() - 1; i++) {
-            len += points.get(i).toLocation().distanceTo(points.get(i).toLocation());
+        for (int i = 0; i < hints.size() - 1; i++) {
+            len += hints.get(i).getLocation().toLocation().distanceTo(hints.get(i + 1).getLocation().toLocation());
         }
 
         return len;
@@ -141,14 +141,14 @@ public abstract class GeoUtils {
     /**
      * Calculate the maximal distance from the starting point in meters.
      *
-     * @param points the points of the path
+     * @param hints the list of hints that holds the points of the path
      * @return the approximate distance in meters
      */
-    public static float calcRadius(List<Point> points) {
+    public static float calcRadius(List<Hint> hints) {
         float len = 0;
-        Location startPoint = points.get(0).toLocation();
-        for (Point p : points) {
-            len = Math.max(len, startPoint.distanceTo(p.toLocation()));
+        Location startPoint = hints.get(0).getLocation().toLocation();
+        for (Hint h : hints) {
+            len = Math.max(len, startPoint.distanceTo(h.getLocation().toLocation()));
         }
         return len;
     }

@@ -123,6 +123,15 @@ public class HuntFinishActivity extends ActionBarActivity {
         EditText commentTitleTextView = (EditText) findViewById(R.id.hunt_finish_review_title);
         EditText commentReviewTextView = (EditText) findViewById(R.id.hunt_finish_review);
 
+        if ((commentTitleTextView.getText().toString().isEmpty()) |
+                (commentReviewTextView.getText().toString().isEmpty())) {
+            Toast.makeText(getApplicationContext(), "Cannot submit an incomplete review.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+
         final Comment comment = new Comment(commentTitleTextView.getText().toString(),
                 commentReviewTextView.getText().toString(), commentRatingRatingBar.getRating());
 
@@ -131,7 +140,7 @@ public class HuntFinishActivity extends ActionBarActivity {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
-                    parseObject.add("Comments", comment.toParseObject());
+                    parseObject.add("comments", comment.toParseObject());
                     parseObject.increment("numOfRaters");
                     parseObject.increment("totalRating", comment.getRating());
                     parseObject.saveInBackground(new SaveCallback() {

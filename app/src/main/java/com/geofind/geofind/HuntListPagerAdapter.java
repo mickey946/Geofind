@@ -16,13 +16,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
-import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -74,7 +72,6 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
-        //query.include("firstPoint");
 
 
         //TODO activate this switch when data on user is available.
@@ -96,6 +93,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
                 if (e == null) {
                     for (ParseObject parseObject : parseObjects) {
                         hunts.add(new Hunt(parseObject));
+
                     }
                     ((HuntListFragment) fragment).setHunts(hunts);
                 } else {

@@ -64,7 +64,11 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return hints.size();
+        int i = 0;
+        while ((i < hints.size()) & (hints.get(i).getState() != Hint.State.UNREVEALED)) {
+            i++;
+        }
+        return i + 1;
     }
 
     /**
@@ -89,7 +93,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         /**
          * give the access to the geofence manager for revealing the hint point
          */
-        public void set_geofenceManager(GeofenceManager geofenceManager){
+        public void set_geofenceManager(GeofenceManager geofenceManager) {
             this._geofenceManager = geofenceManager;
         }
 
