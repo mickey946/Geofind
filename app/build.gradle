@@ -33,4 +33,5 @@ dependencies {
 
     compile 'com.sothree.slidinguppanel:library:+' // this will load SlidingUpPanel
     compile 'com.melnykov:floatingactionbutton:1.0.6+' // this will load floating action button
+    compile 'com.github.chrisbanes.photoview:library:1.2.3+' // this will load gesture views
 }
