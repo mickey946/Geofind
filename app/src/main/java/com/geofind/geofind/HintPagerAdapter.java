@@ -58,8 +58,12 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         return fragment;
     }
 
-    public void invalidateFragment(int index){
-        _fragments.get(index).getView().findViewById(R.id.item_hint_reveal_button).invalidate();
+    public void invalidateFragment(int index) {
+        if (index < _fragments.size())
+        {
+            _fragments.get(index).getView().findViewById(R.id.item_hint_reveal_button).invalidate();
+        }
+
     }
     /**
      * Add a hint to the end of the list.

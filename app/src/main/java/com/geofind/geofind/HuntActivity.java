@@ -388,7 +388,7 @@ public class HuntActivity extends ActionBarActivity {
                 // Mark the current hint as solved
 
                 hints.get(indx).setState(Hint.State.SOLVED);
-//                hintPagerAdapter.invalidateFragment(indx);
+                hintPagerAdapter.invalidateFragment(indx);
                 mapManager.setMarker(hints.get(indx).getLocation().toLatLng(),
                         getString(R.string.hunt_activity_hint_number_title) + indx,
                         hints.get(indx).getState());
