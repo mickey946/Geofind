@@ -91,7 +91,8 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
                         switch (i) {
                             case NEW_HUNTS:
-                                huntsQuery.whereNotEqualTo("objectId", onGoingHunts);
+                                //TODO need to extract point numbers from onGoingHunts
+                                huntsQuery.whereNotEqualTo("objectId", parse(onGoingHunts));
                                 huntsQuery.whereNotEqualTo("objectId", finishedHunts);
                             case ONGOING_HUNTS:
                                 huntsQuery.whereEqualTo("objectId", onGoingHunts);
@@ -229,5 +230,13 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
             adapter.setHunts(hunts);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private List<String> parse(List<Object> idList) {
+        ArrayList<String> result = new ArrayList<String>();
+        for (Object id : idList) {
+            result.add(id.toString().substring(0, id.toString().indexOf('$')));
+        }
+        return null;
     }
 }
