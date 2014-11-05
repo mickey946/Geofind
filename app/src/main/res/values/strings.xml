@@ -10,8 +10,7 @@
     <string name="item_hunt_list_start_hunt">Start Hunt</string>
     <string name="title_activity_hunt_details">Hunt Details</string>
     <string name="hunt_details_map">Overview Map</string>
-    <string name="hunt_details_map_description">Get to the start point before playing. Click on the
-        map to navigate there.</string>
+    <string name="hunt_details_map_description">Click on the map to enlarge it.</string>
     <string name="hunt_details_distances">Distances</string>
     <string name="hunt_details_total_distance">Total distance:\ </string>
     <string name="item_hunt_list_total_distance">Total Distance\ </string>
