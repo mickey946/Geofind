@@ -64,7 +64,7 @@ public class MainScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
-        Toast.makeText(this, UserData.getEmail(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, UserData.getEmail(), Toast.LENGTH_LONG).show();
 
 
         background = (ImageView) findViewById(R.id.background_image);
