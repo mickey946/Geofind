@@ -72,6 +72,8 @@ public class GeofenceManager implements
     //Call back to inform the UI of canceling
     private IndexCallback _cancelCallback;
 
+    private boolean _cleanUp;
+
     /**
      * Contstructor and initializer
      * @param activity the hosting activity
@@ -84,6 +86,7 @@ public class GeofenceManager implements
         mInProgress = false;
         _cancelCallback = null;
         _pointCanceled = false;
+        _cleanUp = false;
         ReceiveTransitionsIntentService.set_manager(this);
         addGeofences();
     }
@@ -167,7 +170,7 @@ public class GeofenceManager implements
 
     public void removeGeofences(String geoID){
         // Record the type of removal request
-        mRequestType = REQUEST_TYPE.REMOVE_INTENT;
+        mRequestType = REQUEST_TYPE.REMOVE_POINT;
         /*
          * Test for Google Play services after setting the request type.
          * If Google Play services isn't present, the request can be
@@ -219,11 +222,22 @@ public class GeofenceManager implements
                 getLocationClient().addGeofences(mCurrentGeofence,
                         mTransitionPendingIntent, this);
                 break;
-            case REMOVE_INTENT:
+            case REMOVE_POINT:
                 getLocationClient().removeGeofences(
                         _deletePoint, this);
                 break;
+            case REMOVE_INTENT:
+                getLocationClient().removeGeofences(mTransitionPendingIntent,new LocationClient.OnRemoveGeofencesResultListener() {
+                    @Override
+                    public void onRemoveGeofencesByRequestIdsResult(int i, String[] strings) {
 
+                    }
+
+                    @Override
+                    public void onRemoveGeofencesByPendingIntentResult(int i, PendingIntent pendingIntent) {
+
+                    }
+                });
         }
 
     }
@@ -327,7 +341,7 @@ public class GeofenceManager implements
                } catch (Exception e) {
                    e.printStackTrace();
                }
-           } else if (!_pointCanceled){
+           } else if (!_pointCanceled && !_cleanUp){
                Intent intent1 = new Intent(_activity.getString(R.string.GeofenceResultIntent));
                intent1.putExtra(_activity.getString(R.string.PointIdIntentExtra), strings[0]);
                intent1.putExtra(_activity.getString(R.string.PointIndexExtra),
@@ -376,9 +390,42 @@ public class GeofenceManager implements
         getLocationClient().disconnect();
     }
 
+    public void destroy() {
+        _cleanUp = true;
+        ReceiveTransitionsIntentService.clearList();
+//        mRequestType = REQUEST_TYPE.REMOVE_INTENT;
+//            /*
+//         * Test for Google Play services after setting the request type.
+//         * If Google Play services isn't present, the request can be
+//         * restarted.
+//         */
+//        if (!GooglePlayUtils.servicesConnected(_activity)) {
+//            return;
+//        }
+//        //mLocationClient = new LocationClient(_activity, this, this);
+//        // If a request is not already underway
+//        if (!mInProgress) {
+//            Log.d(TAG,"remove intent");
+//            // Indicate that a request is underway
+//            mInProgress = true;
+//            // Request a connection from the client to Location Services
+//            getLocationClient().connect();
+//        } else {
+//            Log.d(TAG,"Skip remove request in progress");
+//            /*
+//             * A request is already underway. You can handle
+//             * this situation by disconnecting the client,
+//             * re-setting the flag, and then re-trying the
+//             * request.
+//             */
+//        }
+    }
+
+
     // Defines the allowable request types.
     public enum REQUEST_TYPE {
         ADD,
+        REMOVE_POINT,
         REMOVE_INTENT
     }
 

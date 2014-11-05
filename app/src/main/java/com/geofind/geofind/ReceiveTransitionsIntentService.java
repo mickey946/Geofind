@@ -33,6 +33,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     public static void set_manager(GeofenceManager manager){
         _manager = manager;
     }
+    public static void clearList() { _seenHashes.clear(); }
 
     @Override
     protected void onHandleIntent(Intent intent) {

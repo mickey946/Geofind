@@ -21,7 +21,11 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 
 public class HuntFinishActivity extends ActionBarActivity {
@@ -45,7 +49,15 @@ public class HuntFinishActivity extends ActionBarActivity {
             TextView solvedPointsTextView = (TextView) findViewById(R.id.hunt_finish_solved_points);
             TextView totalTimeTextView = (TextView) findViewById(R.id.hunt_finish_total_time);
 
-            // TODO fill in the needed numbers in the above TextView's
+            totalPointsTextView.setText(
+                    Integer.toString(intent.getIntExtra(getResources().getString(R.string.hunt_finish_total_points), 0)));
+            solvedPointsTextView.setText(
+                    Integer.toString(intent.getIntExtra(getResources().getString(R.string.hunt_finish_solved_points), 0)));
+            Date date = new Date(intent.getLongExtra(getResources().getString(R.string.hunt_finish_total_time), 0));
+            DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+            String dateFormatted = formatter.format(date);
+            totalTimeTextView.setText(dateFormatted);
         }
 
         setUpReviewCard();
@@ -118,6 +130,7 @@ public class HuntFinishActivity extends ActionBarActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
     public void submitReview(View view) {
         RatingBar commentRatingRatingBar = (RatingBar) findViewById(R.id.hunt_finish_review_rating);
         EditText commentTitleTextView = (EditText) findViewById(R.id.hunt_finish_review_title);
@@ -129,7 +142,6 @@ public class HuntFinishActivity extends ActionBarActivity {
                     Toast.LENGTH_LONG).show();
             return;
         }
-
 
 
         final Comment comment = new Comment(commentTitleTextView.getText().toString(),

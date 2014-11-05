@@ -35,9 +35,13 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseException;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 
 public class HuntActivity extends ActionBarActivity {
@@ -126,6 +130,12 @@ public class HuntActivity extends ActionBarActivity {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             layout.setPadding(0, 0, 0, 0);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        geofence.destroy();
+        super.onDestroy();
     }
 
     @Override
@@ -375,11 +385,6 @@ public class HuntActivity extends ActionBarActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
                 int indx = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
                 Log.d(TAG, "recieved from geofence point index" + indx);
@@ -479,10 +484,7 @@ public class HuntActivity extends ActionBarActivity {
                 startActivity(intent);
                 break;
             case R.id.action_temp_finish:
-                intent = new Intent(this, HuntFinishActivity.class);
-
-                // TODO pass arguments for statistics
-                intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+                intent = generateFinishData();
 
                 startActivity(intent);
                 finish();
@@ -490,6 +492,28 @@ public class HuntActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private Intent generateFinishData() {
+        Intent intent = new Intent(this, HuntFinishActivity.class);
+        // TODO pass arguments for statistics
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long currentTime = SystemClock.elapsedRealtime();
+        long passedTime = sharedPreferences.getLong("HuntTime",0);
+        long playTime = passedTime + currentTime - startTime;
+
+        int solved = 0;
+        for(Hint hint : hints){
+            if (hint.getState() == Hint.State.SOLVED)
+                solved++;
+        }
+
+        intent.putExtra(getResources().getString(R.string.hunt_finish_total_points),hints.size());
+        intent.putExtra(getResources().getString(R.string.hunt_finish_solved_points),solved);
+        intent.putExtra(getResources().getString(R.string.hunt_finish_total_time), playTime);
+        intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+
+        return intent;
     }
 
     @Override
@@ -512,16 +536,11 @@ public class HuntActivity extends ActionBarActivity {
         if (hints.size() > i + 1) {
             geofence.createGeofence(hints.get(i + 1).getLocation(),
                     GEOFENCE_RADIUS, i + 1);
+            viewPager.setCurrentItem(i+1, true); // scroll smoothly to the given index
         } else {
-            Intent intent = new Intent(HuntActivity.this, HuntFinishActivity.class);
-            // TODO pass arguments for statistics
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            long currentTime = SystemClock.elapsedRealtime();
-            long passedTime = sharedPreferences.getLong("HuntTime",0);
-            intent.putExtra("HuntTime", passedTime + currentTime - startTime);
-            intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+            Intent intent = generateFinishData();
             startActivity(intent);
-            HuntActivity.this.finish();
+            finish();
         }
 
         hintPagerAdapter.notifyDataSetChanged();
