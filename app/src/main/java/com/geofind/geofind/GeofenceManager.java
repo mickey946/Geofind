@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -63,6 +64,8 @@ public class GeofenceManager implements
     // Active point index
     private int _pointIndex;
 
+    private boolean _pointCanceled;
+
     // List of point IDs to be canceled
     private List<String> _deletePoint;
 
@@ -80,6 +83,8 @@ public class GeofenceManager implements
         _pointIndex = -1;
         mInProgress = false;
         _cancelCallback = null;
+        _pointCanceled = false;
+        ReceiveTransitionsIntentService.set_manager(this);
         addGeofences();
     }
 
@@ -144,6 +149,7 @@ public class GeofenceManager implements
 
         intent.putExtra(_activity.
                 getString(R.string.PointIndexExtra),_pointIndex);
+
         /*
          * Return the PendingIntent
          */
@@ -158,7 +164,8 @@ public class GeofenceManager implements
      * Start a request to remove geofences by calling
      * LocationClient.connect()
      */
-    public void removeGeofences(Point point) {
+
+    public void removeGeofences(String geoID){
         // Record the type of removal request
         mRequestType = REQUEST_TYPE.REMOVE_INTENT;
         /*
@@ -171,7 +178,7 @@ public class GeofenceManager implements
         }
         // Store the PendingIntent
         _deletePoint = new ArrayList<String>();
-        _deletePoint.add(composeID(point));
+        _deletePoint.add(geoID);
         /*
          * Create a new location client object. Since the current
          * activity class implements ConnectionCallbacks and
@@ -197,10 +204,14 @@ public class GeofenceManager implements
         }
     }
 
+    public void removeGeofences(Point point) {
+        _pointCanceled = true;
+        removeGeofences(composeID(point));
+    }
+
     @Override
     public void onConnected(Bundle bundle) {
         // Start with the request flag set to false
-        Log.d(TAG,"onConnected");
         mInProgress = false;
         switch (mRequestType) {
             case ADD:
@@ -214,14 +225,15 @@ public class GeofenceManager implements
                 break;
 
         }
+
     }
 
     /**
      * initialize geofence capability
      */
     public void addGeofences() {
-        mRequestType = REQUEST_TYPE.ADD;
 
+        mRequestType = REQUEST_TYPE.ADD;
         if (!GooglePlayUtils.servicesConnected(_activity))
             return;
 
@@ -308,12 +320,20 @@ public class GeofenceManager implements
     @Override
     public void onRemoveGeofencesByRequestIdsResult(int statusCode, String[] strings) {
        if (statusCode == LocationStatusCodes.SUCCESS){
-           if (_cancelCallback != null){
+           Log.d(TAG,"removed #"+_pointIndex + " by id (" + strings.length + ") " + strings[0]);
+           if (_cancelCallback != null && _pointCanceled){
                try {
                    _cancelCallback.executeCallback(_pointIndex);
                } catch (Exception e) {
                    e.printStackTrace();
                }
+           } else if (!_pointCanceled){
+               Intent intent1 = new Intent(_activity.getString(R.string.GeofenceResultIntent));
+               intent1.putExtra(_activity.getString(R.string.PointIdIntentExtra), strings[0]);
+               intent1.putExtra(_activity.getString(R.string.PointIndexExtra),
+                       _pointIndex);
+               LocalBroadcastManager.getInstance(_activity)
+                       .sendBroadcast(intent1);
            }
            /**
              * Succusful removal can handle UI
@@ -335,7 +355,7 @@ public class GeofenceManager implements
     @Override
     public void onRemoveGeofencesByPendingIntentResult(int statusCode, PendingIntent requestIntent) {
         if (statusCode == LocationStatusCodes.SUCCESS){
-            if (_cancelCallback != null){
+            if (_cancelCallback != null && _pointCanceled){
                 try {
                     _cancelCallback.executeCallback(_pointIndex);
                 } catch (Exception e) {

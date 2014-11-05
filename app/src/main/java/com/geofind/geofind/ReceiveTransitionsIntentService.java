@@ -8,6 +8,8 @@ import android.util.Log;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -16,12 +18,20 @@ import java.util.List;
  */
 public class ReceiveTransitionsIntentService extends IntentService {
 
+    private static GeofenceManager _manager;
+    static HashSet<String> _seenHashes = new HashSet<String>();
 
     /**
      * Set service identifier
      */
     public ReceiveTransitionsIntentService(){
         super("ReceiveTransitionsIntentService");
+        //_seenHashes = new HashSet<String>();
+    //    _manager = null;
+    }
+
+    public static void set_manager(GeofenceManager manager){
+        _manager = manager;
     }
 
     @Override
@@ -35,6 +45,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
 
         } else {
+
+
 
             int transientType =
                     LocationClient.getGeofenceTransition(intent);
@@ -53,12 +65,26 @@ public class ReceiveTransitionsIntentService extends IntentService {
                  * them.
                  */
 
-                Intent intent1 = new Intent(getString(R.string.GeofenceResultIntent));
-                intent1.putExtra(getString(R.string.PointIdIntentExtra), triggerIds[0]);
-                intent1.putExtra(getString(R.string.PointIndexExtra),
-                        intent.getIntExtra(getString(R.string.PointIndexExtra),-1));
-                LocalBroadcastManager.getInstance(this)
-                        .sendBroadcast(intent1);
+                if (_seenHashes.contains(triggerIds[0]))
+                {
+                    Log.d("Geofence Service","skipping " + transientType);
+                    return;
+                }
+
+                _seenHashes.add(triggerIds[0]);
+
+                Log.d("Geofence Service","calling manager for type" + transientType);
+                if (_manager != null){
+                    Log.d("Geofence Service","removing trigger: " + triggerIds[0]);
+                    _manager.removeGeofences(triggerIds[0]);
+                }
+
+//                Intent intent1 = new Intent(getString(R.string.GeofenceResultIntent));
+//                intent1.putExtra(getString(R.string.PointIdIntentExtra), triggerIds[0]);
+//                intent1.putExtra(getString(R.string.PointIndexExtra),
+//                        intent.getIntExtra(getString(R.string.PointIndexExtra),-1));
+//                LocalBroadcastManager.getInstance(this)
+//                        .sendBroadcast(intent1);
             }
         }
     }
