@@ -68,6 +68,21 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
         // create and fill the hunts array to display them.
 
+        ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
+
+        final List<String> onGoingHunts
+        //TODO replace the SECOND "userID" with google use id.
+        userQuery.whereEqualTo("userID", "userID");
+        userQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (!parseObjects.isEmpty()) {
+                        parseObjects.get(0).getList("");
+                    }
+                }
+            }
+        });
 
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
 
@@ -75,8 +90,9 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
 
         //TODO activate this switch when data on user is available.
-        /*switch (i) {
+        switch (i) {
             case NEW_HUNTS:
+
                 query.whereNotEqualTo("objectId", );
 
             case ONGOING_HUNTS:
@@ -84,7 +100,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
             case FINISHED_HUNTS:
                 query.whereEqualTo("objectId", );
-        }*/
+        }
 
 
         query.findInBackground(new FindCallback<ParseObject>() {

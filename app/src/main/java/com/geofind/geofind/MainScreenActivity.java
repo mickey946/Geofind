@@ -208,7 +208,7 @@ public class MainScreenActivity extends Activity {
     private void connectToParse() {
         Parse.initialize(this, parseAppID, parseClientKey);
 
-        String user = "";
+        String user = "userID";
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");
         query.whereEqualTo("userID", user);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -217,7 +217,7 @@ public class MainScreenActivity extends Activity {
                 if (e == null) {
                     if (parseObjects.isEmpty()) {
                         ParseObject userData = new ParseObject("UserData");
-                        userData.put("userID", "");
+                        userData.put("userID", "userID");
                         userData.put("ongoingHunts", new ArrayList<String>());
                         userData.put("finishedHunts", new ArrayList<String>());
 

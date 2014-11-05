@@ -158,10 +158,6 @@ public class HuntActivity extends ActionBarActivity {
             setTitle(hunt.getTitle());
 
 
-
-
-
-
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
             query.selectKeys(Arrays.asList("hints"));
 
@@ -197,13 +193,13 @@ public class HuntActivity extends ActionBarActivity {
             try {
                 List<ParseObject> remoteHintPointers = query.get(hunt.getParseID()).getList("hints");
                 List<ParseObject> remoteHints = ParseObject.fetchAll(remoteHintPointers);
-                for(ParseObject remoteHint : remoteHints) {
+                for (ParseObject remoteHint : remoteHints) {
                     hints.add(new Hint(remoteHint));
                     Log.v("Parse Hint List fetching: ", "Success");
                 }
 
 
-            } catch(ParseException e) {
+            } catch (ParseException e) {
                 Log.v("Parse Hint List fetching: ", "failed");
             }
         }
@@ -463,7 +459,7 @@ public class HuntActivity extends ActionBarActivity {
             case R.id.action_temp_finish:
 
                 //TODO get user google ID and to this function!
-                saveUserData("userID", hunt.getParseID() + "$" + hintPagerAdapter.getCount());
+                saveUserData("userID", hunt.getParseID());
 
                 intent = new Intent(this, HuntFinishActivity.class);
 
@@ -537,5 +533,12 @@ public class HuntActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        //TODO replace "userID" with google user id.
+        saveUserData("userID", hunt.getParseID() + "$" + hintPagerAdapter.getCount());
+        super.onDestroy();
     }
 }
