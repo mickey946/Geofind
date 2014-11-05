@@ -145,12 +145,15 @@
     <string name="create_hint_remove_video">Remove selected video</string>
     <string name="create_hint_remove_audio">Remove selected audio</string>
     <string name="action_back_to_main">Main Menu</string>
-    <string name="hunt_details_waiting_for_location">Waiting for location...</string>
+    <string name="hunt_details_waiting_for_location">Waiting for location…</string>
     <string name="pref_analytics">pref_analytics</string>
     <string name="pref_crash_logs">pref_crash_logs</string>
     <string name="title_activity_content_view">Hint Media</string>
     <string name="create_hint_play_video">Play selected video</string>
     <string name="create_hint_play_audio">Play selected audio</string>
     <string name="create_hint_max_file_error">Max file size is 10MB</string>
+    <string name="title_activity_comment_list">Comments</string>
+    <string name="hunt_details_no_comments">No comments yet.</string>
+    <string name="hunt_details_view_comments">View Comments</string>
 
 </resources>

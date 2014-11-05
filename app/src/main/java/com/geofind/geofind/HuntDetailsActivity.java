@@ -242,4 +242,10 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
         startActivity(intent);
     }
+
+    public void openComments(View view) {
+        Intent intent = new Intent(HuntDetailsActivity.this, CommentListActivity.class);
+        startActivity(intent);
+        // TODO pass the comments to the activity
+    }
 }

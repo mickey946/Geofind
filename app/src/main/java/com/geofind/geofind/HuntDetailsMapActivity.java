@@ -80,14 +80,6 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
 
                 startActivity(intent);
                 return true;
-            case R.id.action_navigate:
-                String navigationUrl = "http://maps.google.com/maps?daddr=%s,%s";
-                intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(String.format(navigationUrl,
-                                hunt.getCenterPosition().latitude,
-                                hunt.getCenterPosition().longitude)));
-                startActivity(intent);
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -224,18 +224,41 @@
                     card_view:cardCornerRadius="@dimen/cardview_default_radius">
 
                     <LinearLayout
-                        style="@style/item_list_hunt_inner_layout"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <TextView
-                            style="@style/hunt_details_title"
-                            android:text="@string/hunt_details_comments_reviews" />
+                        <LinearLayout
+                            style="@style/item_list_hunt_inner_layout"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
-                        <TextView
-                            style="@style/hunt_details"
-                            android:text="No comments yet." />
+                            <TextView
+                                style="@style/hunt_details_title"
+                                android:text="@string/hunt_details_comments_reviews" />
+
+                            <TextView
+                                style="@style/hunt_details"
+                                android:text="@string/hunt_details_no_comments" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/hunt_details_comments_button_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <View style="@style/bottom_card_button_separator" />
+
+                            <Button
+                                style="@style/bottom_card_button"
+                                android:onClick="openComments"
+                                android:text="@string/hunt_details_view_comments"
+                                android:drawableLeft="@drawable/ic_comment_grey600_24dp" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
