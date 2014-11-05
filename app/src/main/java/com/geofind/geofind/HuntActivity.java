@@ -42,7 +42,7 @@ import java.util.List;
 
 public class HuntActivity extends ActionBarActivity {
 
-    public static final int GEOFENCE_RADIUS = 10;
+    public static final int GEOFENCE_RADIUS = 50;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
