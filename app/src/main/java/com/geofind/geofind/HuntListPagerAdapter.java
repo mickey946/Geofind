@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
@@ -61,7 +64,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int i) {
+    public Fragment getItem(final int i) {
         //TODO need to get data on user - List of Finished Hunts, List of OngoingHunts.
         // create new Hint fragment
         final Fragment fragment = new HuntListFragment();
@@ -69,8 +72,12 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         // create and fill the hunts array to display them.
 
         ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
+        final ArrayList<Object> onGoingHunts = new ArrayList<Object>();
+        final ArrayList<Object> finishedHunts = new ArrayList<Object>();
 
-        final List<String> onGoingHunts
+        final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
+        final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery("Hunt");
+
         //TODO replace the SECOND "userID" with google use id.
         userQuery.whereEqualTo("userID", "userID");
         userQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -78,32 +85,31 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
                     if (!parseObjects.isEmpty()) {
-                        parseObjects.get(0).getList("");
+                        ParseObject userData = parseObjects.get(0);
+                        onGoingHunts.addAll(userData.getList("ongingHunts"));
+                        finishedHunts.addAll(userData.getList("finishedHunts"));
+
+                        switch (i) {
+                            case NEW_HUNTS:
+                                huntsQuery.whereNotEqualTo("objectId", onGoingHunts);
+                                huntsQuery.whereNotEqualTo("objectId", finishedHunts);
+                            case ONGOING_HUNTS:
+                                huntsQuery.whereEqualTo("objectId", onGoingHunts);
+
+                            case FINISHED_HUNTS:
+                                huntsQuery.whereEqualTo("objectId", finishedHunts);
+                        }
+                    } else {
+                        Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
                     }
+                } else {
+                    Log.v("Retrieving Hunts Failed: ", "Parse Exception - " + e.getMessage());
                 }
             }
         });
 
-        final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
-
-
-        //TODO activate this switch when data on user is available.
-        switch (i) {
-            case NEW_HUNTS:
-
-                query.whereNotEqualTo("objectId", );
-
-            case ONGOING_HUNTS:
-                query.whereEqualTo("objectId", );
-
-            case FINISHED_HUNTS:
-                query.whereEqualTo("objectId", );
-        }
-
-
-        query.findInBackground(new FindCallback<ParseObject>() {
+        huntsQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
