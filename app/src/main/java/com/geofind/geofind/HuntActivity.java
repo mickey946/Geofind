@@ -28,6 +28,7 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseFile;
+import com.parse.SaveCallback;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import com.parse.ParseObject;
@@ -460,6 +461,10 @@ public class HuntActivity extends ActionBarActivity {
                 startActivity(intent);
                 break;
             case R.id.action_temp_finish:
+
+                //TODO get user google ID and to this function!
+                saveUserData("userID", hunt.getParseID() + "$" + hintPagerAdapter.getCount());
+
                 intent = new Intent(this, HuntFinishActivity.class);
 
                 // TODO pass arguments for statistics
@@ -494,6 +499,8 @@ public class HuntActivity extends ActionBarActivity {
             geofence.createGeofence(hints.get(i + 1).getLocation(),
                     GEOFENCE_RADIUS, i + 1);
         } else {
+            //TODO get user google ID and to this function!
+            saveUserData("userID", hunt.getParseID());
             Intent intent = new Intent(HuntActivity.this, HuntFinishActivity.class);
             // TODO pass arguments for statistics
             intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
@@ -504,4 +511,31 @@ public class HuntActivity extends ActionBarActivity {
         hintPagerAdapter.notifyDataSetChanged();
     }
 
+
+    private void saveUserData(String userID, final String huntID) {
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");
+        query.whereEqualTo("userID", userID);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (!parseObjects.isEmpty()) {
+                        ParseObject userData = parseObjects.get(0);
+                        userData.add("finishedHunts", huntID);
+                        userData.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    Log.v("Adding user data to parse: ", "Success");
+                                } else {
+                                    Log.v("Adding user data to parse: ", "Failure");
+                                }
+                            }
+                        });
+                    }
+
+                }
+            }
+        });
+    }
 }
