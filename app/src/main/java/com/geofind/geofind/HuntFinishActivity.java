@@ -5,15 +5,27 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 
 public class HuntFinishActivity extends ActionBarActivity {
@@ -21,7 +33,7 @@ public class HuntFinishActivity extends ActionBarActivity {
     /**
      * The hunt that was finished.
      */
-    Hunt hunt;
+    private Hunt hunt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +49,15 @@ public class HuntFinishActivity extends ActionBarActivity {
             TextView solvedPointsTextView = (TextView) findViewById(R.id.hunt_finish_solved_points);
             TextView totalTimeTextView = (TextView) findViewById(R.id.hunt_finish_total_time);
 
-            // TODO fill in the needed numbers in the above TextView's
+            totalPointsTextView.setText(
+                    Integer.toString(intent.getIntExtra(getResources().getString(R.string.hunt_finish_total_points), 0)));
+            solvedPointsTextView.setText(
+                    Integer.toString(intent.getIntExtra(getResources().getString(R.string.hunt_finish_solved_points), 0)));
+            Date date = new Date(intent.getLongExtra(getResources().getString(R.string.hunt_finish_total_time), 0));
+            DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+            String dateFormatted = formatter.format(date);
+            totalTimeTextView.setText(dateFormatted);
         }
 
         setUpReviewCard();
@@ -110,6 +130,55 @@ public class HuntFinishActivity extends ActionBarActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
+    public void submitReview(View view) {
+        RatingBar commentRatingRatingBar = (RatingBar) findViewById(R.id.hunt_finish_review_rating);
+        EditText commentTitleTextView = (EditText) findViewById(R.id.hunt_finish_review_title);
+        EditText commentReviewTextView = (EditText) findViewById(R.id.hunt_finish_review);
+
+        if ((commentTitleTextView.getText().toString().isEmpty()) |
+                (commentReviewTextView.getText().toString().isEmpty())) {
+            Toast.makeText(getApplicationContext(), "Cannot submit an incomplete review.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+        final Comment comment = new Comment(commentTitleTextView.getText().toString(),
+                commentReviewTextView.getText().toString(), commentRatingRatingBar.getRating());
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
+        query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    parseObject.add("comments", comment.toParseObject());
+                    parseObject.increment("numOfRaters");
+                    parseObject.increment("totalRating", comment.getRating());
+                    parseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Toast.makeText(getApplicationContext(), "Your review was submitted successfully!",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.v("Review was not saved", "Parse Exception: " + e.getMessage());
+                                Toast.makeText(getApplicationContext(), "Review was NOT submitted, please try again.",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    Log.v("Review was not saved", "Parse Exception: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Review was NOT submitted, please try again.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        //TODO make "submit review" button unavailable, to avoid adding same comment twice.
+    }
+
+    //TODO add button to return to main screen.
 
     @Override
     protected void onResume() {

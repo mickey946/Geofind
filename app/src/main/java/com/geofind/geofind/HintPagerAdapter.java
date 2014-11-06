@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -31,11 +32,14 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
      */
     private GeofenceManager geofence;
 
+    private List<HintFragment> _fragments;
+
     public HintPagerAdapter(FragmentManager fm, ArrayList<Hint> hints, GeofenceManager geofenceManager) {
         super(fm);
         this.hints = hints;
         Log.i(this.getClass().getName(), "set geofence to Hint adapter:" + (geofenceManager == null));
         this.geofence = geofenceManager;
+        _fragments = new ArrayList<HintFragment>();
     }
 
     @Override
@@ -49,10 +53,18 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         args.putSerializable(HintFragment.INDEX_TAG, i);
         fragment.setArguments(args);
         fragment.set_geofenceManager(geofence);
+        _fragments.add(fragment);
 
         return fragment;
     }
 
+    public void invalidateFragment(int index) {
+        if (index < _fragments.size())
+        {
+            _fragments.get(index).getView().findViewById(R.id.item_hint_reveal_button).invalidate();
+        }
+
+    }
     /**
      * Add a hint to the end of the list.
      *
@@ -64,7 +76,18 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return hints.size();
+        int i = 0;
+        while ((i < hints.size()) && (hints.get(i).getState() != Hint.State.UNREVEALED)) {
+            i++;
+        }
+        return i + 1;
+    }
+
+    // TODO remove this function when using the approach described in:
+    // http://stackoverflow.com/questions/7263291/viewpager-pageradapter-not-updating-the-view/8024557#8024557
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 
     /**
@@ -89,7 +112,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         /**
          * give the access to the geofence manager for revealing the hint point
          */
-        public void set_geofenceManager(GeofenceManager geofenceManager){
+        public void set_geofenceManager(GeofenceManager geofenceManager) {
             this._geofenceManager = geofenceManager;
         }
 
