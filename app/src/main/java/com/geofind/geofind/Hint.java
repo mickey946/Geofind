@@ -145,26 +145,32 @@ public class Hint implements Serializable {
     }
 
     private void getFile(final DownloadFiles callback, final String fileType) {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("hint");
-        query.whereExists(fileType);
+        System.out.println("parse hint id is " + _parseId);
+        System.out.println("parse file type is " + fileType);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Hint");
         query.getInBackground(_parseId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
                     final ParseFile file = (ParseFile) parseObject.get(fileType);
-                    file.getDataInBackground(new GetDataCallback() {
-                        @Override
-                        public void done(byte[] bytes, ParseException e) {
-                            if (e == null) {
-                                if (fileType.equals("image")) {
-                                    callback.updateImage(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    if (file != null) {
+                        file.getDataInBackground(new GetDataCallback() {
+                            @Override
+                            public void done(byte[] bytes, ParseException e) {
+                                if (e == null) {
+                                    if (fileType.equals("image")) {
+                                        callback.updateImage(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                    }
+                                    //TODO video
+                                    //TODO audio
+                                } else {
+                                    System.out.println("parse exception1 " + e.getMessage());
                                 }
-                                //TODO video
-                                //TODO audio
                             }
-                        }
-                    });
+                        });
+                    }
+                } else {
+                    System.out.println("parse exception2 " + e.getMessage());
                 }
             }
         });

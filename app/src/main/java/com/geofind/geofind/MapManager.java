@@ -38,7 +38,7 @@ public class MapManager {
 
     public static final String LOG_TAG = "MapManager";
 
-    private static final int DEFAULT_ZOOM = 10;
+    private static final int DEFAULT_ZOOM = 17;
 
     // Markers
     protected MarkerOptions markerOptions;
