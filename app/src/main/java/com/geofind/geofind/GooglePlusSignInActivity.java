@@ -62,6 +62,12 @@ public class GooglePlusSignInActivity extends Activity implements
     // every time the activity goes to the background and comes back to the foreground)
     boolean mAlreadyLoadedState = false;
 
+
+    /* A flag indicating that a PendingIntent is in progress and prevents
+     * us from starting further intents.
+     */
+    private boolean mIntentInProgress;
+
     //snapshot's name
     private String currentSaveName = "snapshotTemp";
 
