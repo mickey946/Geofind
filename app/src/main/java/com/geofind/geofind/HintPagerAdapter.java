@@ -83,6 +83,13 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         return i + 1;
     }
 
+    // TODO remove this function when using the approach described in:
+    // http://stackoverflow.com/questions/7263291/viewpager-pageradapter-not-updating-the-view/8024557#8024557
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
+
     /**
      * The actual hint fragment class. From here we would inflate the hint item to the swipe view.
      */
