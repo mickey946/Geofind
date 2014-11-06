@@ -54,7 +54,7 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
         locationFinder = new LocationFinder(this, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                Log.d("HuntListActivity", locationFinder.getCurrentLocation().toString());
+               // Log.d("HuntListActivity", locationFinder.getCurrentLocation().toString());
 
                 return null;
             }

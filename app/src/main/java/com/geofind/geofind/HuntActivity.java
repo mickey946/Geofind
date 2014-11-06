@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -23,7 +24,6 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -37,7 +37,7 @@ import java.util.List;
 
 public class HuntActivity extends ActionBarActivity {
 
-    public static final int GEOFENCE_RADIUS = 10;
+    public static final int GEOFENCE_RADIUS = 50;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
@@ -87,6 +87,8 @@ public class HuntActivity extends ActionBarActivity {
      */
     GeofenceManager geofence;
 
+    private long startTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -133,10 +135,15 @@ public class HuntActivity extends ActionBarActivity {
         if (keepScreenAwake) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+        startTime = SystemClock.elapsedRealtime();
     }
 
     @Override
     protected void onPause() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long currentTime = SystemClock.elapsedRealtime();
+        long pasedTime = sharedPreferences.getLong("HuntTime", 0);
+        sharedPreferences.edit().putLong("HuntTime", pasedTime + currentTime - startTime);
         mapManager.stopTrackCurrentLocation();
         super.onPause();
     }
@@ -151,8 +158,6 @@ public class HuntActivity extends ActionBarActivity {
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(getResources().getString(R.string.intent_hunt_extra));
             setTitle(hunt.getTitle());
-
-
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
             query.selectKeys(Arrays.asList("hints"));
 
@@ -209,7 +214,7 @@ public class HuntActivity extends ActionBarActivity {
         slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
+                Log.v(TAG, "onPanelSlide, offset " + slideOffset);
                 android.support.v7.app.ActionBar actionBar = getSupportActionBar();
                 if (slideOffset >= SLIDING_UP_PANEL_ANCHOR_POINT - 0.01f) {
                     // In APIs lower than 17, hiding the action bar changes the layout size and
@@ -225,14 +230,14 @@ public class HuntActivity extends ActionBarActivity {
             @Override
             public void onPanelExpanded(View panel) {
                 // when the panel is expanded the map is not visible, so there is nothing to show
-                Log.i(TAG, "onPanelExpanded");
+                Log.v(TAG, "onPanelExpanded");
             }
 
             @Override
             public void onPanelCollapsed(View panel) {
                 // when the panel had collapsed, the user would like to see the map rather than the
                 // point
-                Log.i(TAG, "onPanelCollapsed");
+                Log.v(TAG, "onPanelCollapsed");
                 mapManager.setMapOffset(0, 0);
                 focusOnPoint(viewPager.getCurrentItem());
             }
@@ -241,7 +246,7 @@ public class HuntActivity extends ActionBarActivity {
             public void onPanelAnchored(View panel) {
                 // when the user anchors the panel, he sees both the hint and both the map, so it's
                 // good to assume that he wants to focus on the point (if it is visible)
-                Log.i(TAG, "onPanelAnchored");
+                Log.v(TAG, "onPanelAnchored");
 
                 int height = findViewById(R.id.main_content).getMeasuredHeight();
                 float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
@@ -356,20 +361,20 @@ public class HuntActivity extends ActionBarActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
-                int indx = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
-                Log.d(TAG, "recieved from geofence point index" + indx);
+                int index = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
+                Log.d(TAG, "recieved from geofence point index" + index);
                 Log.d(TAG, "geofence point recieved: " + id);
 
                 // Mark the current hint as solved
 
-                hints.get(indx).setState(Hint.State.SOLVED);
-                mapManager.setMarker(hints.get(indx).getLocation().toLatLng(),
-                        getString(R.string.hunt_activity_hint_number_title) + indx,
-                        hints.get(indx).getState());
+                hints.get(index).setState(Hint.State.SOLVED);
+                mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
+                        getString(R.string.hunt_activity_hint_number_title) + index,
+                        hints.get(index).getState());
 
                 //TODO prepare for next hint
 
-                revealNext(indx);
+                revealNext(index);
             }
         }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
@@ -456,10 +461,7 @@ public class HuntActivity extends ActionBarActivity {
                 //TODO get user google ID and to this function!
                 saveUserData("userID", hunt.getParseID());
 
-                intent = new Intent(this, HuntFinishActivity.class);
-
-                // TODO pass arguments for statistics
-                intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+                intent = generateFinishData();
 
                 startActivity(intent);
                 finish();
@@ -467,6 +469,28 @@ public class HuntActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private Intent generateFinishData() {
+        Intent intent = new Intent(this, HuntFinishActivity.class);
+        // TODO pass arguments for statistics
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long currentTime = SystemClock.elapsedRealtime();
+        long passedTime = sharedPreferences.getLong("HuntTime", 0);
+        long playTime = passedTime + currentTime - startTime;
+
+        int solved = 0;
+        for (Hint hint : hints) {
+            if (hint.getState() == Hint.State.SOLVED)
+                solved++;
+        }
+
+        intent.putExtra(getResources().getString(R.string.hunt_finish_total_points), hints.size());
+        intent.putExtra(getResources().getString(R.string.hunt_finish_solved_points), solved);
+        intent.putExtra(getResources().getString(R.string.hunt_finish_total_time), playTime);
+        intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+
+        return intent;
     }
 
     @Override
@@ -489,17 +513,17 @@ public class HuntActivity extends ActionBarActivity {
         if (hints.size() > i + 1) {
             geofence.createGeofence(hints.get(i + 1).getLocation(),
                     GEOFENCE_RADIUS, i + 1);
+            hintPagerAdapter.notifyDataSetChanged();
+            viewPager.setCurrentItem(i + 1, true); // scroll smoothly to the given index
         } else {
             //TODO get user google ID and to this function!
             saveUserData("userID", hunt.getParseID());
-            Intent intent = new Intent(HuntActivity.this, HuntFinishActivity.class);
-            // TODO pass arguments for statistics
-            intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+            Intent intent = generateFinishData();
             startActivity(intent);
-            HuntActivity.this.finish();
+            finish();
         }
 
-        hintPagerAdapter.notifyDataSetChanged();
+
     }
 
 
@@ -539,6 +563,7 @@ public class HuntActivity extends ActionBarActivity {
         //TODO replace "userID" with google user id.
         System.out.println("Destroying shit");
         saveUserData("userID", hunt.getParseID() + "$" + hintPagerAdapter.getCount());
+		geofence.destroy();
         super.onDestroy();
     }
 }
