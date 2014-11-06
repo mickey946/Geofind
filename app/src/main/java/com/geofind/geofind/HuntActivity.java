@@ -399,7 +399,7 @@ public class HuntActivity extends ActionBarActivity {
                         hints.get(indx).getState());
 
                 //TODO prepare for next hint
-                viewPager.setAdapter(hintPagerAdapter);
+//                viewPager.setAdapter(hintPagerAdapter);
 
                 revealNext(indx);
             }
@@ -536,6 +536,7 @@ public class HuntActivity extends ActionBarActivity {
         if (hints.size() > i + 1) {
             geofence.createGeofence(hints.get(i + 1).getLocation(),
                     GEOFENCE_RADIUS, i + 1);
+            hintPagerAdapter.notifyDataSetChanged();
             viewPager.setCurrentItem(i+1, true); // scroll smoothly to the given index
         } else {
             Intent intent = generateFinishData();

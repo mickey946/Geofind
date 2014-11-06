@@ -19,6 +19,7 @@ import java.util.List;
 public class ReceiveTransitionsIntentService extends IntentService {
 
     private static GeofenceManager _manager;
+    private static int _currentUse = 0;
     static HashSet<String> _seenHashes = new HashSet<String>();
 
     /**
@@ -31,9 +32,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
     public static void set_manager(GeofenceManager manager){
-        _manager = manager;
+        _manager = manager; _currentUse++;
     }
-    public static void clearList() { _seenHashes.clear(); }
+    public static void clearList() { _seenHashes.clear(); _currentUse++; }
+
+    public static int get_currentUse(){return _currentUse;}
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -55,6 +58,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
                     transientType == Geofence.GEOFENCE_TRANSITION_EXIT){
                 List<Geofence> triggerList =
                         LocationClient.getTriggeringGeofences(intent); //Added LocationClient
+
+                int serviceIdNum = intent.getIntExtra("UseID",-1);
+                Log.d("Geofence Service","curId = " + _currentUse + " rec = " + serviceIdNum);
+                if (_currentUse>1){
+                  //  return;
+                }
+
                 String[] triggerIds = new String[triggerList.size()];
 
                 for (int i = 0; i < triggerIds.length; i++) {

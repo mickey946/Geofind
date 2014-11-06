@@ -150,6 +150,8 @@ public class GeofenceManager implements
         Intent intent = new Intent(_activity,
                 ReceiveTransitionsIntentService.class);
 
+        intent.putExtra("UseID", ReceiveTransitionsIntentService.get_currentUse());
+
         intent.putExtra(_activity.
                 getString(R.string.PointIndexExtra),_pointIndex);
 
