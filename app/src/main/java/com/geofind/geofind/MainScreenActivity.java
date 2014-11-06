@@ -26,8 +26,8 @@ import java.util.List;
 
 public class MainScreenActivity extends Activity {
 
-    private final String parseAppID = "s5kJQcPb2ipcKOylJ6bgRkB1ZPsoskxEzNYca1ME";
-    private final String parseClientKey = "19BXDIKmyJTq5BXcd3mFyjth0prmkuak0ze686yp";
+    private final String parseAppID = "ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa";
+    private final String parseClientKey = "bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv";
 
     /**
      * Direction of moving of the image.
