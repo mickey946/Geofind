@@ -96,7 +96,8 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
                                 huntsQuery.whereNotContainedIn("objectId", notNewHunts);
                                 break;
                             case ONGOING_HUNTS:
-                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts));
+                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
+                                        whereNotContainedIn("objectId", finishedHunts);
                                 break;
                             case FINISHED_HUNTS:
                                 huntsQuery.whereContainedIn("objectId", finishedHunts);

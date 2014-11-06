@@ -21,10 +21,11 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
+import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -90,6 +91,11 @@ public class HuntActivity extends ActionBarActivity {
      */
     GeofenceManager geofence;
 
+    /**
+     * The floating action button to finish the hunt.
+     */
+    FloatingActionButton fab;
+
     private long startTime;
 
     private boolean finishedGame;
@@ -100,6 +106,9 @@ public class HuntActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_hunt);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.hide();
 
         setUpHunt();
 
@@ -272,7 +281,7 @@ public class HuntActivity extends ActionBarActivity {
 
         // wait until the layout is drawn, then wait a little bit to display the animation of
         // the sliding up panel
-        final RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_hunt);
+        final FrameLayout layout = (FrameLayout) findViewById(R.id.activity_hunt);
         ViewTreeObserver vto = layout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -524,16 +533,20 @@ public class HuntActivity extends ActionBarActivity {
             hintPagerAdapter.notifyDataSetChanged();
             viewPager.setCurrentItem(i + 1, true); // scroll smoothly to the given index
         } else {
-            //TODO get user google ID and to this function!
-            saveUserData("userID", hunt.getParseID());
-            Intent intent = generateFinishData();
-            startActivity(intent);
-            finish();
+            fab.setVisibility(View.VISIBLE);
+            fab.show();
         }
 
 
     }
 
+    public void finishHunt(View view) {
+        //TODO get user google ID and to this function!
+        saveUserData("userID", hunt.getParseID());
+        Intent intent = generateFinishData();
+        startActivity(intent);
+        finish();
+    }
 
     private void saveUserData(String userID, final String huntID) {
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");

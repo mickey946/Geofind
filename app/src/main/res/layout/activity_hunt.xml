@@ -1,9 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_hunt"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.geofind.geofind.HuntActivity"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:windowActionBarOverlay="true">
 
     <ProgressBar
@@ -11,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="?android:attr/progressBarStyleLarge"
-        android:layout_centerInParent="true"/>
+        android:layout_gravity="center"/>
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
@@ -49,5 +50,18 @@
 
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_done_white_24dp"
+        fab:fab_colorNormal="@color/colorPrimary"
+        fab:fab_colorPressed="@color/colorPrimaryDark"
+        fab:fab_colorRipple="@color/colorPrimary"
+        android:visibility="gone"
+        android:onClick="finishHunt" />
 
-</RelativeLayout>
+
+</FrameLayout>
