@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 
 public class CommentListActivity extends ActionBarActivity {
@@ -35,12 +34,13 @@ public class CommentListActivity extends ActionBarActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // create an adapter and set it's data
-        ArrayList<CommentDummy> comments = new ArrayList<CommentDummy>();
-        comments.add(new CommentDummy("Mickey Mickey", "Fuck this", "Shit", new Date(), 2.f));
-        comments.add(new CommentDummy("Mickey Mickey", "Fuck fdthis", "xcfd", new Date(), 4.f));
-        comments.add(new CommentDummy("Mickey Mickey", "Fucdfk this", "dfds", new Date(), 3.f));
-        comments.add(new CommentDummy("Mickey Mickey", "Fuddck this", "Sfdfdit", new Date(), 1.f));
-        comments.add(new CommentDummy("Ilia Marin", "Fuck thsdis", "df", new Date(), 5.f));
+        ArrayList<Comment> comments = new ArrayList<Comment>();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            comments = (ArrayList<Comment>) bundle.getSerializable(
+                    getResources().getString(R.string.intent_hunt_comments_extra));
+        }
         adapter = new CommentListAdapter(comments, this);
 
         // set adapter
@@ -85,42 +85,5 @@ public class CommentListActivity extends ActionBarActivity {
     public void onCreateSupportNavigateUpTaskStack(TaskStackBuilder builder) {
         super.onCreateSupportNavigateUpTaskStack(builder);
         onBackPressed();
-    }
-
-    // TODO remove this class
-    public class CommentDummy {
-        String userName;
-        String title;
-        String comment;
-        Date date;
-        float rating;
-
-        private CommentDummy(String userName, String title, String comment, Date date, float rating) {
-            this.userName = userName;
-            this.title = title;
-            this.comment = comment;
-            this.date = date;
-            this.rating = rating;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public float getRating() {
-            return rating;
-        }
-
-        public Date getDate() {
-            return date;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getComment() {
-            return comment;
-        }
     }
 }

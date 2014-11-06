@@ -1,7 +1,6 @@
 package com.geofind.geofind;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Created by Mickey on 05/11/2014.
@@ -23,10 +21,10 @@ import java.util.Locale;
 public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.ViewHolder> {
 
     // TODO change this to Comment
-    private ArrayList<CommentListActivity.CommentDummy> comments;
+    private ArrayList<Comment> comments;
     private Context context;
 
-    public CommentListAdapter(ArrayList<CommentListActivity.CommentDummy> comments,
+    public CommentListAdapter(ArrayList<Comment> comments,
                               Context context) {
         this.comments = comments;
         this.context = context;
@@ -42,11 +40,10 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        CommentListActivity.CommentDummy comment = comments.get(i);
-        viewHolder.userName.setText(comment.getUserName());
+        Comment comment = comments.get(i);
         viewHolder.commentTitle.setText(comment.getTitle());
-        viewHolder.comment.setText(comment.getComment());
-        viewHolder.ratingBar.setRating(comment.rating);
+        viewHolder.comment.setText(comment.getReview());
+        viewHolder.ratingBar.setRating(comment.getRating());
 
         // get user's preferred date format
         Format format = android.text.format.DateFormat.getDateFormat(context);
@@ -58,7 +55,7 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
             dateFormat = new SimpleDateFormat(formatString);
         }
 
-        viewHolder.date.setText(dateFormat.format(comment.date));
+        viewHolder.date.setText(dateFormat.format(comment.getDateCreated()));
 
         // TODO get user image
     }

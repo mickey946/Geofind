@@ -155,5 +155,6 @@
     <string name="title_activity_comment_list">Comments</string>
     <string name="hunt_details_no_comments">No comments yet.</string>
     <string name="hunt_details_view_comments">View Comments</string>
+    <string name="hunt_finish_review_thanks">Thanks for reviewing!</string>
 
 </resources>

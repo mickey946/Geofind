@@ -239,6 +239,7 @@
                                 android:text="@string/hunt_details_comments_reviews" />
 
                             <TextView
+                                android:id="@+id/hunt_details_no_comments"
                                 style="@style/hunt_details"
                                 android:text="@string/hunt_details_no_comments" />
 
@@ -248,7 +249,8 @@
                             android:id="@+id/hunt_details_comments_button_layout"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
                             <View style="@style/bottom_card_button_separator" />
 

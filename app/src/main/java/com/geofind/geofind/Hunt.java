@@ -200,4 +200,7 @@ public class Hunt implements Serializable {
 
     }
 
+    public ArrayList<Comment> getComments() {
+        return _comments;
+    }
 }

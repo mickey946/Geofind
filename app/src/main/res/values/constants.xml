@@ -20,6 +20,7 @@
     <string name="intent_hint_point_extra">HINT_POINT</string>
     <string name="intent_hunt_point_extra">HUNT_POINT</string>
     <string name="intent_hunt_radius_extra">HUNT_RADIUS</string>
+    <string name="intent_hunt_comments_extra">COMMENTS</string>
     <string name="pref_key_general_settings">pref_key_general_settings</string>
     <string name="pref_key_sound">pref_sound</string>
     <string name="pref_key_device_settings">pref_key_device_settings</string>

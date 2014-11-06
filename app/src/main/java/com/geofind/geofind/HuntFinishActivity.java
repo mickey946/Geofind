@@ -35,6 +35,12 @@ public class HuntFinishActivity extends ActionBarActivity {
      */
     private Hunt hunt;
 
+    /**
+     * The floating action button that is used for finishing the game.
+     */
+    FloatingActionButton fab;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +75,7 @@ public class HuntFinishActivity extends ActionBarActivity {
      */
     private void setUpReviewCard() {
         // get the floating action button
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
         // hide the floating action button when reviewing the hunt
         EditText reviewTitleEditText = (EditText) findViewById(R.id.hunt_finish_review_title);
@@ -143,7 +149,6 @@ public class HuntFinishActivity extends ActionBarActivity {
             return;
         }
 
-
         final Comment comment = new Comment(commentTitleTextView.getText().toString(),
                 commentReviewTextView.getText().toString(), commentRatingRatingBar.getRating());
 
@@ -175,10 +180,18 @@ public class HuntFinishActivity extends ActionBarActivity {
                 }
             }
         });
-        //TODO make "submit review" button unavailable, to avoid adding same comment twice.
-    }
 
-    //TODO add button to return to main screen.
+        // remove the review layout
+        View reviewLayout = findViewById(R.id.hunt_finish_review_layout);
+        reviewLayout.setVisibility(View.INVISIBLE);
+
+        // show thanks for review
+        View reviewThanks = findViewById(R.id.hunt_finish_review_thanks);
+        reviewThanks.setVisibility(View.VISIBLE);
+
+        // show the finish button
+        fab.show();
+    }
 
     @Override
     protected void onResume() {

@@ -60,6 +60,17 @@ public class HuntDetailsActivity extends ActionBarActivity {
             TextView descriptionTextView = (TextView) findViewById(R.id.hunt_details_description);
             descriptionTextView.setText(hunt.getDescription());
 
+            // hunt comments
+            if (hunt.getComments().size() > 0) {
+                // hide the 'no comments' message
+                TextView noComments = (TextView) findViewById(R.id.hunt_details_no_comments);
+                noComments.setVisibility(View.GONE);
+
+                // show the comments button
+                View commentsView = findViewById(R.id.hunt_details_comments_button_layout);
+                commentsView.setVisibility(View.VISIBLE);
+            }
+
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.hunt_details_progress_bar);
 
             final ImageView mapView = (ImageView) findViewById(R.id.hunt_details_map_preview);
@@ -245,7 +256,8 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
     public void openComments(View view) {
         Intent intent = new Intent(HuntDetailsActivity.this, CommentListActivity.class);
+        intent.putExtra(getResources().getString(R.string.intent_hunt_comments_extra),
+                hunt.getComments());
         startActivity(intent);
-        // TODO pass the comments to the activity
     }
 }
