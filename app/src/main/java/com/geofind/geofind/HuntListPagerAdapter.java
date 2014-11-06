@@ -22,9 +22,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
@@ -72,8 +70,8 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         // create and fill the hunts array to display them.
 
         ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
-        final ArrayList<Object> onGoingHunts = new ArrayList<Object>();
-        final ArrayList<Object> finishedHunts = new ArrayList<Object>();
+        final ArrayList<String> onGoingHunts = new ArrayList<String>();
+        final ArrayList<String> finishedHunts = new ArrayList<String>();
 
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
         final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery("Hunt");
@@ -86,20 +84,41 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
                 if (e == null) {
                     if (!parseObjects.isEmpty()) {
                         ParseObject userData = parseObjects.get(0);
-                        onGoingHunts.addAll(userData.getList("ongingHunts"));
-                        finishedHunts.addAll(userData.getList("finishedHunts"));
+                        onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
+                        finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
 
                         switch (i) {
                             case NEW_HUNTS:
                                 //TODO need to extract point numbers from onGoingHunts
-                                huntsQuery.whereNotEqualTo("objectId", parse(onGoingHunts));
-                                huntsQuery.whereNotEqualTo("objectId", finishedHunts);
+                                List<String> notNewHunts = parse(onGoingHunts);
+                                notNewHunts.addAll(finishedHunts);
+                                huntsQuery.whereNotContainedIn("objectId", notNewHunts);
+                                break;
                             case ONGOING_HUNTS:
-                                huntsQuery.whereEqualTo("objectId", onGoingHunts);
-
+                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts));
+                                break;
                             case FINISHED_HUNTS:
-                                huntsQuery.whereEqualTo("objectId", finishedHunts);
+                                huntsQuery.whereContainedIn("objectId", finishedHunts);
+                                break;
                         }
+
+                        huntsQuery.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> parseObjects, ParseException e) {
+                                if (e == null) {
+                                    for (ParseObject parseObject : parseObjects) {
+                                        hunts.add(new Hunt(parseObject));
+
+                                    }
+                                    ((HuntListFragment) fragment).setHunts(hunts);
+                                } else {
+                                    Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
+                                            Toast.LENGTH_LONG).show();
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                        });
+
                     } else {
                         Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
                     }
@@ -109,22 +128,6 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
             }
         });
 
-
-        huntsQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    for (ParseObject parseObject : parseObjects) {
-                        hunts.add(new Hunt(parseObject));
-
-                    }
-                    ((HuntListFragment) fragment).setHunts(hunts);
-                } else {
-                    Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
@@ -232,11 +235,11 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    private List<String> parse(List<Object> idList) {
+    private List<String> parse(List<String> idList) {
         ArrayList<String> result = new ArrayList<String>();
-        for (Object id : idList) {
-            result.add(id.toString().substring(0, id.toString().indexOf('$')));
+        for (String id : idList) {
+            result.add(id.substring(0, id.indexOf('$')));
         }
-        return null;
+        return result;
     }
 }

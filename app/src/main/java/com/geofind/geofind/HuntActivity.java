@@ -23,17 +23,12 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
-
 import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.GetDataCallback;
-import com.parse.ParseFile;
-import com.parse.SaveCallback;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseException;
+import com.parse.SaveCallback;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -517,7 +512,11 @@ public class HuntActivity extends ActionBarActivity {
                 if (e == null) {
                     if (!parseObjects.isEmpty()) {
                         ParseObject userData = parseObjects.get(0);
-                        userData.add("finishedHunts", huntID);
+                        if (huntID.contains("$")) {
+                            userData.add("ongoingHunts", huntID);
+                        } else {
+                            userData.add("finishedHunts", huntID);
+                        }
                         userData.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(ParseException e) {
@@ -538,6 +537,7 @@ public class HuntActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         //TODO replace "userID" with google user id.
+        System.out.println("Destroying shit");
         saveUserData("userID", hunt.getParseID() + "$" + hintPagerAdapter.getCount());
         super.onDestroy();
     }
