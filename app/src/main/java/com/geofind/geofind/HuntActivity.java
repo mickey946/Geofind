@@ -90,6 +90,8 @@ public class HuntActivity extends ActionBarActivity {
 
     private long startTime;
 
+    private boolean finishedGame;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -153,7 +155,7 @@ public class HuntActivity extends ActionBarActivity {
      * Retrieve the hunt from the intent that started the activity and set it up.
      */
     private void setUpHunt() {
-
+        finishedGame = false;
         Intent intent = getIntent();
         Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
         if (intent != null) {
@@ -473,6 +475,7 @@ public class HuntActivity extends ActionBarActivity {
     }
 
     private Intent generateFinishData() {
+        finishedGame = true;
         Intent intent = new Intent(this, HuntFinishActivity.class);
         // TODO pass arguments for statistics
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -563,7 +566,11 @@ public class HuntActivity extends ActionBarActivity {
     protected void onDestroy() {
         //TODO replace "userID" with google user id.
         System.out.println("Destroying shit");
-        saveUserData("userID", hunt.getParseID() + "$" + hintPagerAdapter.getCount());
+        String huntId = hunt.getParseID();
+        if(!finishedGame){
+            huntId += "$" + hintPagerAdapter.getCount();
+        }
+        saveUserData("userID", huntId );
 		geofence.destroy();
         super.onDestroy();
     }
