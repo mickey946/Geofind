@@ -21,10 +21,12 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -97,24 +99,9 @@ public class HuntActivity extends ActionBarActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
 
-
-        // TODO retrieve the hints on the fly using the hunt
-        /*hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
-        hints.add(new Hint("Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
-        hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
-        hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));*/
-
         setContentView(R.layout.activity_hunt);
 
         setUpHunt();
-
-        setUpGeofence();
-
-        setUpPagerView();
-
-        setUpSlidingUpPanel();
-
-        setUpMap();
 
         // stabilize the layout
         View layout = findViewById(R.id.main_content);
@@ -129,7 +116,9 @@ public class HuntActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mapManager.focusOnCurrentLocation();
+        if (mapManager != null) {
+            mapManager.focusOnCurrentLocation();
+        }
 
         // keep the screen awake (if needed)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -165,46 +154,61 @@ public class HuntActivity extends ActionBarActivity {
             query.selectKeys(Arrays.asList("hints"));
 
             //TODO code1 - integrate with loading screen, and replace code2
-//            query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
-//                @Override
-//                public void done(ParseObject parseObject, ParseException e) {
-//                    if (e == null) {
-//                        final List<ParseObject> remoteHints = parseObject.getList("hints");
-//                        ParseObject.fetchAllInBackground(remoteHints, new FindCallback<ParseObject>() {
-//                            @Override
-//                            public void done(List<ParseObject> parseObjects, ParseException e) {
-//                                if (e == null) {
-//                                    for(ParseObject remoteHint : remoteHints) {
-//                                        hints.add(new Hint(remoteHint));
-//                                        Log.v("Parse Hint List fetching: ", "Success");
-//                                    }
-//                                }
-//                                else {
-//                                    Log.v("Parse Hint List fetching: ", "failed");
-//                                }
-//                            }
-//                        });
-//                    }
-//                    else {
-//                        Log.v("Parse Hint List fetching: ", "failed");
-//                    }
-//                }
-//            });
+            query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        final List<ParseObject> remoteHints = parseObject.getList("hints");
+                        ParseObject.fetchAllInBackground(remoteHints, new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> parseObjects, ParseException e) {
+                                if (e == null) {
+                                    for (ParseObject remoteHint : remoteHints) {
+                                        hints.add(new Hint(remoteHint));
+                                        Log.v("Parse Hint List fetching: ", "Success");
+
+                                        // hide the progress bar
+                                        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+                                        progressBar.setVisibility(View.GONE);
+
+                                        // show the game layout
+                                        View slidingLayout = findViewById(R.id.sliding_layout);
+                                        slidingLayout.setVisibility(View.VISIBLE);
+
+                                        setUpGeofence();
+
+                                        setUpPagerView();
+
+                                        setUpSlidingUpPanel();
+
+                                        setUpMap();
+                                    }
+                                } else {
+                                    Log.v("Parse Hint List fetching: ", "failed");
+                                }
+                            }
+                        });
+                    } else {
+                        Log.v("Parse Hint List fetching: ", "failed");
+                    }
+                }
+            });
 
 
             //TODO code2
-            try {
-                List<ParseObject> remoteHintPointers = query.get(hunt.getParseID()).getList("hints");
-                List<ParseObject> remoteHints = ParseObject.fetchAll(remoteHintPointers);
-                for (ParseObject remoteHint : remoteHints) {
-                    hints.add(new Hint(remoteHint));
-                    Log.v("Parse Hint List fetching: ", "Success");
-                }
-
-
-            } catch (ParseException e) {
-                Log.v("Parse Hint List fetching: ", "failed");
-            }
+//            try {
+//                List<ParseObject> remoteHintPointers = query.get(hunt.getParseID()).getList("hints");
+//                List<ParseObject> remoteHints = ParseObject.fetchAll(remoteHintPointers);
+//                for (ParseObject remoteHint : remoteHints) {
+//                    hints.add(new Hint(remoteHint));
+//                    Log.v("Parse Hint List fetching: ", "Success");
+//                }
+//
+//
+//
+//            } catch (ParseException e) {
+//                Log.v("Parse Hint List fetching: ", "failed");
+//            }
         }
     }
 
@@ -567,11 +571,11 @@ public class HuntActivity extends ActionBarActivity {
         //TODO replace "userID" with google user id.
         System.out.println("Destroying shit");
         String huntId = hunt.getParseID();
-        if(!finishedGame){
+        if (!finishedGame) {
             huntId += "$" + hintPagerAdapter.getCount();
         }
-        saveUserData("userID", huntId );
-		geofence.destroy();
+        saveUserData("userID", huntId);
+        geofence.destroy();
         super.onDestroy();
     }
 }
