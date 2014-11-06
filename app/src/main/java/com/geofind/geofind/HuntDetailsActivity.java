@@ -242,4 +242,8 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
         startActivity(intent);
     }
+
+    public void showComments(View view) {
+        //TODO
+    }
 }

@@ -7,12 +7,17 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 
@@ -97,8 +102,7 @@ public class CreateHuntActivity extends ActionBarActivity {
             if (resultCode == RESULT_OK) { // The user created a list of hints
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
-                    hints = (ArrayList<Hint>)
-                            bundle.getSerializable(getString(R.string.intent_hints_extra));
+                    hints = (ArrayList<Hint>) bundle.getSerializable(getString(R.string.intent_hints_extra));
                     if (hints != null) {
                         TextView createHintsText = (TextView)
                                 findViewById(R.id.create_hunt_add_points_description_text);
@@ -107,8 +111,7 @@ public class CreateHuntActivity extends ActionBarActivity {
 
                         Button createHintsButton = (Button)
                                 findViewById(R.id.create_hunt_create_points_button);
-                        createHintsButton.setText(
-                                getString(R.string.hunt_create_edit_points_button));
+                        createHintsButton.setText(getString(R.string.hunt_create_edit_points_button));
                     }
                 }
             }
@@ -191,10 +194,31 @@ public class CreateHuntActivity extends ActionBarActivity {
      * Submit the Hunt and save it in the database.
      */
     public void submitHunt(String huntTitle, String huntDescription) {
-        String creatorID = "creatorID"; // TODO change to appropriate type
+        String creatorID = "creatorID"; // TODO get the real creator ID.
 
-        Hunt hunt = new Hunt(huntTitle, huntDescription, hints, creatorID);
+        Hunt hunt = new Hunt(huntTitle, huntDescription, creatorID, hints);
 
-        // TODO save hunt to parse
+        ParseObject remoteHunt = hunt.toParseObject(getApplicationContext());
+
+        remoteHunt.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Toast.makeText(getApplicationContext(), "Hunt was successfully created!",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.v("HUNT was not saved.", "Parse Exception: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Hunt was NOT created, please try again.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
+        //TODO return to main application screen
+        //TODO consider moving the finish call to after Toast.
+        finish();
+
     }
+
 }

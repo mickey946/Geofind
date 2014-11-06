@@ -235,8 +235,24 @@
 
                         <TextView
                             style="@style/hunt_details"
+                            android:id="@+id/hunt_details_no_comments"
                             android:text="No comments yet." />
 
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/hunt_details_show_comments"
+                            android:visibility="gone">
+
+                            <View style="@style/bottom_card_button_separator" />
+
+                            <Button
+                                style="@style/bottom_card_button_start"
+                                android:onClick="showComments"
+
+                                android:drawableLeft="@drawable/ic_comment_grey600_24dp"
+                                android:text="Show comments" />
+                        </FrameLayout>
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>

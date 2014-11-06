@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -53,7 +54,7 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
         locationFinder = new LocationFinder(this, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                Log.d("HuntListActivity", locationFinder.getCurrentLocation().toString());
+               // Log.d("HuntListActivity", locationFinder.getCurrentLocation().toString());
 
                 return null;
             }
@@ -124,4 +125,6 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 
     }
+
+
 }

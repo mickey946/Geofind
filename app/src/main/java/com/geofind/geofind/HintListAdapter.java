@@ -144,8 +144,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
             // the same dimension for image view
             new StaticMap(viewHolder.imgMapHint, viewHolder.progressBar)
                     .execute(new StaticMap.StaticMapDescriptor(
-                            hints.get(i).getLocation().toLatLng(),
-                            mapWidth, mapHeight));
+                            hints.get(i).getLocation().toLatLng(), mapWidth, mapHeight));
         }
 
     }
