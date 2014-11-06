@@ -214,8 +214,6 @@ public class CreateHuntActivity extends ActionBarActivity {
             }
         });
 
-
-        //TODO return to main application screen
         //TODO consider moving the finish call to after Toast.
         finish();
 

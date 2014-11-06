@@ -1,7 +1,9 @@
 package com.geofind.geofind;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -119,7 +122,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                  @Nullable Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.item_hint_swipe_view, container, false);
+            final View view = inflater.inflate(R.layout.item_hint_swipe_view, container, false);
 
             // get the related hint
             Bundle bundle = getArguments();
@@ -171,6 +174,28 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                      */
                     revealButton.invalidate();
 
+                }
+            });
+
+            hint.downloadFiles(new Hint.DownloadFiles() {
+                @Override
+                public void updateImage(Bitmap bitmap) {
+                    System.out.println("KAKI");
+                    View imageLayout = view.findViewById(R.id.item_hint_image_layout);
+                    imageLayout.setVisibility(View.VISIBLE);
+
+                    ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
+                    hintImage.setImageBitmap(bitmap);
+                }
+
+                @Override
+                public void updateVideo(MediaStore.Video vid) {
+                    // TODO video display
+                }
+
+                @Override
+                public void updateAudio(MediaStore.Audio aud) {
+                    // TODO audio display
                 }
             });
 
