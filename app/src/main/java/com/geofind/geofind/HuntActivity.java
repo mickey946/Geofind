@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
