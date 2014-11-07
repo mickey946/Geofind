@@ -116,11 +116,25 @@
                                     android:text="@string/item_hint_picture_details" />
                             </LinearLayout>
 
-                            <ImageView
-                                android:id="@+id/item_hint_picture"
-                                android:layout_width="fill_parent"
-                                android:layout_height="@dimen/hunt_details_map_height"
-                                android:scaleType="centerCrop" />
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/hunt_details_map_height">
+
+                                <ImageView
+                                    android:id="@+id/item_hint_picture"
+                                    android:layout_width="fill_parent"
+                                    android:layout_height="@dimen/hunt_details_map_height"
+                                    android:scaleType="centerCrop"/>
+
+                                <ProgressBar
+                                    android:id="@+id/progress_bar"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:visibility="invisible" />
+
+                            </RelativeLayout>
+
                         </LinearLayout>
 
                     </android.support.v7.widget.CardView>

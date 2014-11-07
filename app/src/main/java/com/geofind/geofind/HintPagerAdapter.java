@@ -180,7 +180,6 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
             hint.downloadFiles(new Hint.DownloadFiles() {
                 @Override
                 public void updateImage(Bitmap bitmap) {
-                    System.out.println("KAKI");
                     View imageLayout = view.findViewById(R.id.item_hint_image_layout);
                     imageLayout.setVisibility(View.VISIBLE);
 
