@@ -1,5 +1,6 @@
 package com.geofind.geofind;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -62,12 +63,12 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void invalidateFragment(int index) {
-        if (index < _fragments.size())
-        {
+        if (index < _fragments.size()) {
             _fragments.get(index).getView().findViewById(R.id.item_hint_reveal_button).invalidate();
         }
 
     }
+
     /**
      * Add a hint to the end of the list.
      *
@@ -185,6 +186,14 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
                     ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
                     hintImage.setImageBitmap(bitmap);
+                    hintImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(v.getContext(), ContentViewActivity.class);
+                            intent.putExtra(ContentViewActivity.IMAGE_PARSE, hint);
+                            startActivity(intent);
+                        }
+                    });
                 }
 
                 @Override
