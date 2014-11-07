@@ -180,12 +180,33 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
             hint.downloadFiles(new Hint.DownloadFiles() {
                 @Override
-                public void updateImage(Bitmap bitmap) {
+                public void updateImage(Bitmap inputBitmap) {
                     View imageLayout = view.findViewById(R.id.item_hint_image_layout);
                     imageLayout.setVisibility(View.VISIBLE);
 
                     ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
-                    hintImage.setImageBitmap(bitmap);
+
+                    // zoom the image to improve view responsiveness
+                    Bitmap displayBitmap;
+                    if (inputBitmap.getWidth() >= inputBitmap.getHeight()) {
+                        displayBitmap = Bitmap.createBitmap(
+                                inputBitmap,
+                                inputBitmap.getWidth() / 2 - inputBitmap.getHeight() / 2,
+                                0,
+                                inputBitmap.getHeight(),
+                                inputBitmap.getHeight()
+                        );
+                    } else {
+                        displayBitmap = Bitmap.createBitmap(
+                                inputBitmap,
+                                0,
+                                inputBitmap.getHeight() / 2 - inputBitmap.getWidth() / 2,
+                                inputBitmap.getWidth(),
+                                inputBitmap.getWidth()
+                        );
+                    }
+                    hintImage.setImageBitmap(displayBitmap);
+
                     hintImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
