@@ -156,5 +156,9 @@
     <string name="hunt_details_no_comments">No comments yet.</string>
     <string name="hunt_details_view_comments">View Comments</string>
     <string name="hunt_finish_review_thanks">Thanks for reviewing!</string>
+    <string name="LocationNotAvailable">Do you want open GPS setting?</string>
+    <string name="Location_Disabled_Error">"To play this game, location must be enabled "</string>
+    <string name="Location_Settings">Location Settings</string>
+    <string name="Location_Missing_Canceled">Leave the game</string>
 
 </resources>

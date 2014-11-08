@@ -1,12 +1,16 @@
 package com.geofind.geofind;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,26 +32,21 @@ public class LocationFinder implements
         LocationListener {
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-
-    private Activity context;
-    private LocationClient locationClient;
-
-    // Flag that indicates if a request is underway.
-    private boolean mInProgress;
-
-    private boolean mConnected;
-
-    private Callable<Void> locationFound;
-
     Location currentLocation;
-
     //Define an object that holds accuracy and frequency parameters
     LocationRequest mLocationRequest;
-
+    private Activity context;
+    private LocationClient locationClient;
+    // Flag that indicates if a request is underway.
+    private boolean mInProgress;
+    private boolean mConnected;
+    private Callable<Void> locationFound;
     // is it a single request or continues
     private boolean _requireUpdates;
+    private boolean _requireLocationEnabled;
 
     public LocationFinder(Activity context, Callable<Void> locationFound) {
+        Log.d("LocationFinder", "c-tor");
         locationClient = new LocationClient(context, this, this);
         this.context = context;
         mInProgress = false;
@@ -55,9 +54,13 @@ public class LocationFinder implements
         currentLocation = null;
         this.locationFound = locationFound;
 
-
+        _requireLocationEnabled = true;
         _requireUpdates = false;
 
+    }
+
+    public void set_requireLocationEnabled(boolean requireLocationEnabled){
+        this._requireLocationEnabled =requireLocationEnabled;
     }
 
     /**
@@ -98,14 +101,16 @@ public class LocationFinder implements
      * start location client
      */
     public void startLocation() {
-        locationClient.connect();
+        if (!locationClient.isConnected())
+            locationClient.connect();
     }
 
     /**
      * stop location client
      */
     public void stopLocation() {
-        locationClient.disconnect();
+        if (locationClient.isConnected())
+            locationClient.disconnect();
     }
 
     /**
@@ -126,13 +131,43 @@ public class LocationFinder implements
     public void onConnected(Bundle dataBundle) {
 
         currentLocation = locationClient.getLastLocation();
+        Log.d("LocationFinder", "onConnect");
+
+        if (currentLocation == null) {
+            updateLocation();
+            Log.d("LocationFinder", "No location oncreate");
+
+            if (_requireLocationEnabled) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+
+                builder.setMessage(context.getString(R.string.LocationNotAvailable))
+                        .setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface d, int id) {
+                                        context.startActivity(new Intent(action));
+
+
+                                        d.dismiss();
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface d, int id) {
+                                        d.cancel();
+                                    }
+                                });
+                builder.create().show();
+            }
+        }
 
         if (_requireUpdates) {
             locationClient.requestLocationUpdates(mLocationRequest, this);
         }
 
         try {
-            locationFound.call();
+            if (currentLocation != null)
+                locationFound.call();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -196,9 +231,18 @@ public class LocationFinder implements
         Log.d("LocationFinder", "Location changed");
         currentLocation = location;
         try {
-            locationFound.call();
+            if (currentLocation != null)
+                locationFound.call();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateLocation() {
+        if (locationClient.isConnected())
+            locationClient.requestLocationUpdates(
+                    LocationRequest.create().setNumUpdates(1)
+                            .setInterval(5000).setFastestInterval(1000)
+                            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY), LocationFinder.this);
     }
 }
