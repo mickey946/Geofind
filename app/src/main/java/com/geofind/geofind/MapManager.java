@@ -132,6 +132,7 @@ public class MapManager {
                 return null;
             }
         });
+        _locationFinder.startLocation();
         _mMap.setMyLocationEnabled(true);
         _offsetX = 0;
         _offsetY = 0;
@@ -183,7 +184,8 @@ public class MapManager {
 
     //Single time focus
     public void focusOnCurrentLocation() {
-        _locationFinder.startLocation();
+
+        _locationFinder.updateLocation();
     }
 
     // focus and keep tracking

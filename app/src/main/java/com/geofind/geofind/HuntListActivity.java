@@ -35,10 +35,6 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
      */
     SlidingTabLayout slidingTabLayout;
 
-    /**
-     * The location finder used to determine user's current location.
-     */
-    LocationFinder locationFinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +45,6 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        locationFinder = new LocationFinder(this, new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                // Log.d("HuntListActivity", locationFinder.getCurrentLocation().toString());
-
-                return null;
-            }
-        });
 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the activity.
@@ -77,12 +65,12 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
     @Override
     protected void onStart() {
         super.onStart();
-        locationFinder.startLocation();
+
     }
 
     @Override
     protected void onStop() {
-        locationFinder.stopLocation();
+
         super.onStart();
     }
 

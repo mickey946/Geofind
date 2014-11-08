@@ -117,6 +117,18 @@ public class HuntDetailsActivity extends ActionBarActivity {
                 }
             });
 
+
+            // distance from the user
+            locationFinder = new LocationFinder(this, new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+
+                    updateLocationDisplay();
+                    return null;
+                }
+            });
+            locationFinder.startLocation();
+
             // total distance and distance from user are calculated in onResume to be in sync with
             // the settings.
 
@@ -166,10 +178,16 @@ public class HuntDetailsActivity extends ActionBarActivity {
         }
     }
 
+//    @Override
+//    protected void onStop() {
+//        locationFinder.stopLocation();
+//        super.onStart();
+//    }
+
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         locationFinder.stopLocation();
-        super.onStart();
+        super.onDestroy();
     }
 
     @Override
@@ -186,7 +204,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
         // set distance units
         TextView totalDistanceUnitTextView = (TextView)
                 findViewById(R.id.hunt_details_total_distance_unit);
-        final TextView distanceFromUserUnitTextView = (TextView)
+        TextView distanceFromUserUnitTextView = (TextView)
                 findViewById(R.id.hunt_details_distance_from_user_unit);
 
         // km or miles
@@ -212,32 +230,39 @@ public class HuntDetailsActivity extends ActionBarActivity {
         decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
         totalDistanceTextView.setText(decimalFormat.format(totalDistance));
 
-        // distance from the user
-        locationFinder = new LocationFinder(this, new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                TextView distanceFromUserTextView = (TextView)
-                        findViewById(R.id.hunt_details_distance_from_user);
+        updateLocationDisplay();
 
-                float distanceFromUser = GeoUtils.calcDistance(
-                        locationFinder.currentLocation,
-                        new Point(hunt.getCenterPosition()));
+    }
 
-                // km or miles
-                if (distanceUnit.equals(
-                        getString(R.string.preferences_distance_units_kilometers))) {
-                    distanceFromUser *= Hunt.METERS_TO_KILOMETERS;
-                } else {
-                    distanceFromUser *= Hunt.METERS_TO_MILES;
-                }
+    private void updateLocationDisplay(){
 
-                distanceFromUserTextView.setText(decimalFormat.format(distanceFromUser));
 
-                distanceFromUserUnitTextView.setVisibility(View.VISIBLE);
-                return null;
+        final String distanceUnit = getCurrentDistanceUnit();
+        final DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
+        TextView distanceFromUserUnitTextView = (TextView)
+                findViewById(R.id.hunt_details_distance_from_user_unit);
+
+        if (locationFinder.currentLocation != null) {
+            TextView distanceFromUserTextView = (TextView)
+                    findViewById(R.id.hunt_details_distance_from_user);
+
+            float distanceFromUser = GeoUtils.calcDistance(
+                    locationFinder.currentLocation,
+                    new Point(hunt.getCenterPosition()));
+
+            // km or miles
+            if (distanceUnit.equals(
+                    getString(R.string.preferences_distance_units_kilometers))) {
+                distanceFromUser *= Hunt.METERS_TO_KILOMETERS;
+            } else {
+                distanceFromUser *= Hunt.METERS_TO_MILES;
             }
-        });
-        locationFinder.startLocation();
+
+            distanceFromUserTextView.setText(decimalFormat.format(distanceFromUser));
+
+            distanceFromUserUnitTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
