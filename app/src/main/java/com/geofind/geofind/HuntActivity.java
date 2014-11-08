@@ -388,6 +388,7 @@ public class HuntActivity extends ActionBarActivity {
                 mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
                         getString(R.string.hunt_activity_hint_number_title) + index,
                         hints.get(index).getState());
+                mapManager.onLocationChanged(hints.get(index).getLocation().toLocation());
 
                 //TODO prepare for next hint
 
