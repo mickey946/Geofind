@@ -3,6 +3,12 @@
     tools:context="com.geofind.geofind.PickPointActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_search"
+        android:title="@string/str_atv_places"
+        android:icon="@drawable/ic_search_white_24dp"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+
     <item
         android:id="@+id/action_pick_point"
         android:title="@string/action_pick_point"
