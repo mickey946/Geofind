@@ -43,6 +43,7 @@ public class LocationFinder implements
     private Callable<Void> locationFound;
     // is it a single request or continues
     private boolean _requireUpdates;
+    private boolean _requireLocationEnabled;
 
     public LocationFinder(Activity context, Callable<Void> locationFound) {
         Log.d("LocationFinder", "c-tor");
@@ -53,9 +54,13 @@ public class LocationFinder implements
         currentLocation = null;
         this.locationFound = locationFound;
 
-
+        _requireLocationEnabled = true;
         _requireUpdates = false;
 
+    }
+
+    public void set_requireLocationEnabled(boolean requireLocationEnabled){
+        this._requireLocationEnabled =requireLocationEnabled;
     }
 
     /**
@@ -132,28 +137,28 @@ public class LocationFinder implements
             updateLocation();
             Log.d("LocationFinder", "No location oncreate");
 
+            if (_requireLocationEnabled) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 
-            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
-
-            builder.setMessage(context.getString(R.string.LocationNotAvailable))
-                    .setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface d, int id) {
-                                    context.startActivity(new Intent(action));
+                builder.setMessage(context.getString(R.string.LocationNotAvailable))
+                        .setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface d, int id) {
+                                        context.startActivity(new Intent(action));
 
 
-                                    d.dismiss();
-                                }
-                            })
-                    .setNegativeButton("Cancel",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface d, int id) {
-                                    d.cancel();
-                                }
-                            })
-            ;
-            builder.create().show();
+                                        d.dismiss();
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface d, int id) {
+                                        d.cancel();
+                                    }
+                                });
+                builder.create().show();
+            }
         }
 
         if (_requireUpdates) {

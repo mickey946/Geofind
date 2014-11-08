@@ -404,6 +404,10 @@ public class MapManager {
         return _selectedPoint;
     }
 
+    public void setLocationRequired(boolean locationRequired){
+        _locationFinder.set_requireLocationEnabled(locationRequired);
+    }
+
     /**
      * Class for finding an address by location
      */

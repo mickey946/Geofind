@@ -131,6 +131,8 @@ public class HuntActivity extends ActionBarActivity {
         if (mapManager != null) {
             mapManager.focusOnCurrentLocation();
         }
+        if(geofence!=null)
+            geofence.resumeGeofence();
 
         // keep the screen awake (if needed)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -351,6 +353,7 @@ public class HuntActivity extends ActionBarActivity {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
         mapManager = new MapManager(this, mapFragment);
+        mapManager.setLocationRequired(false);
         mapManager.setMarkerCallback(new IndexCallback() {
             /**
              * Slide to the point page at the given index.
@@ -362,12 +365,6 @@ public class HuntActivity extends ActionBarActivity {
                 viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
             }
         });
-
-        int index = 0;
-        for (Hint hint : hints) {
-            index++;
-
-        }
     }
 
     /**

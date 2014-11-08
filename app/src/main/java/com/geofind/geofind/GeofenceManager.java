@@ -1,13 +1,16 @@
 package com.geofind.geofind;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -64,6 +67,10 @@ public class GeofenceManager implements
     // Active point index
     private int _pointIndex;
 
+    private String _activeID;
+
+    private boolean _geofenceCreateFinished;
+
     private boolean _pointCanceled;
 
     // List of point IDs to be canceled
@@ -73,6 +80,7 @@ public class GeofenceManager implements
     private IndexCallback _cancelCallback;
 
     private boolean _cleanUp;
+
 
     /**
      * Contstructor and initializer
@@ -87,6 +95,7 @@ public class GeofenceManager implements
         mInProgress = false;
         _cancelCallback = null;
         _pointCanceled = false;
+        _geofenceCreateFinished = true;
         _cleanUp = false;
         ReceiveTransitionsIntentService.set_manager(this);
         addGeofences();
@@ -103,9 +112,11 @@ public class GeofenceManager implements
 
         addGeofences();
         final String ID = composeID(point);
+        _activeID = ID;
 
         Log.d(TAG, "create geofence " + ID + "with radius " + radius + "at" + pointIndex);
         _pointIndex = pointIndex;
+        _geofenceCreateFinished = false;
         SimpleGeofence simpleGeofence = new SimpleGeofence(
                 ID,
                 point.getLatitude(),
@@ -125,6 +136,15 @@ public class GeofenceManager implements
             mLocationClient = new LocationClient(_activity, this, this);
         }
         return mLocationClient;
+    }
+
+    public void resumeGeofence(){
+        if (!_geofenceCreateFinished) {
+            Log.d(TAG,"resuming geofence");
+            mCurrentGeofence.add(simpleGeofenceStore.getGeofence(_activeID).toGeofence());
+            if(!getLocationClient().isConnected())
+                getLocationClient().connect();
+        }
     }
 
 
@@ -283,6 +303,7 @@ public class GeofenceManager implements
              * You can send out a broadcast intent or update the UI.
              * geofences into the Intent's extended data.
              */
+            _geofenceCreateFinished = true;
             Log.d(TAG, "Location geofence added succssfully");
         } else {
             // If adding the geofences failed
@@ -291,6 +312,32 @@ public class GeofenceManager implements
              * You can log the error using Log.e() or update
              * the UI.
              */
+
+            if (LocationStatusCodes.GEOFENCE_NOT_AVAILABLE == statusCode){
+                final AlertDialog.Builder builder = new AlertDialog.Builder(_activity);
+
+
+                builder.setMessage(_activity.getString(R.string.Location_Disabled_Error))
+                        .setPositiveButton(_activity.getString(R.string.Location_Settings),
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface d, int id) {
+                                        _activity.startActivity(new Intent(
+                                                Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                        d.dismiss();
+                                    }
+                                })
+                        .setNegativeButton(_activity.getString(R.string.Location_Missing_Canceled),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        _activity.finish();
+                                    }
+                                });
+                builder.create().show();
+
+            }
+
+
             Log.d(TAG, "Location geofence added with error: " + statusCode);
         }
 
@@ -343,6 +390,7 @@ public class GeofenceManager implements
         getLocationClient().disconnect();
         if (statusCode == LocationStatusCodes.SUCCESS) {
             Log.d(TAG, "removed #" + _pointIndex + " by id (" + strings.length + ") " + strings[0]);
+            simpleGeofenceStore.clearGeofence(strings[0]);
             if (_cancelCallback != null && _pointCanceled) {
                 _pointCanceled  = false; // reset for next time
                 try {
