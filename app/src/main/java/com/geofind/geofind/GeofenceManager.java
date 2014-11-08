@@ -338,9 +338,13 @@ public class GeofenceManager implements
      */
     @Override
     public void onRemoveGeofencesByRequestIdsResult(int statusCode, String[] strings) {
+
+        mInProgress = false;
+        getLocationClient().disconnect();
         if (statusCode == LocationStatusCodes.SUCCESS) {
             Log.d(TAG, "removed #" + _pointIndex + " by id (" + strings.length + ") " + strings[0]);
             if (_cancelCallback != null && _pointCanceled) {
+                _pointCanceled  = false; // reset for next time
                 try {
                     _cancelCallback.executeCallback(_pointIndex);
                 } catch (Exception e) {
@@ -364,8 +368,6 @@ public class GeofenceManager implements
              */
         }
 
-        mInProgress = false;
-        getLocationClient().disconnect();
     }
 
     /**
@@ -373,6 +375,9 @@ public class GeofenceManager implements
      */
     @Override
     public void onRemoveGeofencesByPendingIntentResult(int statusCode, PendingIntent requestIntent) {
+
+        mInProgress = false;
+        getLocationClient().disconnect();
         if (statusCode == LocationStatusCodes.SUCCESS) {
             if (_cancelCallback != null && _pointCanceled) {
                 try {
@@ -391,8 +396,6 @@ public class GeofenceManager implements
              */
         }
 
-        mInProgress = false;
-        getLocationClient().disconnect();
     }
 
     public void destroy() {

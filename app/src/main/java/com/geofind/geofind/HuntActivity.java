@@ -99,6 +99,7 @@ public class HuntActivity extends ActionBarActivity {
     private long startTime;
 
     private boolean finishedGame;
+    private BroadcastReceiver geofenceReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,23 +176,23 @@ public class HuntActivity extends ActionBarActivity {
                                     for (ParseObject remoteHint : remoteHints) {
                                         hints.add(new Hint(remoteHint));
                                         Log.v("Parse Hint List fetching: ", "Success");
-
-                                        // hide the progress bar
-                                        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-                                        progressBar.setVisibility(View.GONE);
-
-                                        // show the game layout
-                                        View slidingLayout = findViewById(R.id.sliding_layout);
-                                        slidingLayout.setVisibility(View.VISIBLE);
-
-                                        setUpGeofence();
-
-                                        setUpPagerView();
-
-                                        setUpSlidingUpPanel();
-
-                                        setUpMap();
                                     }
+
+                                    // hide the progress bar
+                                    ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+                                    progressBar.setVisibility(View.GONE);
+
+                                    // show the game layout
+                                    View slidingLayout = findViewById(R.id.sliding_layout);
+                                    slidingLayout.setVisibility(View.VISIBLE);
+
+                                    setUpGeofence();
+
+                                    setUpPagerView();
+
+                                    setUpSlidingUpPanel();
+
+                                    setUpMap();
                                 } else {
                                     Log.v("Parse Hint List fetching: ", "failed");
                                 }
@@ -373,7 +374,7 @@ public class HuntActivity extends ActionBarActivity {
         Log.d(TAG, "setUpGeofence");
         geofence = new GeofenceManager(this);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+        geofenceReciever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
@@ -387,12 +388,15 @@ public class HuntActivity extends ActionBarActivity {
                 mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
                         getString(R.string.hunt_activity_hint_number_title) + index,
                         hints.get(index).getState());
+                mapManager.onLocationChanged(hints.get(index).getLocation().toLocation());
 
                 //TODO prepare for next hint
 
                 revealNext(index);
             }
-        }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                geofenceReciever, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
         int unrevealedIndex = 0;
         while (unrevealedIndex < hints.size() &&
@@ -527,16 +531,16 @@ public class HuntActivity extends ActionBarActivity {
     }
 
     private void revealNext(int i) {
+        hintPagerAdapter.notifyDataSetChanged();
+
         if (hints.size() > i + 1) {
             geofence.createGeofence(hints.get(i + 1).getLocation(),
                     GEOFENCE_RADIUS, i + 1);
-            hintPagerAdapter.notifyDataSetChanged();
             viewPager.setCurrentItem(i + 1, true); // scroll smoothly to the given index
         } else {
             fab.setVisibility(View.VISIBLE);
             fab.show();
         }
-
 
     }
 
@@ -589,6 +593,7 @@ public class HuntActivity extends ActionBarActivity {
         }
         saveUserData("userID", huntId);
         geofence.destroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(geofenceReciever);
         super.onDestroy();
     }
 }

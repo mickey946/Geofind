@@ -84,7 +84,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         while ((i < hints.size()) && (hints.get(i).getState() != Hint.State.UNREVEALED)) {
             i++;
         }
-        return i + 1;
+        return Math.min(i + 1, hints.size());
     }
 
     // TODO remove this function when using the approach described in:
