@@ -1,15 +1,11 @@
 package com.geofind.geofind;
 
 import android.content.Context;
+import android.database.MatrixCursor;
 import android.os.AsyncTask;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -33,12 +29,12 @@ public class GeoAutoComplete {
     public static final String LOG_TAG = "AutoComplete";
     //GOOGLE API Key
     private static final String API_KEY = "AIzaSyAtwXqO2w5kV9a8iE-AcbcoI9DWlK0Q8Yk";
-    private AutoCompleteTextView _atvLocation; // Autocomplete text view
+    private SearchView _atvLocation; // Autocomplete text view
     private Context _context; // The map context
     private MapManager _mapManager; // the map manager of the current map
 
 
-    public GeoAutoComplete(MapManager mapManager, Context context, AutoCompleteTextView atvLocation) {
+    public GeoAutoComplete(MapManager mapManager, Context context, SearchView atvLocation) {
         _mapManager = mapManager;
         _context = context;
         _atvLocation = atvLocation;
@@ -92,49 +88,43 @@ public class GeoAutoComplete {
      */
     private void initAutoCompleteLocation() {
 
-
-        _atvLocation.addTextChangedListener(new TextWatcher() {
+        _atvLocation.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                // Nothing in this case
+            public boolean onQueryTextSubmit(String s) {
+                return false;
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                if (charSequence.length() > 0) {
+            public boolean onQueryTextChange(String text) {
+                if (text.length() > 0) {
                     DownloadTask downloadTask = new DownloadTask(DownloadTypes.PLACES);
-                    String Url = getAutocompleteUrl(charSequence.toString());
+                    String Url = getAutocompleteUrl(text);
                     downloadTask.execute(Url);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // Nothing in this case
+                return true;
             }
         });
 
-        /**
-         * Get the selected item from the list and update the map
-         */
-        _atvLocation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        _atvLocation.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
+            public boolean onSuggestionSelect(int i) {
+                return false;
+            }
 
-                ListView lv = (ListView) adapterView;
-                SimpleAdapter adapter = (SimpleAdapter) adapterView.getAdapter();
-
-                HashMap<String, String> hm = (HashMap<String, String>) adapter.getItem(i);
+            @Override
+            public boolean onSuggestionClick(int i) {
+                android.support.v4.widget.SimpleCursorAdapter adapter =
+                        (SimpleCursorAdapter) _atvLocation.getSuggestionsAdapter();
+                MatrixCursor row = (MatrixCursor) adapter.getItem(i);
 
                 DownloadTask downloadTask = new DownloadTask(DownloadTypes.PLACES_DETAILS);
 
-                String Url = getPlaceDetailsUrl(hm.get("reference"));
+                String Url = getPlaceDetailsUrl(row.getString(row.getColumnCount() - 1));
 
                 downloadTask.execute(Url);
-
+                return true;
             }
         });
-
     }
 
 
@@ -161,9 +151,9 @@ public class GeoAutoComplete {
         String output = "json";
 
         // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/place/details/" + output + "?" + parameters;
 
-        return url;
+        return "https://maps.googleapis.com/maps/api/place/details/" + output + "?" +
+                parameters;
     }
 
     /**
@@ -193,9 +183,9 @@ public class GeoAutoComplete {
         String output = "json";
 
         // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/place/autocomplete/" + output + "?" + parameters;
 
-        return url;
+        return "https://maps.googleapis.com/maps/api/place/autocomplete/" + output + "?" +
+                parameters;
     }
 
     public enum DownloadTypes {PLACES, PLACES_DETAILS}
@@ -235,9 +225,9 @@ public class GeoAutoComplete {
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
 
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
 
-                String line = "";
+                String line;
                 while ((line = br.readLine()) != null) {
                     sb.append(line);
                 }
@@ -255,7 +245,9 @@ public class GeoAutoComplete {
                         e.printStackTrace();
                     }
                 }
-                urlConnection.disconnect();
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
             }
 
             return data;
@@ -302,7 +294,7 @@ public class GeoAutoComplete {
             try {
                 jObject = new JSONObject(strings[0]);
                 // Display error code
-                if (jObject.getString("status") != "OK") {
+                if (!jObject.getString("status").equals("OK")) {
                     if (jObject.has("error_message"))
                         Log.e(LOG_TAG, "google maps error = " + jObject.getString("error_message"));
                     else
@@ -330,24 +322,33 @@ public class GeoAutoComplete {
         }
 
         @Override
-        protected void onPostExecute(List<HashMap<String, String>> result) {
+        protected void onPostExecute(List<HashMap<String, String>> results) {
             switch (_parseType) {
                 case PLACES:
-                    String[] from = new String[]{"description"};
+                    final String key = _context.getString(R.string.auto_complete_json_description);
+                    final String value = _context.getString(R.string.auto_complete_json_reference);
+                    String[] from = new String[]{key};
                     int[] to = new int[]{android.R.id.text1};
 
-                    // Creating a SimpleAdapter for the AutoCompleteTextView
-                    SimpleAdapter adapter = new SimpleAdapter(_context, result, android.R.layout.simple_list_item_1, from, to);
+                    // Creating a SimpleCursorAdapter for the SearchView
+                    MatrixCursor matrixCursor = new MatrixCursor(new String[]{"_id", key, value});
+                    for (HashMap<String, String> result : results) {
+                        matrixCursor.addRow(new Object[]
+                                {result.hashCode(), result.get(key), result.get(value)});
+                    }
+                    SimpleCursorAdapter adapter =
+                            new SimpleCursorAdapter(_context, R.layout.simple_list_item_1_white,
+                                    matrixCursor, from, to, 0);
 
                     // Setting the adapter
-                    _atvLocation.setAdapter(adapter);
+                    _atvLocation.setSuggestionsAdapter(adapter);
 
                     // update the auto-complete list
                     adapter.notifyDataSetChanged();
                     break;
 
                 case PLACES_DETAILS:
-                    HashMap<String, String> hm = result.get(0);
+                    HashMap<String, String> hm = results.get(0);
 
                     // Getting latitude from the parsed data
                     double latitude = Double.parseDouble(hm.get("lat"));

@@ -9,9 +9,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.ViewTreeObserver;
-import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -20,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -43,7 +42,7 @@ public class MapManager {
     // Markers
     protected MarkerOptions markerOptions;
     // Visualize objects
-    private AutoCompleteTextView _atvLocation;
+    private SearchView _atvLocation;
     private MapFragment _mapFragment;
     private Activity _activity;
     // display parameters
@@ -65,7 +64,7 @@ public class MapManager {
     /**
      * Map Manager constructor for usage with AutoComplete
      */
-    public MapManager(Activity activity, MapFragment map, AutoCompleteTextView atvLocation) {
+    public MapManager(Activity activity, MapFragment map, SearchView atvLocation) {
         _mapFragment = map;
         _activity = activity;
         _atvLocation = atvLocation;
@@ -97,8 +96,9 @@ public class MapManager {
         }
         if (_mMap == null) {
             _mMap = _mapFragment.getMap();
-            if (_mMap == null)
-                Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG);
+            if (_mMap == null) {
+                Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG).show();
+            }
             _markerMap = new HashMap<Marker, Integer>();
 
             _mapHeight = 0;
@@ -154,7 +154,7 @@ public class MapManager {
                 // move camera to the current location
                 _mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-                _indexCallback.executeCallback(_markerMap.get(marker).intValue());
+                _indexCallback.executeCallback(_markerMap.get(marker));
 
                 return true;
             }
@@ -247,9 +247,8 @@ public class MapManager {
      */
     public void displayFoundLocation(LatLng location) {
         _mMap.clear(); // Only one marker can be set
-        Marker marker = _mMap.addMarker(new MarkerOptions()
+        _mMap.addMarker(new MarkerOptions()
                 .position(location));
-
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
         _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
 
@@ -308,13 +307,6 @@ public class MapManager {
                         // do nothing
                     }
                 });
-
-        if (_atvLocation != null)
-
-        {
-            _atvLocation.setText(""); // text is set programmatically.
-            _atvLocation.setHint("Lat: " + latitude + " Long:" + longitude);
-        }
     }
 
     /**
@@ -467,11 +459,6 @@ public class MapManager {
         @Override
         protected void onPostExecute(String addressText) {
             mMarker.setTitle(addressText);
-            if (_atvLocation != null) {
-                _atvLocation.setText(""); // text is set programmatically.
-                _atvLocation.setHint(addressText);
-            }
-
         }
     }
 
