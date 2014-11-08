@@ -165,6 +165,22 @@
                     card_view:cardCornerRadius="@dimen/cardview_default_radius">
 
                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/hunt_finish_review_thanks"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            style="@style/hunt_details_title"
+                            android:text="@string/hunt_finish_review_thanks"
+                            android:gravity="center"
+                            android:visibility="invisible"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/hunt_finish_review_layout"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">

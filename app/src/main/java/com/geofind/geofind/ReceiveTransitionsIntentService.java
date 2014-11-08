@@ -2,13 +2,11 @@ package com.geofind.geofind;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -25,22 +23,29 @@ public class ReceiveTransitionsIntentService extends IntentService {
     /**
      * Set service identifier
      */
-    public ReceiveTransitionsIntentService(){
+    public ReceiveTransitionsIntentService() {
         super("ReceiveTransitionsIntentService");
         //_seenHashes = new HashSet<String>();
-    //    _manager = null;
+        //    _manager = null;
     }
 
-    public static void set_manager(GeofenceManager manager){
-        _manager = manager; _currentUse++;
+    public static void set_manager(GeofenceManager manager) {
+        _manager = manager;
+        _currentUse++;
     }
-    public static void clearList() { _seenHashes.clear(); _currentUse++; }
 
-    public static int get_currentUse(){return _currentUse;}
+    public static void clearList() {
+        _seenHashes.clear();
+        _currentUse++;
+    }
+
+    public static int get_currentUse() {
+        return _currentUse;
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (LocationClient.hasError(intent)){
+        if (LocationClient.hasError(intent)) {
             int errorCode = LocationClient.getErrorCode(intent);
             Log.e("ReceiveTransitionsIntentService",
                     "Location Services error: " +
@@ -51,18 +56,17 @@ public class ReceiveTransitionsIntentService extends IntentService {
         } else {
 
 
-
             int transientType =
                     LocationClient.getGeofenceTransition(intent);
             if (transientType == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                    transientType == Geofence.GEOFENCE_TRANSITION_EXIT){
+                    transientType == Geofence.GEOFENCE_TRANSITION_EXIT) {
                 List<Geofence> triggerList =
                         LocationClient.getTriggeringGeofences(intent); //Added LocationClient
 
-                int serviceIdNum = intent.getIntExtra("UseID",-1);
-                Log.d("Geofence Service","curId = " + _currentUse + " rec = " + serviceIdNum);
-                if (_currentUse>1){
-                  //  return;
+                int serviceIdNum = intent.getIntExtra("UseID", -1);
+                Log.d("Geofence Service", "curId = " + _currentUse + " rec = " + serviceIdNum);
+                if (_currentUse > 1) {
+                    //  return;
                 }
 
                 String[] triggerIds = new String[triggerList.size()];
@@ -76,17 +80,16 @@ public class ReceiveTransitionsIntentService extends IntentService {
                  * them.
                  */
 
-                if (_seenHashes.contains(triggerIds[0]))
-                {
-                    Log.d("Geofence Service","skipping " + transientType);
+                if (_seenHashes.contains(triggerIds[0])) {
+                    Log.d("Geofence Service", "skipping " + transientType);
                     return;
                 }
 
                 _seenHashes.add(triggerIds[0]);
 
-                Log.d("Geofence Service","calling manager for type" + transientType);
-                if (_manager != null){
-                    Log.d("Geofence Service","removing trigger: " + triggerIds[0]);
+                Log.d("Geofence Service", "calling manager for type" + transientType);
+                if (_manager != null) {
+                    Log.d("Geofence Service", "removing trigger: " + triggerIds[0]);
                     _manager.removeGeofences(triggerIds[0]);
                 }
 

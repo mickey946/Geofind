@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -30,7 +32,7 @@ import java.util.List;
  * <p/>
  * Created by mickey on 23/10/14.
  */
-public class HuntListPagerAdapter extends FragmentPagerAdapter {
+public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
     /**
      * Number of different Hunt lists.
      */
@@ -95,7 +97,8 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
                                 huntsQuery.whereNotContainedIn("objectId", notNewHunts);
                                 break;
                             case ONGOING_HUNTS:
-                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts));
+                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
+                                        whereNotContainedIn("objectId", finishedHunts);
                                 break;
                             case FINISHED_HUNTS:
                                 huntsQuery.whereContainedIn("objectId", finishedHunts);
@@ -108,8 +111,8 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
                                 if (e == null) {
                                     for (ParseObject parseObject : parseObjects) {
                                         hunts.add(new Hunt(parseObject));
-
                                     }
+                                    ((HuntListFragment) fragment).progressBar.setVisibility(View.GONE);
                                     ((HuntListFragment) fragment).setHunts(hunts);
                                 } else {
                                     Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
@@ -172,6 +175,7 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
         public Context context;
         public HuntListAdapter adapter;
+        public ProgressBar progressBar;
 
         /**
          * Get the current distance unit that is saved in the settings file.
@@ -201,6 +205,9 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
                                  Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.item_hunt_list_pager, container, false);
             context = view.getContext();
+
+            // get a reference to the progress bar
+            progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
             // get a reference to recyclerView
             RecyclerView recyclerView = (RecyclerView)
