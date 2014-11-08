@@ -530,16 +530,16 @@ public class HuntActivity extends ActionBarActivity {
     }
 
     private void revealNext(int i) {
+        hintPagerAdapter.notifyDataSetChanged();
+
         if (hints.size() > i + 1) {
             geofence.createGeofence(hints.get(i + 1).getLocation(),
                     GEOFENCE_RADIUS, i + 1);
-            hintPagerAdapter.notifyDataSetChanged();
             viewPager.setCurrentItem(i + 1, true); // scroll smoothly to the given index
         } else {
             fab.setVisibility(View.VISIBLE);
             fab.show();
         }
-
 
     }
 

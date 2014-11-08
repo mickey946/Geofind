@@ -344,6 +344,7 @@ public class GeofenceManager implements
         if (statusCode == LocationStatusCodes.SUCCESS) {
             Log.d(TAG, "removed #" + _pointIndex + " by id (" + strings.length + ") " + strings[0]);
             if (_cancelCallback != null && _pointCanceled) {
+                _pointCanceled  = false; // reset for next time
                 try {
                     _cancelCallback.executeCallback(_pointIndex);
                 } catch (Exception e) {
