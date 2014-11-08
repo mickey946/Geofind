@@ -29,15 +29,18 @@ public class GeoAutoComplete {
     public static final String LOG_TAG = "AutoComplete";
     //GOOGLE API Key
     private static final String API_KEY = "AIzaSyAtwXqO2w5kV9a8iE-AcbcoI9DWlK0Q8Yk";
-    private SearchView _atvLocation; // Autocomplete text view
+    private static final int DESCRIPTION_COL = 1;
+    private static final int REFERENCE_COL = 2;
+
+    private SearchView searchView; // Autocomplete text view
     private Context _context; // The map context
     private MapManager _mapManager; // the map manager of the current map
 
 
-    public GeoAutoComplete(MapManager mapManager, Context context, SearchView atvLocation) {
+    public GeoAutoComplete(MapManager mapManager, Context context, SearchView searchView) {
         _mapManager = mapManager;
         _context = context;
-        _atvLocation = atvLocation;
+        this.searchView = searchView;
         initAutoCompleteLocation();
     }
 
@@ -88,7 +91,7 @@ public class GeoAutoComplete {
      */
     private void initAutoCompleteLocation() {
 
-        _atvLocation.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 return false;
@@ -105,7 +108,7 @@ public class GeoAutoComplete {
             }
         });
 
-        _atvLocation.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionSelect(int i) {
                 return false;
@@ -114,13 +117,17 @@ public class GeoAutoComplete {
             @Override
             public boolean onSuggestionClick(int i) {
                 android.support.v4.widget.SimpleCursorAdapter adapter =
-                        (SimpleCursorAdapter) _atvLocation.getSuggestionsAdapter();
+                        (SimpleCursorAdapter) searchView.getSuggestionsAdapter();
                 MatrixCursor row = (MatrixCursor) adapter.getItem(i);
 
                 DownloadTask downloadTask = new DownloadTask(DownloadTypes.PLACES_DETAILS);
 
-                String Url = getPlaceDetailsUrl(row.getString(row.getColumnCount() - 1));
+                // set the selected auto complete as the text, but do not submit
+                String description = row.getString(DESCRIPTION_COL);
+                searchView.setQuery(description, false);
 
+                // download the point
+                String Url = getPlaceDetailsUrl(row.getString(REFERENCE_COL));
                 downloadTask.execute(Url);
                 return true;
             }
@@ -341,7 +348,7 @@ public class GeoAutoComplete {
                                     matrixCursor, from, to, 0);
 
                     // Setting the adapter
-                    _atvLocation.setSuggestionsAdapter(adapter);
+                    searchView.setSuggestionsAdapter(adapter);
 
                     // update the auto-complete list
                     adapter.notifyDataSetChanged();
