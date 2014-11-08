@@ -131,7 +131,7 @@ public class HuntActivity extends ActionBarActivity {
         if (mapManager != null) {
             mapManager.focusOnCurrentLocation();
         }
-        if(geofence!=null)
+        if (geofence != null)
             geofence.resumeGeofence();
 
         // keep the screen awake (if needed)
@@ -162,12 +162,12 @@ public class HuntActivity extends ActionBarActivity {
         Intent intent = getIntent();
         Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
         if (intent != null) {
-            hunt = (Hunt) intent.getExtras().getSerializable(getResources().getString(R.string.intent_hunt_extra));
+            hunt = (Hunt) intent.getExtras().getSerializable(getResources().
+                    getString(R.string.intent_hunt_extra));
             setTitle(hunt.getTitle());
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
             query.selectKeys(Arrays.asList("hints"));
 
-            //TODO code1 - integrate with loading screen, and replace code2
             query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -175,21 +175,24 @@ public class HuntActivity extends ActionBarActivity {
                         final List<ParseObject> remoteHints = parseObject.getList("hints");
                         ParseObject.fetchAllInBackground(remoteHints, new FindCallback<ParseObject>() {
                             @Override
-                            public void done(List<ParseObject> parseObjects, ParseException e) {
+                            public void done(List<ParseObject> parseObjects,
+                                             ParseException e) {
                                 if (e == null) {
                                     for (ParseObject remoteHint : remoteHints) {
-                                         Hint hint = new Hint(remoteHint);
+                                        Hint hint = new Hint(remoteHint);
                                         hints.add(hint);
                                         Log.v("Parse Hint List fetching: ", "Success");
                                         if (hint.getState() != Hint.State.UNREVEALED) {
                                             mapManager.setMarker(hint.getLocation().toLatLng(),
-                                                    getString(R.string.hunt_activity_hint_number_title) + hints.size(),
+                                                    getString(R.string.hunt_activity_hint_number_title)
+                                                            + hints.size(),
                                                     hint.getState());
                                         }
                                     }
 
                                     // hide the progress bar
-                                    ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+                                    ProgressBar progressBar = (ProgressBar)
+                                            findViewById(R.id.progress_bar);
                                     progressBar.setVisibility(View.GONE);
 
                                     // show the game layout
@@ -212,22 +215,6 @@ public class HuntActivity extends ActionBarActivity {
                     }
                 }
             });
-
-
-            //TODO code2
-//            try {
-//                List<ParseObject> remoteHintPointers = query.get(hunt.getParseID()).getList("hints");
-//                List<ParseObject> remoteHints = ParseObject.fetchAll(remoteHintPointers);
-//                for (ParseObject remoteHint : remoteHints) {
-//                    hints.add(new Hint(remoteHint));
-//                    Log.v("Parse Hint List fetching: ", "Success");
-//                }
-//
-//
-//
-//            } catch (ParseException e) {
-//                Log.v("Parse Hint List fetching: ", "failed");
-//            }
         }
     }
 
@@ -383,14 +370,11 @@ public class HuntActivity extends ActionBarActivity {
                 Log.d(TAG, "geofence point recieved: " + id);
 
                 // Mark the current hint as solved
-
                 hints.get(index).setState(Hint.State.SOLVED);
                 mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
                         getString(R.string.hunt_activity_hint_number_title) + index,
                         hints.get(index).getState());
                 mapManager.onLocationChanged(hints.get(index).getLocation().toLocation());
-
-                //TODO prepare for next hint
 
                 revealNext(index);
             }
@@ -410,7 +394,7 @@ public class HuntActivity extends ActionBarActivity {
         geofence.setCancelCallback(new IndexCallback() {
             @Override
             public void executeCallback(int index) {
-                Log.d(TAG, "recieved from geofence cancel point index" + index);
+                Log.d(TAG, "Received from geofence cancel point index" + index);
 
                 hints.get(index).setState(Hint.State.REVEALED);
                 Point hintPoint = hints.get(index).getLocation();
@@ -418,11 +402,7 @@ public class HuntActivity extends ActionBarActivity {
                         getString(R.string.hunt_activity_hint_number_title) + index, hints.get(index).getState());
                 mapManager.onLocationChanged(hintPoint.toLocation());
 
-
-                // Mark the current hint as solved
-
-                //TODO prepare for next hint
-
+                // Mark the current hint as revealed
                 revealNext(index);
 
             }
@@ -494,7 +474,7 @@ public class HuntActivity extends ActionBarActivity {
     private Intent generateFinishData() {
         finishedGame = true;
         Intent intent = new Intent(this, HuntFinishActivity.class);
-        // TODO pass arguments for statistics
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         long currentTime = SystemClock.elapsedRealtime();
         long passedTime = sharedPreferences.getLong("HuntTime", 0);

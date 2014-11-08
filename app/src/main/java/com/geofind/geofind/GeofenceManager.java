@@ -138,11 +138,11 @@ public class GeofenceManager implements
         return mLocationClient;
     }
 
-    public void resumeGeofence(){
+    public void resumeGeofence() {
         if (!_geofenceCreateFinished) {
-            Log.d(TAG,"resuming geofence");
+            Log.d(TAG, "resuming geofence");
             mCurrentGeofence.add(simpleGeofenceStore.getGeofence(_activeID).toGeofence());
-            if(!getLocationClient().isConnected())
+            if (!getLocationClient().isConnected())
                 getLocationClient().connect();
         }
     }
@@ -313,12 +313,12 @@ public class GeofenceManager implements
              * the UI.
              */
 
-            if (LocationStatusCodes.GEOFENCE_NOT_AVAILABLE == statusCode){
+            if (LocationStatusCodes.GEOFENCE_NOT_AVAILABLE == statusCode) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(_activity);
 
-
-                builder.setMessage(_activity.getString(R.string.Location_Disabled_Error))
-                        .setPositiveButton(_activity.getString(R.string.Location_Settings),
+                builder.setMessage(_activity.getString(R.string.location_disabled_error))
+                        .setTitle(_activity.getString(R.string.location_services_disabled))
+                        .setPositiveButton(_activity.getString(R.string.location_settings),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface d, int id) {
                                         _activity.startActivity(new Intent(
@@ -326,17 +326,21 @@ public class GeofenceManager implements
                                         d.dismiss();
                                     }
                                 })
-                        .setNegativeButton(_activity.getString(R.string.Location_Missing_Canceled),
+                        .setNegativeButton(_activity.getString(R.string.location_missing_canceled),
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         _activity.finish();
                                     }
-                                });
+                                })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                _activity.finish();
+                            }
+                        });
                 builder.create().show();
-
             }
-
 
             Log.d(TAG, "Location geofence added with error: " + statusCode);
         }
@@ -392,7 +396,7 @@ public class GeofenceManager implements
             Log.d(TAG, "removed #" + _pointIndex + " by id (" + strings.length + ") " + strings[0]);
             simpleGeofenceStore.clearGeofence(strings[0]);
             if (_cancelCallback != null && _pointCanceled) {
-                _pointCanceled  = false; // reset for next time
+                _pointCanceled = false; // reset for next time
                 try {
                     _cancelCallback.executeCallback(_pointIndex);
                 } catch (Exception e) {

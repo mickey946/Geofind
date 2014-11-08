@@ -2,13 +2,10 @@ package com.geofind.geofind;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -38,8 +35,6 @@ public class LocationFinder implements
     private Activity context;
     private LocationClient locationClient;
     // Flag that indicates if a request is underway.
-    private boolean mInProgress;
-    private boolean mConnected;
     private Callable<Void> locationFound;
     // is it a single request or continues
     private boolean _requireUpdates;
@@ -49,8 +44,6 @@ public class LocationFinder implements
         Log.d("LocationFinder", "c-tor");
         locationClient = new LocationClient(context, this, this);
         this.context = context;
-        mInProgress = false;
-        mConnected = false;
         currentLocation = null;
         this.locationFound = locationFound;
 
@@ -59,8 +52,8 @@ public class LocationFinder implements
 
     }
 
-    public void set_requireLocationEnabled(boolean requireLocationEnabled){
-        this._requireLocationEnabled =requireLocationEnabled;
+    public void set_requireLocationEnabled(boolean requireLocationEnabled) {
+        this._requireLocationEnabled = requireLocationEnabled;
     }
 
     /**
@@ -141,17 +134,16 @@ public class LocationFinder implements
                 final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 
-                builder.setMessage(context.getString(R.string.LocationNotAvailable))
-                        .setPositiveButton("Ok",
+                builder.setMessage(context.getString(R.string.location_not_available))
+                        .setTitle(context.getString(R.string.location_services_disabled))
+                        .setPositiveButton(context.getString(R.string.location_settings),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface d, int id) {
                                         context.startActivity(new Intent(action));
-
-
                                         d.dismiss();
                                     }
                                 })
-                        .setNegativeButton("Cancel",
+                        .setNegativeButton(context.getString(R.string.dialog_dismiss),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface d, int id) {
                                         d.cancel();
@@ -183,9 +175,7 @@ public class LocationFinder implements
         // Display the connection status
         Toast.makeText(context, "Disconnected. Please re-connect.",
                 Toast.LENGTH_SHORT).show();
-        mInProgress = false;
         locationClient = null;
-        mConnected = false;
     }
 
     /*
@@ -194,7 +184,6 @@ public class LocationFinder implements
      */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        mInProgress = false;
         Log.d("LocationFinder", "connect failed");
         /*
          * Google Play services can resolve some errors it detects.
