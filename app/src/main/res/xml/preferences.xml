@@ -91,8 +91,9 @@
                 android:action="com.geofind.geofind.licences" />
         </Preference>
         <Preference
-            android:title="@string/preferences_about_geofind_title"
-            android:key="@string/pref_key_about" />
+            android:title="@string/preferences_geofind_version_title"
+            android:key="@string/pref_key_version"
+            android:selectable="false" />
 
     </PreferenceCategory>
 

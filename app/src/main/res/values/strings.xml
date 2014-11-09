@@ -143,7 +143,7 @@
     <string name="preferences_crash_logs_summary">Send anonymous crash reports of this app.</string>
     <string name="preferences_about_title">About</string>
     <string name="preferences_open_source_licences_title">Open Source Licences</string>
-    <string name="preferences_about_geofind_title">About Geofind</string>
+    <string name="preferences_geofind_version_title">Geofind version</string>
     <string name="create_hint_remove_image">Remove selected image</string>
     <string name="create_hint_remove_video">Remove selected video</string>
     <string name="create_hint_remove_audio">Remove selected audio</string>

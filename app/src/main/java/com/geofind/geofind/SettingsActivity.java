@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
@@ -77,6 +78,8 @@ public class SettingsActivity extends ActionBarActivity {
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+            Preference version = findPreference(getString(R.string.pref_key_version));
+            version.setSummary(BuildConfig.VERSION_NAME);
         }
 
         @Override
