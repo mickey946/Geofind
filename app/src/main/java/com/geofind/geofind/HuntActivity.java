@@ -352,7 +352,7 @@ public class HuntActivity extends ActionBarActivity {
     private void setUpMap() {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
-        mapManager = new MapManager(this, mapFragment);
+        mapManager = new MapManager(this, mapFragment, true);
         mapManager.setLocationRequired(false);
         mapManager.setMarkerCallback(new IndexCallback() {
             /**
