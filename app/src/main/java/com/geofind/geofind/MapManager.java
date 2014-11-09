@@ -69,23 +69,24 @@ public class MapManager {
         _activity = activity;
         _atvLocation = atvLocation;
         new GeoAutoComplete(this, activity, atvLocation);
-        initMap();
+        initMap(true);
     }
 
     /**
      * Default constructor .
      */
-    public MapManager(Activity activity, MapFragment map) {
+    public MapManager(Activity activity, MapFragment map, boolean focusOnCurrent) {
         _mapFragment = map;
         _activity = activity;
-        initMap();
+        initMap(focusOnCurrent);
     }
 
 
     /**
      * Common initialization
+     * @param focusOnCurrent
      */
-    private void initMap() {
+    private void initMap(final boolean focusOnCurrent) {
 
         // Getting Google Play availability status
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(_activity.getBaseContext());
@@ -128,7 +129,9 @@ public class MapManager {
         _locationFinder = new LocationFinder(_activity, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                onLocationChanged(_locationFinder.getCurrentLocation());
+                Log.d("MapManager","LocationFinder updated");
+                if (focusOnCurrent)
+                    onLocationChanged(_locationFinder.getCurrentLocation());
                 return null;
             }
         });
@@ -137,6 +140,7 @@ public class MapManager {
         _offsetX = 0;
         _offsetY = 0;
         _zoomLevel = DEFAULT_ZOOM;
+        if (focusOnCurrent)
         focusOnCurrentLocation();
 
 
@@ -389,6 +393,7 @@ public class MapManager {
         l.setLatitude(position.latitude);
         l.setLongitude(position.longitude);
 
+        Log.d("MapManager","DrawCircle Update ");
         onLocationChangedAnchored(l);
     }
 
