@@ -27,12 +27,12 @@ public final class UserData {
     private static boolean _connected = false;
     private static GoogleApiClient _mGoogleApiClient;
 
-    private UserData(){
+    private UserData() {
 
     }
 
     public static void init(GoogleApiClient mGoogleApiClient){
-       _connected = true;
+        _connected = true;
         _person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
         _name = null;
         _id = null;
@@ -41,23 +41,23 @@ public final class UserData {
         _mGoogleApiClient = mGoogleApiClient;
     }
 
-    public static boolean isConnected(){
+    public static boolean isConnected() {
         return _connected;
     }
 
-    public static String getName(){
+    public static String getName() {
         return _name == null ? _name = _person.getDisplayName() : _name;
     }
 
-    public static String getId(){
+    public static String getId() {
         return _id == null ? _id = _person.getId() : _id;
     }
 
-    public static String getEmail(){
+    public static String getEmail() {
         return _email;
     }
 
-    public static Person.Image getImage(){
+    public static Person.Image getImage() {
         return _image == null ? _image = _person.getImage() : _image;
     }
 
@@ -82,8 +82,8 @@ public final class UserData {
                         Log.d("UserData person id 2", _person.getId());
                         personBuffer.close();
                     }
-                }
-                else{
+
+                } else {
                     Log.d("status: ", "failed");
                 }
             }
