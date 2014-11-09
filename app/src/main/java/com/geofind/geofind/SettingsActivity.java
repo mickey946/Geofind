@@ -108,8 +108,6 @@ public class SettingsActivity extends ActionBarActivity {
                 tracker.enableExceptionReporting(
                         sharedPreferences.getBoolean(key,false));
             }
-
-
         }
     }
 }

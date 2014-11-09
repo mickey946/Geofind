@@ -167,5 +167,6 @@
     <string name="location_missing_canceled">Leave the game</string>
     <string name="dialog_dismiss">Dismiss</string>
     <string name="item_hunt_list_pager_empty">No hunts to show.</string>
+    <string name="title_activity_licence">LicenceActivity</string>
 
 </resources>

@@ -86,7 +86,10 @@
 
         <Preference
             android:title="@string/preferences_open_source_licences_title"
-            android:key="@string/pref_key_licences" />
+            android:key="@string/pref_key_licences">
+            <intent
+                android:action="com.geofind.geofind.licences" />
+        </Preference>
         <Preference
             android:title="@string/preferences_about_geofind_title"
             android:key="@string/pref_key_about" />
