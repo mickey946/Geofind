@@ -64,9 +64,11 @@ public class MainScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
-        //Toast.makeText(this, UserData.getEmail(), Toast.LENGTH_LONG).show();
+        if (UserData.isConnected()) {
+            Toast.makeText(this, UserData.getPersonById("115280025224905266245").getId(), Toast.LENGTH_LONG).show();
+        }
 
-
+//UserData.getPersonById("108956450570950712562").getDisplayName()
         background = (ImageView) findViewById(R.id.background_image);
         background.post(new Runnable() {
             @Override
