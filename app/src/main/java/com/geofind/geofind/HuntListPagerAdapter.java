@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -109,11 +110,21 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
                             @Override
                             public void done(List<ParseObject> parseObjects, ParseException e) {
                                 if (e == null) {
-                                    for (ParseObject parseObject : parseObjects) {
-                                        hunts.add(new Hunt(parseObject));
+                                    // remove progress bar
+                                    ((HuntListFragment) fragment).progressBar
+                                            .setVisibility(View.GONE);
+
+                                    if (!parseObjects.isEmpty()) {
+                                        for (ParseObject parseObject : parseObjects) {
+                                            hunts.add(new Hunt(parseObject));
+                                        }
+                                        ((HuntListFragment) fragment).setHunts(hunts);
+
+                                    } else { // empty list
+                                        ((HuntListFragment) fragment).emptyListTextView
+                                                .setVisibility(View.VISIBLE);
                                     }
-                                    ((HuntListFragment) fragment).progressBar.setVisibility(View.GONE);
-                                    ((HuntListFragment) fragment).setHunts(hunts);
+
                                 } else {
                                     Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
                                             Toast.LENGTH_LONG).show();
@@ -126,7 +137,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
                         Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
                     }
                 } else {
-                    Log.v("Retrieving Hunts Failed: ", "Parse Exception - " + e.getMessage());
+                    System.out.println("error");
                 }
             }
         });
@@ -176,6 +187,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
         public Context context;
         public HuntListAdapter adapter;
         public ProgressBar progressBar;
+        public TextView emptyListTextView;
 
         /**
          * Get the current distance unit that is saved in the settings file.
@@ -208,6 +220,9 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
             // get a reference to the progress bar
             progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+
+            // get a reference to the empty list text view
+            emptyListTextView = (TextView) view.findViewById(R.id.hunt_list_empty);
 
             // get a reference to recyclerView
             RecyclerView recyclerView = (RecyclerView)
