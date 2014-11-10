@@ -1,7 +1,6 @@
 package com.geofind.geofind;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
@@ -44,7 +43,7 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
                     MapFragment mapFragment =
                             (MapFragment) getFragmentManager().
                                     findFragmentById(R.id.hunt_details_map_preview);
-                    mapManager = new MapManager(this, mapFragment);
+                    mapManager = new MapManager(this, mapFragment, false);
                     mapManager.showMyLocationButton(true);
                     mapManager.drawCircle(hunt.getCenterPosition(), hunt.getRadius());
                 }
@@ -78,14 +77,6 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
                 // pass the hunt itself to the HuntDetailActivity
                 intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
 
-                startActivity(intent);
-                return true;
-            case R.id.action_navigate:
-                String navigationUrl = "http://maps.google.com/maps?daddr=%s,%s";
-                intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(String.format(navigationUrl,
-                                hunt.getCenterPosition().latitude,
-                                hunt.getCenterPosition().longitude)));
                 startActivity(intent);
                 return true;
         }

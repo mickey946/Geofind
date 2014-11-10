@@ -10,8 +10,7 @@
     <string name="item_hunt_list_start_hunt">Start Hunt</string>
     <string name="title_activity_hunt_details">Hunt Details</string>
     <string name="hunt_details_map">Overview Map</string>
-    <string name="hunt_details_map_description">Get to the start point before playing. Click on the
-        map to navigate there.</string>
+    <string name="hunt_details_map_description">Click on the map to enlarge it.</string>
     <string name="hunt_details_distances">Distances</string>
     <string name="hunt_details_total_distance">Total distance:\ </string>
     <string name="item_hunt_list_total_distance">Total Distance\ </string>
@@ -83,7 +82,8 @@
     <string name="create_hint_kitkat_file_error">Error loading file.</string>
     <string name="hint_list_not_enough_points_error">A hunt must have at least 2 points!</string>
     <string name="hunt_create_edit_points_button">Edit your Points</string>
-    <string name="hint_list_data_loss_warning">Your changes will be lost! Do you want to save them?</string>
+    <string name="hint_list_data_loss_warning">Your changes will be lost! Do you want to save
+        them?</string>
     <string name="hint_list_data_loss_warning_title">Unsaved Changes</string>
     <string name="hint_list_data_loss_warning_positive">OK</string>
     <string name="hint_list_data_loss_warning_negative">Cancel</string>
@@ -125,9 +125,11 @@
     <string name="preferences_always_awake_title">Always Awake</string>
     <string name="preferences_always_awake_summary">The screen would stay awake while playing a hunt.</string>
     <string name="preferences_work_in_background_title">Work In Background</string>
-    <string name="preferences_work_in_background_summary">The hunt would continue to run when it\'s window is closed.</string>
+    <string name="preferences_work_in_background_summary">The hunt would continue to run when it\'s
+        window is closed.</string>
     <string name="preferences_play_offline_title">Play Offline</string>
-    <string name="preferences_play_offline_summary">Download entire hunt\'s data before starting to play.</string>
+    <string name="preferences_play_offline_summary">Download entire hunt\'s data before starting to
+        play.</string>
     <string name="preferences_units_title">Units</string>
     <string name="preferences_distance_units_title">Distance units</string>
     <string name="preferences_account_settings_title">Account Settings</string>
@@ -141,17 +143,30 @@
     <string name="preferences_crash_logs_summary">Send anonymous crash reports of this app.</string>
     <string name="preferences_about_title">About</string>
     <string name="preferences_open_source_licences_title">Open Source Licences</string>
-    <string name="preferences_about_geofind_title">About Geofind</string>
+    <string name="preferences_geofind_version_title">Geofind version</string>
     <string name="create_hint_remove_image">Remove selected image</string>
     <string name="create_hint_remove_video">Remove selected video</string>
     <string name="create_hint_remove_audio">Remove selected audio</string>
     <string name="action_back_to_main">Main Menu</string>
-    <string name="hunt_details_waiting_for_location">Waiting for location...</string>
+    <string name="hunt_details_waiting_for_location">Waiting for location…</string>
     <string name="pref_analytics">pref_analytics</string>
     <string name="pref_crash_logs">pref_crash_logs</string>
     <string name="title_activity_content_view">Hint Media</string>
     <string name="create_hint_play_video">Play selected video</string>
     <string name="create_hint_play_audio">Play selected audio</string>
     <string name="create_hint_max_file_error">Max file size is 10MB</string>
+    <string name="title_activity_comment_list">Comments</string>
+    <string name="hunt_details_no_comments">No comments yet.</string>
+    <string name="hunt_details_view_comments">View Comments</string>
+    <string name="hunt_finish_review_thanks">Thanks for reviewing!</string>
+    <string name="location_services_disabled">Location services disabled</string>
+    <string name="location_not_available">Geofind needs access to your location. Please turn on
+        location access.</string>
+    <string name="location_disabled_error">"To play Geofind, location must be enabled. Please turn on location access."</string>
+    <string name="location_settings">Location Settings</string>
+    <string name="location_missing_canceled">Leave the game</string>
+    <string name="dialog_dismiss">Dismiss</string>
+    <string name="item_hunt_list_pager_empty">No hunts to show.</string>
+    <string name="title_activity_licence">LicenceActivity</string>
 
 </resources>

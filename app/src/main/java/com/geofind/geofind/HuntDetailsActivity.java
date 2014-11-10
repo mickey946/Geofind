@@ -60,6 +60,17 @@ public class HuntDetailsActivity extends ActionBarActivity {
             TextView descriptionTextView = (TextView) findViewById(R.id.hunt_details_description);
             descriptionTextView.setText(hunt.getDescription());
 
+            // hunt comments
+            if (hunt.getComments().size() > 0) {
+                // hide the 'no comments' message
+                TextView noComments = (TextView) findViewById(R.id.hunt_details_no_comments);
+                noComments.setVisibility(View.GONE);
+
+                // show the comments button
+                View commentsView = findViewById(R.id.hunt_details_comments_button_layout);
+                commentsView.setVisibility(View.VISIBLE);
+            }
+
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.hunt_details_progress_bar);
 
             final ImageView mapView = (ImageView) findViewById(R.id.hunt_details_map_preview);
@@ -105,6 +116,18 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
                 }
             });
+
+
+            // distance from the user
+            locationFinder = new LocationFinder(this, new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+
+                    updateLocationDisplay();
+                    return null;
+                }
+            });
+            locationFinder.startLocation();
 
             // total distance and distance from user are calculated in onResume to be in sync with
             // the settings.
@@ -155,10 +178,16 @@ public class HuntDetailsActivity extends ActionBarActivity {
         }
     }
 
+//    @Override
+//    protected void onStop() {
+//        locationFinder.stopLocation();
+//        super.onStart();
+//    }
+
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         locationFinder.stopLocation();
-        super.onStart();
+        super.onDestroy();
     }
 
     @Override
@@ -175,7 +204,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
         // set distance units
         TextView totalDistanceUnitTextView = (TextView)
                 findViewById(R.id.hunt_details_total_distance_unit);
-        final TextView distanceFromUserUnitTextView = (TextView)
+        TextView distanceFromUserUnitTextView = (TextView)
                 findViewById(R.id.hunt_details_distance_from_user_unit);
 
         // km or miles
@@ -201,32 +230,39 @@ public class HuntDetailsActivity extends ActionBarActivity {
         decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
         totalDistanceTextView.setText(decimalFormat.format(totalDistance));
 
-        // distance from the user
-        locationFinder = new LocationFinder(this, new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                TextView distanceFromUserTextView = (TextView)
-                        findViewById(R.id.hunt_details_distance_from_user);
+        updateLocationDisplay();
 
-                float distanceFromUser = GeoUtils.calcDistance(
-                        locationFinder.currentLocation,
-                        new Point(hunt.getCenterPosition()));
+    }
 
-                // km or miles
-                if (distanceUnit.equals(
-                        getString(R.string.preferences_distance_units_kilometers))) {
-                    distanceFromUser *= Hunt.METERS_TO_KILOMETERS;
-                } else {
-                    distanceFromUser *= Hunt.METERS_TO_MILES;
-                }
+    private void updateLocationDisplay(){
 
-                distanceFromUserTextView.setText(decimalFormat.format(distanceFromUser));
 
-                distanceFromUserUnitTextView.setVisibility(View.VISIBLE);
-                return null;
+        final String distanceUnit = getCurrentDistanceUnit();
+        final DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
+        TextView distanceFromUserUnitTextView = (TextView)
+                findViewById(R.id.hunt_details_distance_from_user_unit);
+
+        if (locationFinder.currentLocation != null) {
+            TextView distanceFromUserTextView = (TextView)
+                    findViewById(R.id.hunt_details_distance_from_user);
+
+            float distanceFromUser = GeoUtils.calcDistance(
+                    locationFinder.currentLocation,
+                    new Point(hunt.getCenterPosition()));
+
+            // km or miles
+            if (distanceUnit.equals(
+                    getString(R.string.preferences_distance_units_kilometers))) {
+                distanceFromUser *= Hunt.METERS_TO_KILOMETERS;
+            } else {
+                distanceFromUser *= Hunt.METERS_TO_MILES;
             }
-        });
-        locationFinder.startLocation();
+
+            distanceFromUserTextView.setText(decimalFormat.format(distanceFromUser));
+
+            distanceFromUserUnitTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -240,6 +276,13 @@ public class HuntDetailsActivity extends ActionBarActivity {
         // pass the hunt itself to the HuntDetailActivity
         intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
 
+        startActivity(intent);
+    }
+
+    public void openComments(View view) {
+        Intent intent = new Intent(HuntDetailsActivity.this, CommentListActivity.class);
+        intent.putExtra(getResources().getString(R.string.intent_hunt_comments_extra),
+                hunt.getComments());
         startActivity(intent);
     }
 }

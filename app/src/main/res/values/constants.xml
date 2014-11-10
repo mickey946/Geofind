@@ -13,10 +13,14 @@
     <integer name="intent_hint_edit_extra">5</integer>
     <integer name="intent_video_result">6</integer>
     <integer name="intent_audio_result">7</integer>
+    <string name="intent_finish_hint_num">HintNum</string>
+    <string name="intent_finish_solved_hints">solvedHints</string>
+    <string name="intent_finish_hunt_time">HuntTime</string>
     <string name="hint_list_retained_fragment">HINTS</string>
     <string name="intent_hint_point_extra">HINT_POINT</string>
     <string name="intent_hunt_point_extra">HUNT_POINT</string>
     <string name="intent_hunt_radius_extra">HUNT_RADIUS</string>
+    <string name="intent_hunt_comments_extra">COMMENTS</string>
     <string name="pref_key_general_settings">pref_key_general_settings</string>
     <string name="pref_key_sound">pref_sound</string>
     <string name="pref_key_device_settings">pref_key_device_settings</string>
@@ -33,7 +37,9 @@
     <string name="pref_key_crash_logs">pref_crash_logs</string>
     <string name="pref_key_about_settings">pref_key_about_settings</string>
     <string name="pref_key_licences">pref_key_licences</string>
-    <string name="pref_key_about">pref_key_about</string>
+    <string name="pref_key_version">pref_key_version</string>
     <integer name="bitmap_compression_quality">70</integer>
     <string name="pref_analyticks_key">pref_analytics</string>
+    <string name="auto_complete_json_description">description</string>
+    <string name="auto_complete_json_reference">reference</string>
 </resources>

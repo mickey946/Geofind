@@ -28,4 +28,7 @@
 
     <dimen name="text_size_small">12sp</dimen>
 
+    <dimen name="item_comment_list_padding">5dp</dimen>
+    <dimen name="item_comment_list_date_size">12sp</dimen>
+
 </resources>

@@ -9,9 +9,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.ViewTreeObserver;
-import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -20,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -38,12 +37,12 @@ public class MapManager {
 
     public static final String LOG_TAG = "MapManager";
 
-    private static final int DEFAULT_ZOOM = 10;
+    private static final int DEFAULT_ZOOM = 17;
 
     // Markers
     protected MarkerOptions markerOptions;
     // Visualize objects
-    private AutoCompleteTextView _atvLocation;
+    private SearchView _atvLocation;
     private MapFragment _mapFragment;
     private Activity _activity;
     // display parameters
@@ -65,28 +64,29 @@ public class MapManager {
     /**
      * Map Manager constructor for usage with AutoComplete
      */
-    public MapManager(Activity activity, MapFragment map, AutoCompleteTextView atvLocation) {
+    public MapManager(Activity activity, MapFragment map, SearchView atvLocation) {
         _mapFragment = map;
         _activity = activity;
         _atvLocation = atvLocation;
         new GeoAutoComplete(this, activity, atvLocation);
-        initMap();
+        initMap(true);
     }
 
     /**
      * Default constructor .
      */
-    public MapManager(Activity activity, MapFragment map) {
+    public MapManager(Activity activity, MapFragment map, boolean focusOnCurrent) {
         _mapFragment = map;
         _activity = activity;
-        initMap();
+        initMap(focusOnCurrent);
     }
 
 
     /**
      * Common initialization
+     * @param focusOnCurrent
      */
-    private void initMap() {
+    private void initMap(final boolean focusOnCurrent) {
 
         // Getting Google Play availability status
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(_activity.getBaseContext());
@@ -97,8 +97,9 @@ public class MapManager {
         }
         if (_mMap == null) {
             _mMap = _mapFragment.getMap();
-            if (_mMap == null)
-                Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG);
+            if (_mMap == null) {
+                Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG).show();
+            }
             _markerMap = new HashMap<Marker, Integer>();
 
             _mapHeight = 0;
@@ -128,14 +129,18 @@ public class MapManager {
         _locationFinder = new LocationFinder(_activity, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                onLocationChanged(_locationFinder.getCurrentLocation());
+                Log.d("MapManager","LocationFinder updated");
+                if (focusOnCurrent)
+                    onLocationChanged(_locationFinder.getCurrentLocation());
                 return null;
             }
         });
+        _locationFinder.startLocation();
         _mMap.setMyLocationEnabled(true);
         _offsetX = 0;
         _offsetY = 0;
         _zoomLevel = DEFAULT_ZOOM;
+        if (focusOnCurrent)
         focusOnCurrentLocation();
 
 
@@ -154,7 +159,7 @@ public class MapManager {
                 // move camera to the current location
                 _mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-                _indexCallback.executeCallback(_markerMap.get(marker).intValue());
+                _indexCallback.executeCallback(_markerMap.get(marker));
 
                 return true;
             }
@@ -183,7 +188,8 @@ public class MapManager {
 
     //Single time focus
     public void focusOnCurrentLocation() {
-        _locationFinder.startLocation();
+
+        _locationFinder.updateLocation();
     }
 
     // focus and keep tracking
@@ -247,9 +253,8 @@ public class MapManager {
      */
     public void displayFoundLocation(LatLng location) {
         _mMap.clear(); // Only one marker can be set
-        Marker marker = _mMap.addMarker(new MarkerOptions()
+        _mMap.addMarker(new MarkerOptions()
                 .position(location));
-
         _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
         _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
 
@@ -308,13 +313,6 @@ public class MapManager {
                         // do nothing
                     }
                 });
-
-        if (_atvLocation != null)
-
-        {
-            _atvLocation.setText(""); // text is set programmatically.
-            _atvLocation.setHint("Lat: " + latitude + " Long:" + longitude);
-        }
     }
 
     /**
@@ -395,11 +393,16 @@ public class MapManager {
         l.setLatitude(position.latitude);
         l.setLongitude(position.longitude);
 
+        Log.d("MapManager","DrawCircle Update ");
         onLocationChangedAnchored(l);
     }
 
     public Point get_selectedPoint() {
         return _selectedPoint;
+    }
+
+    public void setLocationRequired(boolean locationRequired){
+        _locationFinder.set_requireLocationEnabled(locationRequired);
     }
 
     /**
@@ -467,11 +470,6 @@ public class MapManager {
         @Override
         protected void onPostExecute(String addressText) {
             mMarker.setTitle(addressText);
-            if (_atvLocation != null) {
-                _atvLocation.setText(""); // text is set programmatically.
-                _atvLocation.setHint(addressText);
-            }
-
         }
     }
 

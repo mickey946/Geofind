@@ -1,8 +1,10 @@
 package com.geofind.geofind;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
@@ -30,12 +32,12 @@ public class ContentViewActivity extends ActionBarActivity {
     /**
      * Intent tag for passing image parse id (image stored in parse).
      */
-    public static final String IMAGE_PARSE_ID = "IMAGE_PARSE_ID";
+    public static final String IMAGE_PARSE = "IMAGE_PARSE";
 
     /**
      * Intent tag for passing video or audio parse id (video or audio stored in parse).
      */
-    public static final String VIDEO_AUDIO_PARSE_ID = "VIDEO_AUDIO_PARSE_ID";
+    public static final String VIDEO_AUDIO_PARSE = "VIDEO_AUDIO";
 
     /**
      * A tag used to preserve video or audio playback position on orientation change.
@@ -66,11 +68,29 @@ public class ContentViewActivity extends ActionBarActivity {
 
         String selectedImageUriString = bundle.getString(IMAGE_URI);
         String selectedVideoAudioString = bundle.getString(VIDEO_AUDIO_URI);
+        Hint hintWithImage = (Hint) bundle.getSerializable(IMAGE_PARSE);
 
         if (selectedImageUriString != null) { // user views his selected image
             setUpImageView(selectedImageUriString);
-        } else if (selectedVideoAudioString != null) { // user vies his selected video or audio
+        } else if (selectedVideoAudioString != null) { // user views his selected video or audio
             setUpVideoAudioView(selectedVideoAudioString);
+        } else if (hintWithImage != null) { // user views a hint image
+            hintWithImage.downloadFiles(new Hint.DownloadFiles() {
+                @Override
+                public void updateImage(Bitmap bitmap) {
+                    setUpImageView(bitmap);
+                }
+
+                @Override
+                public void updateVideo(MediaStore.Video vid) {
+                    // TODO remove this for not downloading video for nothing
+                }
+
+                @Override
+                public void updateAudio(MediaStore.Audio aud) {
+                    // TODO remove this for not downloading audio for nothing
+                }
+            });
         }
 
         // TODO retrieve files from parse
@@ -85,6 +105,12 @@ public class ContentViewActivity extends ActionBarActivity {
         Uri selectedImageUri = Uri.parse(selectedImageUriString);
         ImageView imageView = (ImageView) findViewById(R.id.content_image_view);
         imageView.setImageURI(selectedImageUri);
+        imageView.setVisibility(View.VISIBLE);
+    }
+
+    private void setUpImageView(Bitmap bitmap) {
+        ImageView imageView = (ImageView) findViewById(R.id.content_image_view);
+        imageView.setImageBitmap(bitmap);
         imageView.setVisibility(View.VISIBLE);
     }
 

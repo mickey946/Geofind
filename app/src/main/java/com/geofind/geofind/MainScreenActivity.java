@@ -3,19 +3,32 @@ package com.geofind.geofind;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ImageView;
 
+import com.parse.FindCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainScreenActivity extends Activity {
+
+    private final String parseAppID = "ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa";
+    private final String parseClientKey = "bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv";
 
     /**
      * Direction of moving of the image.
@@ -63,11 +76,11 @@ public class MainScreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        connectToParse();
         setContentView(R.layout.activity_main_screen);
         if (UserData.isConnected()) {
             Toast.makeText(this, UserData.getPersonById("115280025224905266245").getId(), Toast.LENGTH_LONG).show();
         }
-
 //UserData.getPersonById("108956450570950712562").getDisplayName()
         background = (ImageView) findViewById(R.id.background_image);
         background.post(new Runnable() {
@@ -195,6 +208,42 @@ public class MainScreenActivity extends Activity {
     public void openSettings(View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    private void connectToParse() {
+        Parse.initialize(this, parseAppID, parseClientKey);
+
+        String user = "userID";
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");
+        query.whereEqualTo("userID", user);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (parseObjects.isEmpty()) {
+                        ParseObject userData = new ParseObject("UserData");
+                        userData.put("userID", "userID");
+                        userData.put("ongoingHunts", new ArrayList<String>());
+                        userData.put("finishedHunts", new ArrayList<String>());
+
+                        userData.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    Log.v("Parse User Data Creation: ", "Success.");
+                                } else {
+                                    Log.v("Parse User Data Creation: ", "Failure.");
+                                }
+                            }
+                        });
+                    }
+                    //Else : user data exists. do nothing!
+
+                } else {
+                    Log.v("ParseException, could not connect to Parse.", e.getMessage());
+                }
+            }
+        });
     }
 
     //TODO: All of Google Play Games buttons

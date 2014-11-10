@@ -2,11 +2,12 @@ package com.geofind.geofind;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AutoCompleteTextView;
 
 import com.google.android.gms.maps.MapFragment;
 
@@ -26,9 +27,22 @@ public class PickPointActivity extends ActionBarActivity {
 
         //TextView tvLocation = (TextView) findViewById(R.id.pick_point_txt);
 
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.pick_point, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        // Configure the search info and add any event listeners
+
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.pick_point_map);
-        _mapManager = new MapManager(this, mapFragment, (AutoCompleteTextView) findViewById(R.id.atv_places));
+        _mapManager = new MapManager(this, mapFragment, searchView);
         _mapManager.enableMarkers(true);
 
         Intent intent = getIntent();
@@ -41,13 +55,6 @@ public class PickPointActivity extends ActionBarActivity {
             }
         }
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.pick_point, menu);
         return true;
     }
 

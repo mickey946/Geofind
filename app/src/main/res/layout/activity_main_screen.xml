@@ -48,7 +48,6 @@
                 android:onClick="openHuntCreation"
                 android:text="@string/main_screen_create_hunt" />
 
-
             <Button
                 style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_games_controller_white"

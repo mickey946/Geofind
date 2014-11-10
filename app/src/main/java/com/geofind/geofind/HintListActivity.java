@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -222,6 +223,19 @@ public class HintListActivity extends ActionBarActivity {
         AlertDialog dialog = builder.create();
 
         dialog.show();
+    }
+
+
+    @Override
+    public Intent getSupportParentActivityIntent() {
+        onBackPressed();
+        return null;
+    }
+
+    @Override
+    public void onCreateSupportNavigateUpTaskStack(TaskStackBuilder builder) {
+        super.onCreateSupportNavigateUpTaskStack(builder);
+        onBackPressed();
     }
 
     /**

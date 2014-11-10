@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -19,19 +20,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.MapFragment;
+import com.melnykov.fab.FloatingActionButton;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class HuntActivity extends ActionBarActivity {
 
-    public static final int GEOFENCE_RADIUS = 10;
+    public static final int GEOFENCE_RADIUS = 50;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
@@ -71,7 +81,6 @@ public class HuntActivity extends ActionBarActivity {
      * The hints that would be displayed and used.
      */
     ArrayList<Hint> hints = new ArrayList<Hint>();
-
     /**
      * The map manager controller
      */
@@ -82,27 +91,27 @@ public class HuntActivity extends ActionBarActivity {
      */
     GeofenceManager geofence;
 
+    /**
+     * The floating action button to finish the hunt.
+     */
+    FloatingActionButton fab;
+
+    private long startTime;
+
+    private boolean finishedGame;
+    private BroadcastReceiver geofenceReciever;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
 
-
-        // TODO retrieve the hints on the fly using the hunt
-        hints.add(new Hint("Description1", new Point(31.66831, 35.11371), Hint.State.SOLVED));
-        hints.add(new Hint("Description2", new Point(31.86831, 35.21371), Hint.State.SOLVED));
-        hints.add(new Hint("Description3", new Point(31.56831, 35.11371), Hint.State.REVEALED));
-        hints.add(new Hint("Description4", new Point(31.76831, 35.21371), Hint.State.UNREVEALED));
-
         setContentView(R.layout.activity_hunt);
 
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.hide();
+
         setUpHunt();
-
-        setUpGeofence();
-
-        setUpPagerView();
-
-        setUpSlidingUpPanel();
 
         setUpMap();
 
@@ -119,7 +128,11 @@ public class HuntActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mapManager.focusOnCurrentLocation();
+        if (mapManager != null) {
+            mapManager.focusOnCurrentLocation();
+        }
+        if (geofence != null)
+            geofence.resumeGeofence();
 
         // keep the screen awake (if needed)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -128,10 +141,15 @@ public class HuntActivity extends ActionBarActivity {
         if (keepScreenAwake) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+        startTime = SystemClock.elapsedRealtime();
     }
 
     @Override
     protected void onPause() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long currentTime = SystemClock.elapsedRealtime();
+        long pasedTime = sharedPreferences.getLong("HuntTime", 0);
+        sharedPreferences.edit().putLong("HuntTime", pasedTime + currentTime - startTime);
         mapManager.stopTrackCurrentLocation();
         super.onPause();
     }
@@ -140,13 +158,63 @@ public class HuntActivity extends ActionBarActivity {
      * Retrieve the hunt from the intent that started the activity and set it up.
      */
     private void setUpHunt() {
-
+        finishedGame = false;
         Intent intent = getIntent();
         Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
         if (intent != null) {
-            hunt = (Hunt) intent.getExtras().getSerializable(
-                    getResources().getString(R.string.intent_hunt_extra));
+            hunt = (Hunt) intent.getExtras().getSerializable(getResources().
+                    getString(R.string.intent_hunt_extra));
             setTitle(hunt.getTitle());
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
+            query.selectKeys(Arrays.asList("hints"));
+
+            query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        final List<ParseObject> remoteHints = parseObject.getList("hints");
+                        ParseObject.fetchAllInBackground(remoteHints, new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> parseObjects,
+                                             ParseException e) {
+                                if (e == null) {
+                                    for (ParseObject remoteHint : remoteHints) {
+                                        Hint hint = new Hint(remoteHint);
+                                        hints.add(hint);
+                                        Log.v("Parse Hint List fetching: ", "Success");
+                                        if (hint.getState() != Hint.State.UNREVEALED) {
+                                            mapManager.setMarker(hint.getLocation().toLatLng(),
+                                                    getString(R.string.hunt_activity_hint_number_title)
+                                                            + hints.size(),
+                                                    hint.getState());
+                                        }
+                                    }
+
+                                    // hide the progress bar
+                                    ProgressBar progressBar = (ProgressBar)
+                                            findViewById(R.id.progress_bar);
+                                    progressBar.setVisibility(View.GONE);
+
+                                    // show the game layout
+                                    View slidingLayout = findViewById(R.id.sliding_layout);
+                                    slidingLayout.setVisibility(View.VISIBLE);
+
+                                    setUpGeofence();
+
+                                    setUpPagerView();
+
+                                    setUpSlidingUpPanel();
+
+                                } else {
+                                    Log.v("Parse Hint List fetching: ", "failed");
+                                }
+                            }
+                        });
+                    } else {
+                        Log.v("Parse Hint List fetching: ", "failed");
+                    }
+                }
+            });
         }
     }
 
@@ -159,7 +227,7 @@ public class HuntActivity extends ActionBarActivity {
         slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
+                Log.v(TAG, "onPanelSlide, offset " + slideOffset);
                 android.support.v7.app.ActionBar actionBar = getSupportActionBar();
                 if (slideOffset >= SLIDING_UP_PANEL_ANCHOR_POINT - 0.01f) {
                     // In APIs lower than 17, hiding the action bar changes the layout size and
@@ -175,14 +243,14 @@ public class HuntActivity extends ActionBarActivity {
             @Override
             public void onPanelExpanded(View panel) {
                 // when the panel is expanded the map is not visible, so there is nothing to show
-                Log.i(TAG, "onPanelExpanded");
+                Log.v(TAG, "onPanelExpanded");
             }
 
             @Override
             public void onPanelCollapsed(View panel) {
                 // when the panel had collapsed, the user would like to see the map rather than the
                 // point
-                Log.i(TAG, "onPanelCollapsed");
+                Log.v(TAG, "onPanelCollapsed");
                 mapManager.setMapOffset(0, 0);
                 focusOnPoint(viewPager.getCurrentItem());
             }
@@ -191,7 +259,7 @@ public class HuntActivity extends ActionBarActivity {
             public void onPanelAnchored(View panel) {
                 // when the user anchors the panel, he sees both the hint and both the map, so it's
                 // good to assume that he wants to focus on the point (if it is visible)
-                Log.i(TAG, "onPanelAnchored");
+                Log.v(TAG, "onPanelAnchored");
 
                 int height = findViewById(R.id.main_content).getMeasuredHeight();
                 float panDistance = ((1 - (1 - SLIDING_UP_PANEL_ANCHOR_POINT) / 2) - 0.5f) * height
@@ -210,7 +278,7 @@ public class HuntActivity extends ActionBarActivity {
 
         // wait until the layout is drawn, then wait a little bit to display the animation of
         // the sliding up panel
-        final RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_hunt);
+        final FrameLayout layout = (FrameLayout) findViewById(R.id.activity_hunt);
         ViewTreeObserver vto = layout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -271,7 +339,8 @@ public class HuntActivity extends ActionBarActivity {
     private void setUpMap() {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
-        mapManager = new MapManager(this, mapFragment);
+        mapManager = new MapManager(this, mapFragment, true);
+        mapManager.setLocationRequired(false);
         mapManager.setMarkerCallback(new IndexCallback() {
             /**
              * Slide to the point page at the given index.
@@ -283,16 +352,6 @@ public class HuntActivity extends ActionBarActivity {
                 viewPager.setCurrentItem(index, true); // scroll smoothly to the given index
             }
         });
-
-        int index = 0;
-        for (Hint hint : hints) {
-            index++;
-            if (hint.getState() != Hint.State.UNREVEALED) {
-                mapManager.setMarker(hint.getLocation().toLatLng(),
-                        getString(R.string.hunt_activity_hint_number_title) + index,
-                        hint.getState());
-            }
-        }
     }
 
     /**
@@ -302,26 +361,26 @@ public class HuntActivity extends ActionBarActivity {
         Log.d(TAG, "setUpGeofence");
         geofence = new GeofenceManager(this);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+        geofenceReciever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
-                int indx = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
-                Log.d(TAG, "recieved from geofence point index" + indx);
+                int index = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
+                Log.d(TAG, "recieved from geofence point index" + index);
                 Log.d(TAG, "geofence point recieved: " + id);
 
                 // Mark the current hint as solved
+                hints.get(index).setState(Hint.State.SOLVED);
+                mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
+                        getString(R.string.hunt_activity_hint_number_title) + index,
+                        hints.get(index).getState());
+                mapManager.onLocationChanged(hints.get(index).getLocation().toLocation());
 
-                hints.get(indx).setState(Hint.State.SOLVED);
-                mapManager.setMarker(hints.get(indx).getLocation().toLatLng(),
-                        getString(R.string.hunt_activity_hint_number_title) + indx,
-                        hints.get(indx).getState());
-
-                //TODO prepare for next hint
-
-                hintPagerAdapter.notifyDataSetChanged();
+                revealNext(index);
             }
-        }, new IntentFilter(getString(R.string.GeofenceResultIntent)));
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                geofenceReciever, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
         int unrevealedIndex = 0;
         while (unrevealedIndex < hints.size() &&
@@ -335,7 +394,7 @@ public class HuntActivity extends ActionBarActivity {
         geofence.setCancelCallback(new IndexCallback() {
             @Override
             public void executeCallback(int index) {
-                Log.d(TAG, "recieved from geofence cancel point index" + index);
+                Log.d(TAG, "Received from geofence cancel point index" + index);
 
                 hints.get(index).setState(Hint.State.REVEALED);
                 Point hintPoint = hints.get(index).getLocation();
@@ -343,12 +402,8 @@ public class HuntActivity extends ActionBarActivity {
                         getString(R.string.hunt_activity_hint_number_title) + index, hints.get(index).getState());
                 mapManager.onLocationChanged(hintPoint.toLocation());
 
-
-                // Mark the current hint as solved
-
-                //TODO prepare for next hint
-
-                hintPagerAdapter.notifyDataSetChanged();
+                // Mark the current hint as revealed
+                revealNext(index);
 
             }
         });
@@ -402,10 +457,11 @@ public class HuntActivity extends ActionBarActivity {
                 startActivity(intent);
                 break;
             case R.id.action_temp_finish:
-                intent = new Intent(this, HuntFinishActivity.class);
 
-                // TODO pass arguments for statistics
-                intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+                //TODO get user google ID and to this function!
+                saveUserData("userID", hunt.getParseID());
+
+                intent = generateFinishData();
 
                 startActivity(intent);
                 finish();
@@ -413,6 +469,29 @@ public class HuntActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private Intent generateFinishData() {
+        finishedGame = true;
+        Intent intent = new Intent(this, HuntFinishActivity.class);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long currentTime = SystemClock.elapsedRealtime();
+        long passedTime = sharedPreferences.getLong("HuntTime", 0);
+        long playTime = passedTime + currentTime - startTime;
+
+        int solved = 0;
+        for (Hint hint : hints) {
+            if (hint.getState() == Hint.State.SOLVED)
+                solved++;
+        }
+
+        intent.putExtra(getResources().getString(R.string.hunt_finish_total_points), hints.size());
+        intent.putExtra(getResources().getString(R.string.hunt_finish_solved_points), solved);
+        intent.putExtra(getResources().getString(R.string.hunt_finish_total_time), playTime);
+        intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+
+        return intent;
     }
 
     @Override
@@ -429,5 +508,72 @@ public class HuntActivity extends ActionBarActivity {
         } else {
             super.onBackPressed(); // if the panel is collapsed, proceed as usual
         }
+    }
+
+    private void revealNext(int i) {
+        hintPagerAdapter.notifyDataSetChanged();
+
+        if (hints.size() > i + 1) {
+            geofence.createGeofence(hints.get(i + 1).getLocation(),
+                    GEOFENCE_RADIUS, i + 1);
+            viewPager.setCurrentItem(i + 1, true); // scroll smoothly to the given index
+        } else {
+            fab.setVisibility(View.VISIBLE);
+            fab.show();
+        }
+
+    }
+
+    public void finishHunt(View view) {
+        //TODO get user google ID and to this function!
+        saveUserData("userID", hunt.getParseID());
+        Intent intent = generateFinishData();
+        startActivity(intent);
+        finish();
+    }
+
+    private void saveUserData(String userID, final String huntID) {
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");
+        query.whereEqualTo("userID", userID);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (!parseObjects.isEmpty()) {
+                        ParseObject userData = parseObjects.get(0);
+                        if (huntID.contains("$")) {
+                            userData.add("ongoingHunts", huntID);
+                        } else {
+                            userData.add("finishedHunts", huntID);
+                        }
+                        userData.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    Log.v("Adding user data to parse: ", "Success");
+                                } else {
+                                    Log.v("Adding user data to parse: ", "Failure");
+                                }
+                            }
+                        });
+                    }
+
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        //TODO replace "userID" with google user id.
+        System.out.println("Destroying shit");
+        String huntId = hunt.getParseID();
+        if (!finishedGame) {
+            huntId += "$" + hintPagerAdapter.getCount();
+        }
+        saveUserData("userID", huntId);
+        geofence.destroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(geofenceReciever);
+        super.onDestroy();
     }
 }

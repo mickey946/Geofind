@@ -7,16 +7,25 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
@@ -24,7 +33,7 @@ import java.util.ArrayList;
  * <p/>
  * Created by mickey on 23/10/14.
  */
-public class HuntListPagerAdapter extends FragmentPagerAdapter {
+public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
     /**
      * Number of different Hunt lists.
      */
@@ -56,18 +65,83 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int i) {
+    public Fragment getItem(final int i) {
+        //TODO need to get data on user - List of Finished Hunts, List of OngoingHunts.
         // create new Hint fragment
-        Fragment fragment = new HuntListFragment();
+        final Fragment fragment = new HuntListFragment();
 
         // create and fill the hunts array to display them.
-        // TODO retrieve the hunts from parse
-        ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        hunts.add(new Hunt("Title1", 1, 1000, "Hunt1", new LatLng(31.76831, 35.21371), 500));
-        hunts.add(new Hunt("Title2", 2, 2, "Hunt2", new LatLng(31.76831, 35.21371), 1000));
-        hunts.add(new Hunt("Title3", 3, 3, "Hunt3", new LatLng(31.76831, 35.21371), 200));
-        hunts.add(new Hunt("Title4", 4, 4, "Hunt4", new LatLng(31.76831, 35.21371), 10000));
-        hunts.add(new Hunt("Title5", 5, 5, "Hunt5", new LatLng(31.76831, 35.21371), 800));
+
+        ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
+        final ArrayList<String> onGoingHunts = new ArrayList<String>();
+        final ArrayList<String> finishedHunts = new ArrayList<String>();
+
+        final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
+        final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery("Hunt");
+
+        //TODO replace the SECOND "userID" with google use id.
+        userQuery.whereEqualTo("userID", "userID");
+        userQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (!parseObjects.isEmpty()) {
+                        ParseObject userData = parseObjects.get(0);
+                        onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
+                        finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
+
+                        switch (i) {
+                            case NEW_HUNTS:
+                                //TODO need to extract point numbers from onGoingHunts
+                                List<String> notNewHunts = parse(onGoingHunts);
+                                notNewHunts.addAll(finishedHunts);
+                                huntsQuery.whereNotContainedIn("objectId", notNewHunts);
+                                break;
+                            case ONGOING_HUNTS:
+                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
+                                        whereNotContainedIn("objectId", finishedHunts);
+                                break;
+                            case FINISHED_HUNTS:
+                                huntsQuery.whereContainedIn("objectId", finishedHunts);
+                                break;
+                        }
+
+                        huntsQuery.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> parseObjects, ParseException e) {
+                                if (e == null) {
+                                    // remove progress bar
+                                    ((HuntListFragment) fragment).progressBar
+                                            .setVisibility(View.GONE);
+
+                                    if (!parseObjects.isEmpty()) {
+                                        for (ParseObject parseObject : parseObjects) {
+                                            hunts.add(new Hunt(parseObject));
+                                        }
+                                        ((HuntListFragment) fragment).setHunts(hunts);
+
+                                    } else { // empty list
+                                        ((HuntListFragment) fragment).emptyListTextView
+                                                .setVisibility(View.VISIBLE);
+                                    }
+
+                                } else {
+                                    Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
+                                            Toast.LENGTH_LONG).show();
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                        });
+
+                    } else {
+                        Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
+                    }
+                } else {
+                    System.out.println("error");
+                }
+            }
+        });
+
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
@@ -111,7 +185,9 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
         public static final String HUNT_LIST_TAG = "HUNT_LIST";
 
         public Context context;
-        HuntListAdapter adapter;
+        public HuntListAdapter adapter;
+        public ProgressBar progressBar;
+        public TextView emptyListTextView;
 
         /**
          * Get the current distance unit that is saved in the settings file.
@@ -142,6 +218,12 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
             View view = inflater.inflate(R.layout.item_hunt_list_pager, container, false);
             context = view.getContext();
 
+            // get a reference to the progress bar
+            progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+
+            // get a reference to the empty list text view
+            emptyListTextView = (TextView) view.findViewById(R.id.hunt_list_empty);
+
             // get a reference to recyclerView
             RecyclerView recyclerView = (RecyclerView)
                     view.findViewById(R.id.recycler_view);
@@ -168,5 +250,18 @@ public class HuntListPagerAdapter extends FragmentPagerAdapter {
 
             return view;
         }
+
+        public void setHunts(ArrayList<Hunt> hunts) {
+            adapter.setHunts(hunts);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private List<String> parse(List<String> idList) {
+        ArrayList<String> result = new ArrayList<String>();
+        for (String id : idList) {
+            result.add(id.substring(0, id.indexOf('$')));
+        }
+        return result;
     }
 }
