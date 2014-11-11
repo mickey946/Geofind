@@ -217,6 +217,9 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                             }
                         });
                     }
+
+                    @Override
+                    public void onUrlReceive(String link) { }
                 });
             }
 

@@ -2,6 +2,7 @@ package com.geofind.geofind;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -9,12 +10,15 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
+
+import java.net.URL;
 
 
 public class ContentViewActivity extends ActionBarActivity {
@@ -78,10 +82,24 @@ public class ContentViewActivity extends ActionBarActivity {
             hintWithImage.downloadImage(new Hint.DownloadImage() {
                 @Override
                 public void updateImage(Bitmap bitmap) {
-                    setUpImageView(bitmap);
+                    //setUpImageView(bitmap);
                 }
 
-//                @Override
+                @Override
+                public void onUrlReceive(String link) {
+                    URL url;
+
+                    try {
+                        url = new URL(link);
+                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        setUpImageView(bmp);
+                    } catch (Exception e) {
+                        Log.v("Exception in loading image from URL.", e.getMessage());
+                    }
+
+                }
+
+                //                @Override
 //                public void updateVideo(String videoLink) {
 //                    // TODO remove this for not downloading video for nothing
 //                    setUpVideoAudioView(videoLink);

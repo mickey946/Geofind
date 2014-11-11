@@ -172,6 +172,7 @@ public class Hint implements Serializable {
 
     public interface DownloadImage {
         void updateImage(Bitmap im);
+        void onUrlReceive(String link);
     }
 
     public interface DownloadVideoAudio {
@@ -201,6 +202,7 @@ public class Hint implements Serializable {
                             @Override
                             public void done(byte[] bytes, ParseException e) {
                                 if (e == null) {
+                                    callback.onUrlReceive(file.getUrl());
                                     callback.updateImage(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                                 }
                                 else {
