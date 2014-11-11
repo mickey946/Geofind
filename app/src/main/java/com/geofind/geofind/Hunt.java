@@ -23,7 +23,7 @@ public class Hunt implements Serializable {
     public static final float METERS_TO_KILOMETERS = 0.001f;
     public static final int DIGIT_PRECISION = 3;
 
-    private static final String PARSE_CLASS_NAME = "Hunt";
+    public static final String PARSE_CLASS_NAME = "Hunt";
     private static final String PARSE_TITLE_FIELD = "title";
     private static final String PARSE_DESCRIPTION_FIELD = "description";
     private static final String PARSE_CREATOR_ID_FIELD = "creatorID";
@@ -33,7 +33,7 @@ public class Hunt implements Serializable {
     private static final String PARSE_RATING_FIELD = "rating";
     private static final String PARSE_TOTAL_RATING_FIELD = "totalRating";
     private static final String PARSE_NUM_OF_RATERS_FIELD = "numOfRaters";
-    private static final String PARSE_HINTS_FIELD = "hints";
+    public static final String PARSE_HINTS_FIELD = "hints";
     private static final String PARSE_COMMENTS_FIELD = "comments";
 
 

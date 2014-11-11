@@ -75,21 +75,23 @@ public class ContentViewActivity extends ActionBarActivity {
         } else if (selectedVideoAudioString != null) { // user views his selected video or audio
             setUpVideoAudioView(selectedVideoAudioString);
         } else if (hintWithImage != null) { // user views a hint image
-            hintWithImage.downloadFiles(new Hint.DownloadFiles() {
+            hintWithImage.downloadImage(new Hint.DownloadImage() {
                 @Override
                 public void updateImage(Bitmap bitmap) {
                     setUpImageView(bitmap);
                 }
 
-                @Override
-                public void updateVideo(MediaStore.Video vid) {
-                    // TODO remove this for not downloading video for nothing
-                }
-
-                @Override
-                public void updateAudio(MediaStore.Audio aud) {
-                    // TODO remove this for not downloading audio for nothing
-                }
+//                @Override
+//                public void updateVideo(String videoLink) {
+//                    // TODO remove this for not downloading video for nothing
+//                    setUpVideoAudioView(videoLink);
+//                }
+//
+//                @Override
+//                public void updateAudio(String audioLink) {
+//                    // TODO remove this for not downloading audio for nothing
+//                    setUpVideoAudioView(audioLink);
+//                }
             });
         }
 

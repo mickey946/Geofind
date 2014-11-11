@@ -31,8 +31,8 @@ public class Hint implements Serializable {
     private static final String PARSE_TEXT_FIELD = "text";
     private static final String PARSE_LOCATION_FIELD = "location";
     private static final String PARSE_IMAGE_FIELD = "image";
-    private static final String PARSE_VIDEO_FIELD = "video";
-    private static final String PARSE_AUDIO_FIELD = "audio";
+    public static final String PARSE_VIDEO_FIELD = "video";
+    public static final String PARSE_AUDIO_FIELD = "audio";
 
     private static final String IMAGE_FILE_SUFFIX = ".jpg";
     private static final String VIDEO_FILE_SUFFIX = ".mp4";
@@ -167,44 +167,68 @@ public class Hint implements Serializable {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public interface DownloadFiles {
+
+
+
+    public interface DownloadImage {
         void updateImage(Bitmap im);
-
-        void updateVideo(MediaStore.Video vid);
-
-        void updateAudio(MediaStore.Audio aud);
     }
 
-    public void downloadFiles(DownloadFiles callback) {
-        getFile(callback, "image");
-        //TODO video
-        //TODO audio
+    public interface DownloadVideoAudio {
+        void updateVideoAudio(String link);
     }
 
-    private void getFile(final DownloadFiles callback, final String fileType) {
-        System.out.println("parse hint id is " + _parseId);
-        System.out.println("parse file type is " + fileType);
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Hint");
+    public void downloadImage(DownloadImage callback) {
+        getImage(callback);
+
+    }
+
+    public void downloadVideoAudio(DownloadVideoAudio callback, String fileType) {
+        getVideoAudio(callback, fileType);
+
+    }
+
+
+    private void getImage(final DownloadImage callback) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(PARSE_CLASS_NAME);
         query.getInBackground(_parseId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
-                    final ParseFile file = (ParseFile) parseObject.get(fileType);
+                    final ParseFile file = (ParseFile) parseObject.get(PARSE_IMAGE_FIELD);
                     if (file != null) {
                         file.getDataInBackground(new GetDataCallback() {
                             @Override
                             public void done(byte[] bytes, ParseException e) {
                                 if (e == null) {
-                                    if (fileType.equals("image")) {
-                                        callback.updateImage(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                                    }
-                                    //TODO video
-                                    //TODO audio
-                                } else {
+                                    callback.updateImage(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                }
+                                else {
                                     System.out.println("parse exception1 " + e.getMessage());
                                 }
                             }
                         });
+                    }
+                } else {
+                    System.out.println("parse exception2 " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void getVideoAudio(final DownloadVideoAudio callback, final String fileType) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(PARSE_CLASS_NAME);
+        query.getInBackground(_parseId, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    String field = PARSE_VIDEO_FIELD;
+                    if (fileType.equals(PARSE_AUDIO_FIELD)) {
+                        field = PARSE_AUDIO_FIELD;
+                    }
+                    ParseFile file = (ParseFile) parseObject.get(field);
+                    if (file != null) {
+                        callback.updateVideoAudio(file.getUrl());
                     }
                 } else {
                     System.out.println("parse exception2 " + e.getMessage());
