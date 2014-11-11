@@ -23,6 +23,9 @@ public class Hunt implements Serializable {
     public static final float METERS_TO_KILOMETERS = 0.001f;
     public static final int DIGIT_PRECISION = 3;
 
+    public final String HUNT_CLASS_NAME_PARSE = "Hunt";
+
+
     private String _title;
     private String _description;
     private String _creatorID;
