@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import java.net.URL;
+import java.io.InputStream;
 
 
 public class ContentViewActivity extends ActionBarActivity {
@@ -86,34 +86,38 @@ public class ContentViewActivity extends ActionBarActivity {
                 }
 
                 @Override
-                public void onUrlReceive(String link) {
-                    URL url;
-
-                    try {
-                        url = new URL(link);
-                        Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        setUpImageView(bmp);
-                    } catch (Exception e) {
-                        Log.v("Exception in loading image from URL.", e.getMessage());
-                    }
-
+                public void onUrlReceive(String url) {
+                        DownloadImageTask downloadImageTask = new DownloadImageTask();
+                        downloadImageTask.execute(url);
                 }
-
-                //                @Override
-//                public void updateVideo(String videoLink) {
-//                    // TODO remove this for not downloading video for nothing
-//                    setUpVideoAudioView(videoLink);
-//                }
-//
-//                @Override
-//                public void updateAudio(String audioLink) {
-//                    // TODO remove this for not downloading audio for nothing
-//                    setUpVideoAudioView(audioLink);
-//                }
             });
         }
 
         // TODO retrieve files from parse
+    }
+
+    /**
+     * An {@link android.os.AsyncTask} used to download an image from Parse.
+     */
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap outputBitmap = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                outputBitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error loading an image: ", e.getMessage());
+                e.printStackTrace();
+            }
+            return outputBitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            // TODO add a progress bar to indicate download
+            setUpImageView(result);
+        }
     }
 
     /**
