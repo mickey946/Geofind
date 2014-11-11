@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <integer name="splash_screen_timeout">3000</integer>
     <integer name="sliding_up_panel_anchor_delay">500</integer>
     <string name="intent_hunt_extra">HUNT</string>
@@ -42,4 +43,39 @@
     <string name="pref_analyticks_key">pref_analytics</string>
     <string name="auto_complete_json_description">description</string>
     <string name="auto_complete_json_reference">reference</string>
+
+    <!--constants for parse-->
+
+    <string name="parse_app_id">ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa</string>
+    <string name="parse_client_key">bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv</string>
+
+
+    <!--class names-->
+    <string name="parse_hunt_class_name">Hunt</string>
+    <string name="parse_hint_class_name">Hint</string>
+    <string name="parse_comment_class_name">Comment</string>
+    <string name="parse_userdata_class_name">UserData</string>
+
+    <!--field names-->
+    <string name="parse_title_field_name">title</string>
+    <string name="parse_description_field_name">description</string>
+    <string name="parse_radius_field_name">radius</string>
+    <string name="parse_totalDistance_field_name">totalDistance</string>
+    <string name="parse_totalRating_field_name">totalRating</string>
+    <string name="parse_rating_field_name">rating</string>
+    <string name="parse_firstPoint_field_name">firstPoint</string>
+    <string name="parse_hints_field_name">hints</string>
+    <string name="parse_comments_field_name">comments</string>
+    <string name="parse_creatorID_field_name">creatorID</string>
+    <string name="parse_numOfRaters_field_name">numOfRaters</string>
+    <string name="parse_location_field_name">location</string>
+    <string name="parse_text_field_name">text</string>
+    <string name="parse_image_field_name">image</string>
+    <string name="parse_video_field_name">video</string>
+    <string name="parse_audio_field_name">audio</string>
+    <string name="parse_finishedHunts_field_name">finishedHunts</string>
+    <string name="parse_ongoingHunts_field_name">ongoingHunts</string>
+    <string name="parse_userID_field_name">userID</string>
+    <string name="parse_review_field_name">review</string>
+
 </resources>

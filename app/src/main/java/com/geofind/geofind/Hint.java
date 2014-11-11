@@ -27,6 +27,18 @@ import java.io.Serializable;
 public class Hint implements Serializable {
 
 
+    private static final String PARSE_CLASS_NAME = "Hint";
+    private static final String PARSE_TEXT_FIELD = "text";
+    private static final String PARSE_LOCATION_FIELD = "location";
+    private static final String PARSE_IMAGE_FIELD = "image";
+    private static final String PARSE_VIDEO_FIELD = "video";
+    private static final String PARSE_AUDIO_FIELD = "audio";
+
+    private static final String IMAGE_FILE_SUFFIX = ".jpg";
+    private static final String VIDEO_FILE_SUFFIX = ".mp4";
+    private static final String AUDIO_FILE_SUFFIX = ".mp3";
+
+
     public enum State {
         UNREVEALED, REVEALED, SOLVED
     }
@@ -54,8 +66,8 @@ public class Hint implements Serializable {
     }
 
     public Hint(ParseObject remoteHint) {
-        _text = remoteHint.getString("text");
-        _location = new Point(remoteHint.getParseGeoPoint("location"));
+        _text = remoteHint.getString(PARSE_TEXT_FIELD);
+        _location = new Point(remoteHint.getParseGeoPoint(PARSE_LOCATION_FIELD));
         _state = State.UNREVEALED;
         _parseId = remoteHint.getObjectId();
     }
@@ -81,30 +93,33 @@ public class Hint implements Serializable {
     }
 
     public ParseObject toParseObject(Context c) {
-        ParseObject remoteHint = new ParseObject("Hint");
-        remoteHint.put("text", _text);
-        remoteHint.put("location", _location.toParseGeoPoint());
+        ParseObject remoteHint = new ParseObject(PARSE_CLASS_NAME);
+        remoteHint.put(PARSE_TEXT_FIELD, _text);
+        remoteHint.put(PARSE_LOCATION_FIELD, _location.toParseGeoPoint());
         _context = c;
 
         //TODO not sure this is the right place to perform the files upload to parse!
         //TODO consider changing this.
         try {
             if (_image != null) {
-                ParseFile image = new ParseFile("image.png", uriToByteArray(Uri.parse(_image)));
+                ParseFile image = new ParseFile(PARSE_IMAGE_FIELD + IMAGE_FILE_SUFFIX,
+                                                        uriToByteArray(Uri.parse(_image)));
                 image.saveInBackground();
-                remoteHint.put("image", image);
+                remoteHint.put(PARSE_IMAGE_FIELD, image);
             }
 
             if (_video != null) {
-                ParseFile video = new ParseFile("video.mp4", uriToByteArray(Uri.parse(_video)));
+                ParseFile video = new ParseFile(PARSE_VIDEO_FIELD + VIDEO_FILE_SUFFIX,
+                                                        uriToByteArray(Uri.parse(_video)));
                 video.saveInBackground();
-                remoteHint.put("video", video);
+                remoteHint.put(PARSE_VIDEO_FIELD, video);
             }
 
             if (_audio != null) {
-                ParseFile audio = new ParseFile("audio.mp3", uriToByteArray(Uri.parse(_audio)));
+                ParseFile audio = new ParseFile(PARSE_AUDIO_FIELD + AUDIO_FILE_SUFFIX,
+                                                        uriToByteArray(Uri.parse(_audio)));
                 audio.saveInBackground();
-                remoteHint.put("audio", audio);
+                remoteHint.put(PARSE_AUDIO_FIELD, audio);
             }
         } catch (IOException e) {
             Log.v("IO Exception in saving a hint file.", e.getMessage());
