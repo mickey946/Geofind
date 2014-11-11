@@ -143,14 +143,30 @@ public class HuntActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Set up the {@link com.melnykov.fab.FloatingActionButton} that finishes the game.
+     */
     private void setUpFloatingActionButton() {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
     }
 
+    /**
+     * Setup the {@link android.media.MediaPlayer}s that play the sounds.
+     */
     private void setUpSounds() {
         successMediaPlayer = MediaPlayer.create(this, R.raw.success_1_by_fins);
         failureMediaPlayer = MediaPlayer.create(this, R.raw.aww_by_phmiller42);
+    }
+
+    /**
+     * Release (delete) the {@link android.media.MediaPlayer}s that play the sounds.
+     */
+    private void removeSounds() {
+        successMediaPlayer.release();
+        successMediaPlayer = null;
+        failureMediaPlayer.release();
+        failureMediaPlayer = null;
     }
 
     @Override
@@ -617,6 +633,9 @@ public class HuntActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
+        // release the MediaPlayers
+        removeSounds();
+
         //TODO replace "userID" with google user id.
         System.out.println("Destroying shit");
         String huntId = hunt.getParseID();
