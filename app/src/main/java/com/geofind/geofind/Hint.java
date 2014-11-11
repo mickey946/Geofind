@@ -48,6 +48,10 @@ public class Hint implements Serializable {
     private Point _location;
     private String _image, _video, _audio;
     private String _parseId;
+    private boolean _hasImage = false;
+    private boolean _hasVideo = false;
+    private boolean _hasAudio = false;
+
     private Context _context;
 
     public Hint(String text, Point location, String image, String video, String audio) {
@@ -55,8 +59,11 @@ public class Hint implements Serializable {
         _state = State.UNREVEALED; // a default state for a hint
         _location = location;
         _image = image;
+        _hasImage = (image != null);
         _video = video;
+        _hasVideo = (video != null);
         _audio = audio;
+        _hasAudio = (audio != null);
     }
 
     public Hint(String text, Point location, State state) {
@@ -70,6 +77,9 @@ public class Hint implements Serializable {
         _location = new Point(remoteHint.getParseGeoPoint(PARSE_LOCATION_FIELD));
         _state = State.UNREVEALED;
         _parseId = remoteHint.getObjectId();
+        _hasImage = remoteHint.has(PARSE_IMAGE_FIELD);
+        _hasVideo = remoteHint.has(PARSE_VIDEO_FIELD);
+        _hasAudio = remoteHint.has(PARSE_AUDIO_FIELD);
     }
 
     public String getText() {
@@ -90,6 +100,18 @@ public class Hint implements Serializable {
 
     public String getParseId() {
         return _parseId;
+    }
+
+    public boolean hasImage() {
+        return _hasImage;
+    }
+
+    public boolean hasVideo() {
+        return _hasVideo;
+    }
+
+    public boolean hasAudio() {
+        return _hasAudio;
     }
 
     public ParseObject toParseObject(Context c) {
