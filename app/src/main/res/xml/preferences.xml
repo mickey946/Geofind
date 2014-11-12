@@ -52,10 +52,6 @@
     <PreferenceCategory
         android:title="@string/preferences_account_settings_title"
         android:key="@string/pref_key_account_settings">
-
-        <Preference
-            android:title="@string/preferences_google_plus_title"
-            android:key="@string/pref_key_account_profile" />
         <Preference
             android:title="@string/preferences_account_sign_out_title"
             android:key="@string/pref_key_account_sign_in_out" />
