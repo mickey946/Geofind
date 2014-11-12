@@ -124,7 +124,9 @@
                 android:value="com.geofind.geofind.CreateHintActivity" />
         </activity>
 
-        <activity android:name=".GooglePlusSignInActivity">
+        <activity
+            android:name=".GooglePlusSignInActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.ImageView;
 
 import com.parse.FindCallback;
@@ -78,10 +77,7 @@ public class MainScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         connectToParse();
         setContentView(R.layout.activity_main_screen);
-        if (UserData.isConnected()) {
-            Toast.makeText(this, UserData.getPersonById("115280025224905266245").getId(), Toast.LENGTH_LONG).show();
-        }
-//UserData.getPersonById("108956450570950712562").getDisplayName()
+
         background = (ImageView) findViewById(R.id.background_image);
         background.post(new Runnable() {
             @Override
@@ -155,6 +151,7 @@ public class MainScreenActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (valueAnimator != null) {
                 valueAnimator.resume();

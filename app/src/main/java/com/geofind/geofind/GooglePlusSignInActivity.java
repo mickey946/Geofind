@@ -25,14 +25,7 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
         super.onCreate(savedInstanceState);
 
         setRequestedClients(CLIENT_GAMES | CLIENT_PLUS);
-        Log.d("onCreate", "start app");
         setContentView(R.layout.activity_splash_screen);
-
-//        // Progress bar to be displayed if the connection failure is not resolved.
-//        mConnectionProgressDialog = new ProgressDialog(this);
-//        mConnectionProgressDialog.setMessage("Signing in...");
-
-
     }
 
     @Override
@@ -43,22 +36,6 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-
-    @Override
     public void onSignInFailed() {
         Toast.makeText(this, "Connection failed / cancel pressed", Toast.LENGTH_LONG).show();
 
@@ -66,7 +43,7 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
         startActivity(i);
 
         // close this activity
-        //finish();
+        finish();
     }
 
     @Override
@@ -74,7 +51,8 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
         mGoogleApiClient = getApiClient();
         Log.d("mGoogleapi = ", mGoogleApiClient.toString());
         UserData.init(mGoogleApiClient);
-        Toast.makeText(this, Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getDisplayName() + " is connected", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getDisplayName()
+                + " is connected", Toast.LENGTH_LONG).show();
 
         Intent i = new Intent(GooglePlusSignInActivity.this, MainScreenActivity.class);
         startActivity(i);

@@ -8,11 +8,13 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusClient;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.model.people.PersonBuffer;
+import com.google.example.games.basegameutils.GameHelper;
 
 /**
  * Created by Gil on 29/10/2014.
@@ -27,8 +29,10 @@ public final class UserData {
     private static boolean _connected = false;
     private static GoogleApiClient _mGoogleApiClient;
 
-    private UserData() {
+    // The game helper object. This class is mainly a wrapper around this object.
+    private static GameHelper _helper;
 
+    private UserData() {
     }
 
     public static void init(GoogleApiClient mGoogleApiClient){
@@ -73,7 +77,7 @@ public final class UserData {
                     PersonBuffer personBuffer = loadPeopleResult.getPersonBuffer();
                     try {
                         int count = personBuffer.getCount();
-                        Log.d("UserData person buffer", new Integer(count).toString());
+                        Log.d("UserData person buffer", Integer.valueOf(count).toString());
                         for (int i = 0; i < count; i++) {
                             _person = personBuffer.get(i);
 
@@ -89,5 +93,13 @@ public final class UserData {
             }
         });
         return _person;
+    }
+
+    public static void signOut() {
+        _helper.signOut();
+    }
+
+    public static GoogleApiClient getGoogleApiClient() {
+        return _mGoogleApiClient;
     }
 }
