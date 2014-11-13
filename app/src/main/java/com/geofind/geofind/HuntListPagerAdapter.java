@@ -72,37 +72,37 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
         // create and fill the hunts array to display them.
 
-        ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
+        ParseQuery<ParseObject> userQuery = ParseQuery.getQuery(context.getString(R.string.parse_userdata_class_name));
         final ArrayList<String> onGoingHunts = new ArrayList<String>();
         final ArrayList<String> finishedHunts = new ArrayList<String>();
 
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery("Hunt");
+        final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
 
         //TODO replace the SECOND "userID" with google use id.
-        userQuery.whereEqualTo("userID", "userID");
+        userQuery.whereEqualTo(context.getString(R.string.parse_userID_field_name), "userID");
         userQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
                     if (!parseObjects.isEmpty()) {
                         ParseObject userData = parseObjects.get(0);
-                        onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
-                        finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
+                        onGoingHunts.addAll((List<String>) userData.get(context.getString(R.string.parse_ongoingHunts_field_name)));
+                        finishedHunts.addAll((List<String>) userData.get(context.getString(R.string.parse_finishedHunts_field_name)));
 
                         switch (i) {
                             case NEW_HUNTS:
                                 //TODO need to extract point numbers from onGoingHunts
                                 List<String> notNewHunts = parse(onGoingHunts);
                                 notNewHunts.addAll(finishedHunts);
-                                huntsQuery.whereNotContainedIn("objectId", notNewHunts);
+                                huntsQuery.whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), notNewHunts);
                                 break;
                             case ONGOING_HUNTS:
-                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
-                                        whereNotContainedIn("objectId", finishedHunts);
+                                huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), parse(onGoingHunts)).
+                                        whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), finishedHunts);
                                 break;
                             case FINISHED_HUNTS:
-                                huntsQuery.whereContainedIn("objectId", finishedHunts);
+                                huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), finishedHunts);
                                 break;
                         }
 

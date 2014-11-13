@@ -31,10 +31,10 @@ public class Hunt implements Serializable {
     private static final String PARSE_RADIUS_FIELD = "radius";
     private static final String PARSE_TOTAL_DISTANCE_FIELD = "totalDistance";
     private static final String PARSE_RATING_FIELD = "rating";
-    private static final String PARSE_TOTAL_RATING_FIELD = "totalRating";
-    private static final String PARSE_NUM_OF_RATERS_FIELD = "numOfRaters";
+    public static final String PARSE_TOTAL_RATING_FIELD = "totalRating";
+    public static final String PARSE_NUM_OF_RATERS_FIELD = "numOfRaters";
     public static final String PARSE_HINTS_FIELD = "hints";
-    private static final String PARSE_COMMENTS_FIELD = "comments";
+    public static final String PARSE_COMMENTS_FIELD = "comments";
 
 
     private String _title;

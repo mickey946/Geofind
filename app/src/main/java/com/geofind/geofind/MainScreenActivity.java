@@ -218,12 +218,10 @@ public class MainScreenActivity extends Activity {
                 if (e == null) {
                     if (parseObjects.isEmpty()) {
                         ParseObject userData =
-                                new ParseObject(getString(R.string.parse_userID_field_name));
+                                new ParseObject(getString(R.string.parse_userdata_class_name));
                         userData.put(getString(R.string.parse_userID_field_name), "userID");
-                        userData.put(getString(R.string.parse_ongoingHunts_field_name),
-                                                                    new ArrayList<String>());
-                        userData.put(getString(R.string.parse_finishedHunts_field_name),
-                                                                    new ArrayList<String>());
+                        userData.put(getString(R.string.parse_ongoingHunts_field_name), new ArrayList<String>());
+                        userData.put(getString(R.string.parse_finishedHunts_field_name), new ArrayList<String>());
 
                         userData.saveInBackground(new SaveCallback() {
                             @Override

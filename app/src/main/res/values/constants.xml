@@ -52,5 +52,7 @@
     <string name="parse_finishedHunts_field_name">finishedHunts</string>
     <string name="parse_ongoingHunts_field_name">ongoingHunts</string>
     <string name="parse_userID_field_name">userID</string>
+    <string name="parse_objectID_field_name">objectId</string>
+
 
 </resources>
