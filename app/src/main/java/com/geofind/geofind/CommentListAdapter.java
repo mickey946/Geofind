@@ -3,12 +3,18 @@ package com.geofind.geofind;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.People;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.PersonBuffer;
 
 import java.text.DateFormat;
 import java.text.Format;
@@ -44,6 +50,17 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
         viewHolder.commentTitle.setText(comment.getTitle());
         viewHolder.comment.setText(comment.getReview());
         viewHolder.ratingBar.setRating(comment.getRating());
+
+        Log.d("isConnected: ", UserData.getGoogleApiClient().isConnected() + "");
+
+        Plus.PeopleApi.load(UserData.getGoogleApiClient(), UserData.getId())
+                .setResultCallback(new ResultCallback<People.LoadPeopleResult>() {
+                    @Override
+                    public void onResult(People.LoadPeopleResult loadPeopleResult) {
+                        PersonBuffer persons = loadPeopleResult.getPersonBuffer();
+                        Log.d("got person ", persons.get(0).getDisplayName());
+                    }
+                });
 
         // get user's preferred date format
         Format format = android.text.format.DateFormat.getDateFormat(context);

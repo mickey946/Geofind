@@ -2,14 +2,12 @@ package com.geofind.geofind;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,6 +17,8 @@ import com.google.example.games.basegameutils.GameHelper;
 
 
 public class SettingsActivity extends BaseGameActivity {
+
+    SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class SettingsActivity extends BaseGameActivity {
 
         // set and show the settings fragments
         if (savedInstanceState == null) {
-            SettingsFragment settingsFragment = new SettingsFragment();
+            settingsFragment = new SettingsFragment();
             settingsFragment.setGameHelper(getGameHelper());
             getFragmentManager().beginTransaction()
                     .add(R.id.container, settingsFragment)
@@ -73,17 +73,18 @@ public class SettingsActivity extends BaseGameActivity {
 
     @Override
     public void onSignInFailed() {
-
+        settingsFragment.setButtonToSignIn();
     }
 
     @Override
     public void onSignInSucceeded() {
-
+        settingsFragment.setButtonSignOut();
     }
 
     public static class SettingsFragment extends PreferenceFragment implements
             SharedPreferences.OnSharedPreferenceChangeListener {
 
+        private Preference signInOut;
         private Preference.OnPreferenceClickListener signInClick, signOutClick;
         private GameHelper gameHelper;
 
@@ -92,6 +93,16 @@ public class SettingsActivity extends BaseGameActivity {
 
         public void setGameHelper(GameHelper gameHelper) {
             this.gameHelper = gameHelper;
+        }
+
+        public void setButtonToSignIn() {
+            Preference signInOut = findPreference(getString(R.string.pref_key_account_sign_in_out));
+            signInOut.setOnPreferenceClickListener(signInClick);
+        }
+
+        public void setButtonSignOut() {
+            Preference signInOut = findPreference(getString(R.string.pref_key_account_sign_in_out));
+            signInOut.setOnPreferenceClickListener(signOutClick);
         }
 
         @Override
@@ -103,9 +114,7 @@ public class SettingsActivity extends BaseGameActivity {
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-            // Sign in/out
-            final Preference signInOut =
-                    findPreference(getString(R.string.pref_key_account_sign_in_out));
+            signInOut = findPreference(getString(R.string.pref_key_account_sign_in_out));
 
             signOutClick =
                     new Preference.OnPreferenceClickListener() {
@@ -130,10 +139,9 @@ public class SettingsActivity extends BaseGameActivity {
                     };
 
             if (UserData.isConnected()) {
-                signInOut.setOnPreferenceClickListener(signOutClick);
+                setButtonSignOut();
             } else { // user is disconnected
-                signInOut.setTitle(getString(R.string.preferences_account_sign_in_title));
-                signInOut.setOnPreferenceClickListener(signInClick);
+                setButtonToSignIn();
             }
 
             // Show the version number
