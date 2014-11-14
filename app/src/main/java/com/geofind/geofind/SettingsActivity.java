@@ -78,14 +78,25 @@ public class SettingsActivity extends BaseGameActivity {
 
     @Override
     public void onSignInSucceeded() {
-        settingsFragment.setButtonSignOut();
+        settingsFragment.setButtonToSignOut();
     }
 
     public static class SettingsFragment extends PreferenceFragment implements
             SharedPreferences.OnSharedPreferenceChangeListener {
 
+        /**
+         * Sign in/out preference button.
+         */
         private Preference signInOut;
+
+        /**
+         * Two listeners for the sign in/out button.
+         */
         private Preference.OnPreferenceClickListener signInClick, signOutClick;
+
+        /**
+         * The {@link com.google.example.games.basegameutils.GameHelper} of the activity.
+         */
         private GameHelper gameHelper;
 
         public SettingsFragment() {
@@ -96,13 +107,13 @@ public class SettingsActivity extends BaseGameActivity {
         }
 
         public void setButtonToSignIn() {
-            Preference signInOut = findPreference(getString(R.string.pref_key_account_sign_in_out));
             signInOut.setOnPreferenceClickListener(signInClick);
+            signInOut.setTitle(getString(R.string.preferences_account_sign_in_title));
         }
 
-        public void setButtonSignOut() {
-            Preference signInOut = findPreference(getString(R.string.pref_key_account_sign_in_out));
+        public void setButtonToSignOut() {
             signInOut.setOnPreferenceClickListener(signOutClick);
+            signInOut.setTitle(getString(R.string.preferences_account_sign_out_title));
         }
 
         @Override
@@ -114,6 +125,7 @@ public class SettingsActivity extends BaseGameActivity {
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
+            // Sign in/out button title and click listener managing
             signInOut = findPreference(getString(R.string.pref_key_account_sign_in_out));
 
             signOutClick =
@@ -121,8 +133,7 @@ public class SettingsActivity extends BaseGameActivity {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             gameHelper.signOut();
-                            signInOut.setTitle(getString(R.string.preferences_account_sign_in_title));
-                            signInOut.setOnPreferenceClickListener(signInClick);
+                            setButtonToSignIn();
                             return true;
                         }
                     };
@@ -132,14 +143,12 @@ public class SettingsActivity extends BaseGameActivity {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             gameHelper.beginUserInitiatedSignIn();
-                            signInOut.setTitle(getString(R.string.preferences_account_sign_out_title));
-                            signInOut.setOnPreferenceClickListener(signOutClick);
                             return true;
                         }
                     };
 
-            if (UserData.isConnected()) {
-                setButtonSignOut();
+            if (gameHelper.isSignedIn()) {
+                setButtonToSignOut();
             } else { // user is disconnected
                 setButtonToSignIn();
             }
