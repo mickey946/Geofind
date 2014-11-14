@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.MapFragment;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
@@ -101,6 +102,8 @@ public class HuntActivity extends ActionBarActivity {
     private boolean finishedGame;
     private BroadcastReceiver geofenceReciever;
 
+    private SnapshotManager snapshotManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -123,6 +126,8 @@ public class HuntActivity extends ActionBarActivity {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             layout.setPadding(0, 0, 0, 0);
         }
+        GoogleApiClient a = null;
+        snapshotManager = new SnapshotManager(this, a);
     }
 
     @Override
@@ -164,6 +169,8 @@ public class HuntActivity extends ActionBarActivity {
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(getResources().
                     getString(R.string.intent_hunt_extra));
+            ((GeoFindApp) getApplicationContext()).getGameStatus().startGame(
+                    hunt.getTitle(), hunt.getParseID());
             setTitle(hunt.getTitle());
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
             query.selectKeys(Arrays.asList("hints"));
@@ -563,10 +570,26 @@ public class HuntActivity extends ActionBarActivity {
         });
     }
 
+    private void SaveGame( boolean revealed){
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long currentTime = SystemClock.elapsedRealtime();
+        long passedTime = sharedPreferences.getLong("HuntTime", 0);
+        long playTime = passedTime + currentTime - startTime;
+
+        ((GeoFindApp) getApplicationContext()).getGameStatus().upDateGame(
+                hunt.getParseID(), playTime, revealed);
+
+        snapshotManager.saveSnapshot(null);
+
+
+     }
+
     @Override
     protected void onDestroy() {
         //TODO replace "userID" with google user id.
         System.out.println("Destroying shit");
+
         String huntId = hunt.getParseID();
         if (!finishedGame) {
             huntId += "$" + hintPagerAdapter.getCount();

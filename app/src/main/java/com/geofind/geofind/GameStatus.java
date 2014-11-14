@@ -56,6 +56,13 @@ public class GameStatus {
             return  jsonObject;
         }
 
+        public void updateStatus(long huntTime, boolean revealed){
+            this.huntTime = huntTime;
+            if (revealed)
+                revealedPoints.add(huntPosition);
+            huntPosition++;
+        }
+
 
     }
 
@@ -76,6 +83,27 @@ public class GameStatus {
 
     public GameStatus(SharedPreferences sp, String key){
         loadJson(sp.getString(key, ""));
+    }
+
+    public boolean startGame(String HuntTitle, String HuntID){
+        if (_activeHunts.containsKey(HuntID)){
+            return false;
+        }
+        else{
+            _activeHunts.put(HuntID, new HuntStatus(HuntTitle, HuntID));
+            return true;
+        }
+
+
+    }
+
+    public boolean upDateGame(String HuntId, long huntTime, boolean revealed){
+        if (_activeHunts.containsKey(HuntId)){
+            _activeHunts.get(HuntId).updateStatus(huntTime,revealed);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
@@ -115,6 +143,9 @@ public class GameStatus {
         }
     }
 
+    public byte[] toBytes(){
+        return toString().getBytes();
+    }
 
     /** Serializes this SaveGame to a JSON string. */
     @Override
@@ -136,4 +167,28 @@ public class GameStatus {
             throw new RuntimeException("Error converting save data to JSON.", ex);
         }
     }
+
+    public HuntStatus GetHuntStatus(String HuntID){
+        return _activeHunts.get(HuntID);
+    }
+
+//
+//    public GameStatus unionWith(GameStatus gameStatus){
+//        GameStatus current = clone();
+//
+//        for (String HuntId: gameStatus._activeHunts.keySet()){
+//
+//        }
+//
+//    }
+
+    public GameStatus clone(){
+        GameStatus  gameStatus = new GameStatus();
+        for (String id : _activeHunts.keySet()){
+            gameStatus._activeHunts.put(id, _activeHunts.get(id));
+        }
+
+        return gameStatus;
+    }
+
 }
