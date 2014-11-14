@@ -106,6 +106,16 @@ public class GameStatus {
         }
     }
 
+    public void loadHunt(byte[] data){
+        try {
+            JSONObject jsonObject = new JSONObject(new String(data));
+            String id = jsonObject.getString("huntID");
+            _activeHunts.put(id, new HuntStatus(jsonObject));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /** Replaces this SaveGame's content with the content loaded from the given JSON string. */
     public void loadJson(String json) {
@@ -145,6 +155,23 @@ public class GameStatus {
 
     public byte[] toBytes(){
         return toString().getBytes();
+    }
+
+    public byte[] HuntToBytes(String HuntID){
+        JSONObject currentHunt = new JSONObject();
+        try {
+            if (_activeHunts.containsKey(HuntID))
+                currentHunt.put("Hunt",_activeHunts.get(HuntID).toJsonObject());
+            else
+            {
+                Log.e("GameStatus", "HuntID not found on save");
+            }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Error converting single hunt save data to JSON.", ex);
+        }
+
+        return currentHunt.toString().getBytes();
     }
 
     /** Serializes this SaveGame to a JSON string. */

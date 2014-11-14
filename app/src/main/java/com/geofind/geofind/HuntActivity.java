@@ -580,7 +580,7 @@ public class HuntActivity extends ActionBarActivity {
         ((GeoFindApp) getApplicationContext()).getGameStatus().upDateGame(
                 hunt.getParseID(), playTime, revealed);
 
-        snapshotManager.saveSnapshot(null);
+        snapshotManager.saveSnapshot(hunt.getParseID(),null);
 
 
      }
