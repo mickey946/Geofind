@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -70,9 +71,15 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
                         Person currentPerson = persons.get(0);
                         viewHolder.userName.setText(currentPerson.getDisplayName());
 
-                        DownloadImageTask downloadImageTask = new
-                                DownloadImageTask(viewHolder.userImage);
-                        downloadImageTask.execute(currentPerson.getImage().getUrl());
+                        if (currentPerson.hasImage()) {
+                            DownloadImageTask downloadImageTask = new
+                                    DownloadImageTask(viewHolder.userImage);
+                            downloadImageTask.execute(currentPerson.getImage().getUrl());
+                        }
+
+                        // show the comment and hide the progress bar
+                        viewHolder.commentView.setVisibility(View.VISIBLE);
+                        viewHolder.progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
 
@@ -126,22 +133,26 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public View commentView;
         public TextView userName;
         public TextView commentTitle;
         public TextView comment;
         public TextView date;
         public ImageView userImage;
         public RatingBar ratingBar;
+        public ProgressBar progressBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
+            commentView = itemView.findViewById(R.id.item_comment_list_view);
             userName = (TextView) itemView.findViewById(R.id.item_comment_list_user_name);
             commentTitle = (TextView) itemView.findViewById(R.id.item_comment_list_title);
             comment = (TextView) itemView.findViewById(R.id.item_comment_list_comment);
             date = (TextView) itemView.findViewById(R.id.item_comment_list_date);
             userImage = (ImageView) itemView.findViewById(R.id.item_comment_list_user_image);
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_comment_list_rating);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         }
     }
 }
