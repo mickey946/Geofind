@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 public class CommentListActivity extends BaseGameActivity {
 
+    ArrayList<Comment> comments;
+    RecyclerView recyclerView;
     private CommentListAdapter adapter;
 
     @Override
@@ -29,20 +31,20 @@ public class CommentListActivity extends BaseGameActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // get a reference to recyclerView
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // create an adapter and set it's data
-        ArrayList<Comment> comments = new ArrayList<Comment>();
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
             comments = (ArrayList<Comment>) bundle.getSerializable(
                     getResources().getString(R.string.intent_hunt_comments_extra));
         }
-        adapter = new CommentListAdapter(comments, this);
+
+        adapter = new CommentListAdapter(new ArrayList<Comment>(), this);
 
         // set adapter
         recyclerView.setAdapter(adapter);
@@ -50,7 +52,6 @@ public class CommentListActivity extends BaseGameActivity {
         // set item animator to DefaultAnimator
         recyclerView.setItemAnimator(new DefaultItemAnimator());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -95,6 +96,9 @@ public class CommentListActivity extends BaseGameActivity {
 
     @Override
     public void onSignInSucceeded() {
+        adapter = new CommentListAdapter(comments, this);
 
+        // set adapter
+        recyclerView.setAdapter(adapter);
     }
 }
