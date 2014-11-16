@@ -4,17 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
+
 import java.util.ArrayList;
 
 
-public class CommentListActivity extends ActionBarActivity {
+public class CommentListActivity extends BaseGameActivity {
 
     private CommentListAdapter adapter;
 
@@ -85,5 +86,15 @@ public class CommentListActivity extends ActionBarActivity {
     public void onCreateSupportNavigateUpTaskStack(TaskStackBuilder builder) {
         super.onCreateSupportNavigateUpTaskStack(builder);
         onBackPressed();
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

@@ -7,8 +7,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
-import com.google.example.games.basegameutils.BaseGameActivity;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 
@@ -17,8 +15,6 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
     private GoogleApiClient mGoogleApiClient;
 
     TextView id;
-    private boolean mResolvingConnectionFailure = false;
-    private boolean mIntentInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +47,6 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
         mGoogleApiClient = getApiClient();
         Log.d("mGoogleapi = ", mGoogleApiClient.toString());
         UserData.init(mGoogleApiClient);
-        Toast.makeText(this, Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getDisplayName()
-                + " is connected", Toast.LENGTH_LONG).show();
 
         Intent i = new Intent(GooglePlusSignInActivity.this, MainScreenActivity.class);
         startActivity(i);

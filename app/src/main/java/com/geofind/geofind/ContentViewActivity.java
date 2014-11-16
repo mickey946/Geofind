@@ -8,7 +8,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,8 +15,10 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 
-public class ContentViewActivity extends ActionBarActivity {
+
+public class ContentViewActivity extends BaseGameActivity {
 
     /**
      * Intent tag for passing image uri (image stored in user's device).
@@ -180,5 +181,15 @@ public class ContentViewActivity extends ActionBarActivity {
     public void onCreateSupportNavigateUpTaskStack(TaskStackBuilder builder) {
         super.onCreateSupportNavigateUpTaskStack(builder);
         onBackPressed();
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

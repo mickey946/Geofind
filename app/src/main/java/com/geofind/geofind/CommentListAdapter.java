@@ -51,7 +51,9 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
         viewHolder.comment.setText(comment.getReview());
         viewHolder.ratingBar.setRating(comment.getRating());
 
-        Log.d("isConnected: ", UserData.getGoogleApiClient().isConnected() + "");
+        if(!UserData.getGoogleApiClient().isConnected()) {
+            UserData.getGoogleApiClient().connect();
+        }
 
         Plus.PeopleApi.load(UserData.getGoogleApiClient(), UserData.getId())
                 .setResultCallback(new ResultCallback<People.LoadPeopleResult>() {
