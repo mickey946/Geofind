@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class GameStatus {
     private Map<String, HuntStatus> _activeHunts;
     private final String SERIAL_VERSION = "0.0";
 
-    public GameStatus(){}
+    public GameStatus(){_activeHunts = new HashMap<String, HuntStatus>();}
 
     public GameStatus(byte[] data){
         if (data == null) return;

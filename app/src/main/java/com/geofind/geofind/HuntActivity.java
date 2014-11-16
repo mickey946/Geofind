@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import com.geofind.geofind.widget.SlidingTabLayout.SaveGame;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.MapFragment;
 import com.google.example.games.basegameutils.BaseGameActivity;
@@ -126,8 +127,6 @@ public class HuntActivity extends BaseGameActivity {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             layout.setPadding(0, 0, 0, 0);
         }
-        GoogleApiClient a = null;
-        snapshotManager = new SnapshotManager(this, a);
     }
 
     @Override
@@ -383,6 +382,7 @@ public class HuntActivity extends BaseGameActivity {
                         hints.get(index).getState());
                 mapManager.onLocationChanged(hints.get(index).getLocation().toLocation());
 
+                saveGame(false);
                 revealNext(index);
             }
         };
@@ -409,6 +409,7 @@ public class HuntActivity extends BaseGameActivity {
                         getString(R.string.hunt_activity_hint_number_title) + index, hints.get(index).getState());
                 mapManager.onLocationChanged(hintPoint.toLocation());
 
+                saveGame(true);
                 // Mark the current hint as revealed
                 revealNext(index);
 
@@ -570,7 +571,7 @@ public class HuntActivity extends BaseGameActivity {
         });
     }
 
-    private void SaveGame( boolean revealed){
+    private void saveGame( boolean revealed){
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         long currentTime = SystemClock.elapsedRealtime();
@@ -602,11 +603,13 @@ public class HuntActivity extends BaseGameActivity {
 
     @Override
     public void onSignInFailed() {
+        Log.d("HuntActivity", "SignInFailed");
 
     }
 
     @Override
     public void onSignInSucceeded() {
-
+        Log.d("HuntActivity", "SignInSuccess");
+        snapshotManager = new SnapshotManager(this, getGameHelper().getApiClient());
     }
 }
