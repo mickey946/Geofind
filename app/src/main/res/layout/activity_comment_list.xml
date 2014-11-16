@@ -6,6 +6,12 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context="com.geofind.geofind.CommentListActivity">
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/recycler_view"
         android:layout_width="fill_parent"

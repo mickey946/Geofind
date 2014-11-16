@@ -2,7 +2,8 @@ package com.geofind.geofind;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 import de.psdev.licensesdialog.LicensesDialogFragment;
 import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
@@ -12,7 +13,7 @@ import de.psdev.licensesdialog.model.Notice;
 import de.psdev.licensesdialog.model.Notices;
 
 
-public class LicenceActivity extends ActionBarActivity {
+public class LicenceActivity extends BaseGameActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,5 +79,15 @@ public class LicenceActivity extends ActionBarActivity {
         });
 
         fragment.show(getSupportFragmentManager(), null);
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

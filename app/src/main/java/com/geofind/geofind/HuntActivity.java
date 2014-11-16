@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +25,7 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.MapFragment;
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class HuntActivity extends ActionBarActivity {
+public class HuntActivity extends BaseGameActivity {
 
     public static final int GEOFENCE_RADIUS = 50;
 
@@ -598,5 +598,15 @@ public class HuntActivity extends ActionBarActivity {
         geofence.destroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(geofenceReciever);
         super.onDestroy();
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

@@ -6,15 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
-import java.util.concurrent.Callable;
-
-public class HuntListActivity extends ActionBarActivity implements ActionBar.TabListener {
+public class HuntListActivity extends BaseGameActivity implements ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -112,5 +110,13 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
 
     }
 
+    @Override
+    public void onSignInFailed() {
 
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
+    }
 }

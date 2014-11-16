@@ -4,15 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.MapFragment;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 
-public class PickPointActivity extends ActionBarActivity {
+public class PickPointActivity extends BaseGameActivity {
 
     MapManager _mapManager;
 
@@ -24,10 +24,6 @@ public class PickPointActivity extends ActionBarActivity {
         // show the back button on the action bar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        //TextView tvLocation = (TextView) findViewById(R.id.pick_point_txt);
-
-
     }
 
 
@@ -82,5 +78,15 @@ public class PickPointActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

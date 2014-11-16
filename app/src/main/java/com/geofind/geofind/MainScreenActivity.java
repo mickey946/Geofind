@@ -3,7 +3,6 @@ package com.geofind.geofind;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -13,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -24,10 +24,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainScreenActivity extends Activity {
+public class MainScreenActivity extends BaseGameActivity {
 
     private final String parseAppID = "ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa";
     private final String parseClientKey = "bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv";
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
+    }
 
     /**
      * Direction of moving of the image.

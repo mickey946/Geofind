@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,10 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
+
 import java.util.ArrayList;
 
 
-public class HintListActivity extends ActionBarActivity {
+public class HintListActivity extends BaseGameActivity {
 
     private RetainedFragment<ArrayList<Hint>> retainedFragment;
     private HintListAdapter adapter;
@@ -246,5 +247,15 @@ public class HintListActivity extends ActionBarActivity {
     public void openHintCreation(View view) {
         Intent intent = new Intent(this, CreateHintActivity.class);
         startActivityForResult(intent, getResources().getInteger(R.integer.intent_hint_result));
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

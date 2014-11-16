@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,10 +14,12 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
+
 import java.text.DecimalFormat;
 import java.util.concurrent.Callable;
 
-public class HuntDetailsActivity extends ActionBarActivity {
+public class HuntDetailsActivity extends BaseGameActivity {
 
     /**
      * The hunt on which the activity displays the details.
@@ -234,7 +235,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
     }
 
-    private void updateLocationDisplay(){
+    private void updateLocationDisplay() {
 
 
         final String distanceUnit = getCurrentDistanceUnit();
@@ -284,5 +285,15 @@ public class HuntDetailsActivity extends ActionBarActivity {
         intent.putExtra(getResources().getString(R.string.intent_hunt_comments_extra),
                 hunt.getComments());
         startActivity(intent);
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

@@ -4,14 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.MapFragment;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 
-public class HuntDetailsMapActivity extends ActionBarActivity {
+public class HuntDetailsMapActivity extends BaseGameActivity {
 
     /**
      * Control dynamic map
@@ -93,5 +93,15 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
     public void onCreateSupportNavigateUpTaskStack(TaskStackBuilder builder) {
         super.onCreateSupportNavigateUpTaskStack(builder);
         onBackPressed();
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }
