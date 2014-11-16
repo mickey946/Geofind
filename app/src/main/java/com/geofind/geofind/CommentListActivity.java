@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.example.games.basegameutils.BaseGameActivity;
 
@@ -96,6 +98,10 @@ public class CommentListActivity extends BaseGameActivity {
 
     @Override
     public void onSignInSucceeded() {
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
+
+        // set the adapter only after connection of the GoogleApiClient
         adapter = new CommentListAdapter(comments, this);
 
         // set adapter
