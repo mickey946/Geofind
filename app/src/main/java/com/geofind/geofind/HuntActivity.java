@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -99,7 +100,23 @@ public class HuntActivity extends ActionBarActivity {
     private long startTime;
 
     private boolean finishedGame;
-    private BroadcastReceiver geofenceReciever;
+
+    private BroadcastReceiver broadcastReceiver;
+
+    /**
+     * Indicates if the user wants sound effects or not.
+     */
+    private boolean isSoundAllowed;
+
+    /**
+     * The {@link android.media.MediaPlayer} that plays the success sound.
+     */
+    private MediaPlayer successMediaPlayer;
+
+    /**
+     * The {@link android.media.MediaPlayer} that plays the failure sound.
+     */
+    private MediaPlayer failureMediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +125,9 @@ public class HuntActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_hunt);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.hide();
+        setUpFloatingActionButton();
+
+        setUpSounds();
 
         setUpHunt();
 
@@ -123,6 +141,32 @@ public class HuntActivity extends ActionBarActivity {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             layout.setPadding(0, 0, 0, 0);
         }
+    }
+
+    /**
+     * Set up the {@link com.melnykov.fab.FloatingActionButton} that finishes the game.
+     */
+    private void setUpFloatingActionButton() {
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.hide();
+    }
+
+    /**
+     * Setup the {@link android.media.MediaPlayer}s that play the sounds.
+     */
+    private void setUpSounds() {
+        successMediaPlayer = MediaPlayer.create(this, R.raw.success_1_by_fins);
+        failureMediaPlayer = MediaPlayer.create(this, R.raw.aww_by_phmiller42);
+    }
+
+    /**
+     * Release (delete) the {@link android.media.MediaPlayer}s that play the sounds.
+     */
+    private void removeSounds() {
+        successMediaPlayer.release();
+        successMediaPlayer = null;
+        failureMediaPlayer.release();
+        failureMediaPlayer = null;
     }
 
     @Override
@@ -141,6 +185,11 @@ public class HuntActivity extends ActionBarActivity {
         if (keepScreenAwake) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+
+        // turn the sounds on or off
+        isSoundAllowed = sharedPreferences.getBoolean(getString(R.string.pref_key_sound),
+                false);
+
         startTime = SystemClock.elapsedRealtime();
     }
 
@@ -148,6 +197,7 @@ public class HuntActivity extends ActionBarActivity {
     protected void onPause() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         long currentTime = SystemClock.elapsedRealtime();
+        // TODO save the hunt time to the cloud and attach the Hunt ID
         long pasedTime = sharedPreferences.getLong("HuntTime", 0);
         sharedPreferences.edit().putLong("HuntTime", pasedTime + currentTime - startTime);
         mapManager.stopTrackCurrentLocation();
@@ -360,13 +410,22 @@ public class HuntActivity extends ActionBarActivity {
         Log.d(TAG, "setUpGeofence");
         geofence = new GeofenceManager(this);
 
-        geofenceReciever = new BroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
                 int index = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
-                Log.d(TAG, "recieved from geofence point index" + index);
-                Log.d(TAG, "geofence point recieved: " + id);
+                Log.d(TAG, "received from geofence point index" + index);
+                Log.d(TAG, "geofence point received: " + id);
+
+                // Play the success sound
+                if (isSoundAllowed) {
+                    if (successMediaPlayer.isPlaying() || failureMediaPlayer.isPlaying()) {
+                        failureMediaPlayer.stop();
+                        successMediaPlayer.seekTo(0);
+                    }
+                    successMediaPlayer.start();
+                }
 
                 // Mark the current hint as solved
                 hints.get(index).setState(Hint.State.SOLVED);
@@ -379,7 +438,7 @@ public class HuntActivity extends ActionBarActivity {
             }
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                geofenceReciever, new IntentFilter(getString(R.string.GeofenceResultIntent)));
+                broadcastReceiver, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
         int unrevealedIndex = 0;
         while (unrevealedIndex < hints.size() &&
@@ -394,6 +453,15 @@ public class HuntActivity extends ActionBarActivity {
             @Override
             public void executeCallback(int index) {
                 Log.d(TAG, "Received from geofence cancel point index" + index);
+
+                // Play the failure sound
+                if (isSoundAllowed) {
+                    if (failureMediaPlayer.isPlaying() || successMediaPlayer.isPlaying()) {
+                        successMediaPlayer.stop();
+                        failureMediaPlayer.seekTo(0);
+                    }
+                    failureMediaPlayer.start();
+                }
 
                 hints.get(index).setState(Hint.State.REVEALED);
                 Point hintPoint = hints.get(index).getLocation();
@@ -565,6 +633,10 @@ public class HuntActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
+        // release the MediaPlayers
+        removeSounds();
+
+        //TODO replace "userID" with google user id.
         System.out.println("Destroying shit");
         String huntId = hunt.getParseID();
         if (!finishedGame) {
@@ -574,7 +646,7 @@ public class HuntActivity extends ActionBarActivity {
         //TODO replace "userID" with google user id.
         saveUserData("userID", huntId);
         geofence.destroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(geofenceReciever);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 }
