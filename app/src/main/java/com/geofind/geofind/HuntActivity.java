@@ -23,8 +23,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import com.geofind.geofind.widget.SlidingTabLayout.SaveGame;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.MapFragment;
 import com.google.example.games.basegameutils.BaseGameActivity;
 import com.melnykov.fab.FloatingActionButton;
@@ -571,7 +569,7 @@ public class HuntActivity extends BaseGameActivity {
         });
     }
 
-    private void saveGame( boolean revealed){
+    private void saveGame(boolean revealed) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         long currentTime = SystemClock.elapsedRealtime();
@@ -581,10 +579,10 @@ public class HuntActivity extends BaseGameActivity {
         ((GeoFindApp) getApplicationContext()).getGameStatus().upDateGame(
                 hunt.getParseID(), playTime, revealed);
 
-        snapshotManager.saveSnapshot(hunt.getParseID(),null);
+        snapshotManager.saveSnapshot(hunt.getParseID(), null);
 
 
-     }
+    }
 
     @Override
     protected void onDestroy() {
