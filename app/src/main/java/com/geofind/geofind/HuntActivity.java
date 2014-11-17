@@ -380,7 +380,7 @@ public class HuntActivity extends BaseGameActivity {
                         hints.get(index).getState());
                 mapManager.onLocationChanged(hints.get(index).getLocation().toLocation());
 
-                saveGame(false);
+                saveGame(false, index == hints.size() - 1 );
                 revealNext(index);
             }
         };
@@ -407,7 +407,7 @@ public class HuntActivity extends BaseGameActivity {
                         getString(R.string.hunt_activity_hint_number_title) + index, hints.get(index).getState());
                 mapManager.onLocationChanged(hintPoint.toLocation());
 
-                saveGame(true);
+                saveGame(true, index == hints.size() - 1 );
                 // Mark the current hint as revealed
                 revealNext(index);
 
@@ -569,7 +569,7 @@ public class HuntActivity extends BaseGameActivity {
         });
     }
 
-    private void saveGame(boolean revealed) {
+    private void saveGame(boolean revealed, boolean isFinished) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         long currentTime = SystemClock.elapsedRealtime();
@@ -577,7 +577,7 @@ public class HuntActivity extends BaseGameActivity {
         long playTime = passedTime + currentTime - startTime;
 
         ((GeoFindApp) getApplicationContext()).getGameStatus().upDateGame(
-                hunt.getParseID(), playTime, revealed);
+                hunt.getParseID(), playTime, revealed, isFinished);
 
         snapshotManager.saveSnapshot(hunt.getParseID(), null);
 

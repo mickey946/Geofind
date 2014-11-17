@@ -16,6 +16,7 @@ import com.google.android.gms.games.snapshot.Snapshots;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Ilia Marin on 14/11/2014.
@@ -28,6 +29,10 @@ public class SnapshotManager {
     private String currentSaveName = "snapshotTemp";
     private Context context;
     private ProgressDialog mLoadingDialog = null;
+
+    public interface ExecFinished{
+        void onFinish();
+    }
 
 
     // Request code used to invoke sign in user interactions.
@@ -50,7 +55,7 @@ public class SnapshotManager {
         gameStatus  = ((GeoFindApp)context.getApplicationContext()).getGameStatus();
     }
 
-    public void loadSnapshot(){
+    public void loadSnapshot(final ExecFinished callback){
         if (mLoadingDialog == null) {
             mLoadingDialog = new ProgressDialog(context);
             mLoadingDialog.setMessage("Loading");
@@ -64,7 +69,7 @@ public class SnapshotManager {
                     protected Snapshots.LoadSnapshotsResult doInBackground(Void... params) {
 
                         Log.i(TAG, "Listing snapshots");
-                        return Games.Snapshots.load(mGoogleApiClient, false).await();
+                        return Games.Snapshots.load(mGoogleApiClient, true).await();
                     }
 
                     @Override
@@ -89,17 +94,25 @@ public class SnapshotManager {
                                     Toast.LENGTH_SHORT).show();
                         } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_FOLDER_UNAVAILABLE) {
                             Log.i(TAG, "Error: Snapshot folder unavailable");
-                            Toast.makeText(context, "Error: Snapshot folder unavailable.",
+                            Toast.makeText(context, "Error: Snapshot folder unavail able.",
                                     Toast.LENGTH_SHORT).show();
                         }
 
                         ArrayList<SnapshotMetadata> items = new ArrayList<SnapshotMetadata>();
+                        Log.i(TAG, "loaded " + snapshotResults.getSnapshots().getCount() + " snapshots");
                         for (SnapshotMetadata m : snapshotResults.getSnapshots()) {
-                            loadFromSnapshot(m.freeze());
+                            //loadFromSnapshot(m.freeze());
+                            // This is a hack to clear saved games
+                           // Games.Snapshots.delete(mGoogleApiClient,m);
+                            gameStatus.addToSaveHunts(m.freeze());
+
 
 
                         }
 
+                        snapshotResults.getSnapshots().release();
+
+                        callback.onFinish();
 
 
 
@@ -211,10 +224,19 @@ public class SnapshotManager {
                     }
 
                     @Override
-                    protected void onPostExecute(Snapshots.OpenSnapshotResult openSnapshotResult) {
-                        Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openSnapshotResult, 0);
+                    protected void onPostExecute(final Snapshots.OpenSnapshotResult openSnapshotResult) {
 
-                        Log.i(TAG, writeSnapshot(toWrite, HuntID ));
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... params) {
+                                Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openSnapshotResult, 0);
+
+                                Log.i(TAG, writeSnapshot(toWrite, HuntID ));
+                                return null;
+                            }
+                        };
+
+
                     }
                 };
         task.execute();
@@ -271,9 +293,10 @@ public class SnapshotManager {
         // Save the snapshot.
         SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
                 //.setCoverImage(getScreenShot())
-                .setDescription("Modified data at: " + Calendar.getInstance().getTime())
+                //.setDescription("Modified data at: " + Calendar.getInstance().getTime())
+                .setDescription(gameStatus.isFinished(HuntID) ? "Finished" : "OnGoing")
                 .build();
-        Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange);
+        Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange).await();
         return snapshot.toString();
     }
 

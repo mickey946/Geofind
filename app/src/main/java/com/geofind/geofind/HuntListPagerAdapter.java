@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -57,9 +58,9 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
     /**
      * The host activity.
      */
-    Context context;
+    BaseGameActivity context;
 
-    public HuntListPagerAdapter(FragmentManager fm, Context context) {
+    public HuntListPagerAdapter(FragmentManager fm, BaseGameActivity context) {
         super(fm);
         this.context = context;
     }
@@ -72,73 +73,82 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
         // create and fill the hunts array to display them.
 
-        ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
+
         final ArrayList<String> onGoingHunts = new ArrayList<String>();
         final ArrayList<String> finishedHunts = new ArrayList<String>();
 
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
         final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery("Hunt");
-
-        //TODO replace the SECOND "userID" with google use id.
-        userQuery.whereEqualTo("userID", "userID");
-        userQuery.findInBackground(new FindCallback<ParseObject>() {
+        SnapshotManager snapshotManager = new SnapshotManager(context,context.getGameHelper().getApiClient());
+        snapshotManager.loadSnapshot(new SnapshotManager.ExecFinished() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    if (!parseObjects.isEmpty()) {
-                        ParseObject userData = parseObjects.get(0);
-                        onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
-                        finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
+            public void onFinish() {
 
-                        switch (i) {
-                            case NEW_HUNTS:
-                                //TODO need to extract point numbers from onGoingHunts
-                                List<String> notNewHunts = parse(onGoingHunts);
-                                notNewHunts.addAll(finishedHunts);
-                                huntsQuery.whereNotContainedIn("objectId", notNewHunts);
-                                break;
-                            case ONGOING_HUNTS:
-                                huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
-                                        whereNotContainedIn("objectId", finishedHunts);
-                                break;
-                            case FINISHED_HUNTS:
-                                huntsQuery.whereContainedIn("objectId", finishedHunts);
-                                break;
-                        }
+                ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
+                //TODO replace the SECOND "userID" with google use id.
+                userQuery.whereEqualTo("userID", "userID");
+                userQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                        if (e == null) {
+                            if (!parseObjects.isEmpty()) {
+                                ParseObject userData = parseObjects.get(0);
+                                onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
+                                finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
 
-                        huntsQuery.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> parseObjects, ParseException e) {
-                                if (e == null) {
-                                    // remove progress bar
-                                    ((HuntListFragment) fragment).progressBar
-                                            .setVisibility(View.GONE);
-
-                                    if (!parseObjects.isEmpty()) {
-                                        for (ParseObject parseObject : parseObjects) {
-                                            hunts.add(new Hunt(parseObject));
-                                        }
-                                        ((HuntListFragment) fragment).setHunts(hunts);
-
-                                    } else { // empty list
-                                        ((HuntListFragment) fragment).emptyListTextView
-                                                .setVisibility(View.VISIBLE);
-                                    }
-
-                                } else {
-                                    Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
-                                            Toast.LENGTH_LONG).show();
-                                    System.out.println(e.getMessage());
+                                switch (i) {
+                                    case NEW_HUNTS:
+                                        //TODO need to extract point numbers from onGoingHunts
+                                        List<String> notNewHunts = parse(onGoingHunts);
+                                        notNewHunts.addAll(finishedHunts);
+                                        huntsQuery.whereNotContainedIn("objectId", notNewHunts);
+                                        break;
+                                    case ONGOING_HUNTS:
+                                        huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
+                                                whereNotContainedIn("objectId", finishedHunts);
+                                        break;
+                                    case FINISHED_HUNTS:
+                                        huntsQuery.whereContainedIn("objectId", finishedHunts);
+                                        break;
                                 }
-                            }
-                        });
 
-                    } else {
-                        Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
+                                huntsQuery.findInBackground(new FindCallback<ParseObject>() {
+                                    @Override
+                                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                                        if (e == null) {
+                                            // remove progress bar
+                                            ((HuntListFragment) fragment).progressBar
+                                                    .setVisibility(View.GONE);
+
+                                            if (!parseObjects.isEmpty()) {
+                                                for (ParseObject parseObject : parseObjects) {
+                                                    hunts.add(new Hunt(parseObject));
+                                                }
+                                                ((HuntListFragment) fragment).setHunts(hunts);
+
+                                            } else { // empty list
+                                                ((HuntListFragment) fragment).emptyListTextView
+                                                        .setVisibility(View.VISIBLE);
+                                            }
+
+                                        } else {
+                                            Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
+                                                    Toast.LENGTH_LONG).show();
+                                            System.out.println(e.getMessage());
+                                        }
+                                    }
+                                });
+
+                            } else {
+                                Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
+                            }
+                        } else {
+                            System.out.println("error");
+                        }
                     }
-                } else {
-                    System.out.println("error");
-                }
+                });
+
+
             }
         });
 

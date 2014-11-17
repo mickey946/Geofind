@@ -3,6 +3,8 @@ package com.geofind.geofind;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.android.gms.games.snapshot.SnapshotMetadata;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,12 +12,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by Ilia Marin on 14/11/2014.
  */
 public class GameStatus {
+
 
     private class HuntStatus {
 
@@ -24,6 +28,7 @@ public class GameStatus {
         private long huntTime;
         private int huntPosition;
         private ArrayList<Integer> revealedPoints;
+        private boolean isFinished;
 
         public HuntStatus(String huntTitle, String huntID) {
             this.huntID = huntID;
@@ -31,6 +36,7 @@ public class GameStatus {
             huntPosition = 0;
             huntTime = 0;
             revealedPoints = new ArrayList<Integer>();
+            isFinished = false;
         }
 
         public HuntStatus(JSONObject jsonObject) throws JSONException {
@@ -43,6 +49,7 @@ public class GameStatus {
             for (int i = 0; i < rev.length(); i++) {
                 revealedPoints.add(rev.getInt(i));
             }
+            isFinished = false;
         }
 
 
@@ -63,14 +70,20 @@ public class GameStatus {
             huntPosition++;
         }
 
+        public void markFinish(){
+            isFinished=true;
+        }
+
 
     }
 
     private Map<String, HuntStatus> _activeHunts;
     private final String SERIAL_VERSION = "0.0";
+    private Map<String, SnapshotMetadata> _savedHunts;
 
     public GameStatus() {
         _activeHunts = new HashMap<String, HuntStatus>();
+        _savedHunts = new HashMap<String, SnapshotMetadata>();
     }
 
     public GameStatus(byte[] data) {
@@ -98,9 +111,19 @@ public class GameStatus {
 
     }
 
-    public boolean upDateGame(String HuntId, long huntTime, boolean revealed) {
+
+    public boolean isFinished(String huntID) {
+        if (_activeHunts.containsKey(huntID)){
+            return  _activeHunts.get(huntID).isFinished;
+        }
+        return false;
+    }
+
+    public boolean upDateGame(String HuntId, long huntTime, boolean revealed, boolean isFinished) {
         if (_activeHunts.containsKey(HuntId)) {
             _activeHunts.get(HuntId).updateStatus(huntTime, revealed);
+            if (isFinished)
+                _activeHunts.get(HuntId).markFinish();
             return true;
         } else {
             return false;
@@ -216,6 +239,31 @@ public class GameStatus {
         }
 
         return gameStatus;
+    }
+
+    public void addToSaveHunts(SnapshotMetadata metadata){
+        _savedHunts.put(metadata.getUniqueName().substring(8), metadata);
+        Log.d("GameStatus","adding " + metadata.getUniqueName() + ":" + metadata.getDescription());
+    }
+
+    public List<String> getOnGoing(){
+        ArrayList<String> hunts = new ArrayList<String>();
+        for (Map.Entry<String,SnapshotMetadata> entry : _savedHunts.entrySet()){
+            if (entry.getValue().getDescription().equalsIgnoreCase("OnGoing")){
+                hunts.add(entry.getKey());
+            }
+        }
+        return  hunts;
+    }
+
+    public List<String> getFinished(){
+        ArrayList<String> hunts = new ArrayList<String>();
+        for (Map.Entry<String,SnapshotMetadata> entry : _savedHunts.entrySet()){
+            if (entry.getValue().getDescription().equalsIgnoreCase("Finished")){
+                hunts.add(entry.getKey());
+            }
+        }
+        return  hunts;
     }
 
 }
