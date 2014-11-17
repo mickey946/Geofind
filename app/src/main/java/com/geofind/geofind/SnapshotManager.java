@@ -274,7 +274,7 @@ public class SnapshotManager {
                 .setDescription("Modified data at: " + Calendar.getInstance().getTime())
                 .build();
         Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange);
-        return snapshot.getSnapshotContents().toString();
+        return snapshot.toString();
     }
 
 
