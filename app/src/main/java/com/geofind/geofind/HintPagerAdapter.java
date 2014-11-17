@@ -178,55 +178,70 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                 }
             });
 
-            hint.downloadFiles(new Hint.DownloadFiles() {
-                @Override
-                public void updateImage(Bitmap inputBitmap) {
-                    View imageLayout = view.findViewById(R.id.item_hint_image_layout);
-                    imageLayout.setVisibility(View.VISIBLE);
+            if (hint.hasImage()) {
+                hint.downloadImage(new Hint.DownloadImage() {
+                    @Override
+                    public void updateImage(Bitmap inputBitmap) {
+                        View imageLayout = view.findViewById(R.id.item_hint_image_layout);
+                        imageLayout.setVisibility(View.VISIBLE);
 
-                    ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
+                        ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
 
-                    // zoom the image to improve view responsiveness
-                    Bitmap displayBitmap;
-                    if (inputBitmap.getWidth() >= inputBitmap.getHeight()) {
-                        displayBitmap = Bitmap.createBitmap(
-                                inputBitmap,
-                                inputBitmap.getWidth() / 2 - inputBitmap.getHeight() / 2,
-                                0,
-                                inputBitmap.getHeight(),
-                                inputBitmap.getHeight()
-                        );
-                    } else {
-                        displayBitmap = Bitmap.createBitmap(
-                                inputBitmap,
-                                0,
-                                inputBitmap.getHeight() / 2 - inputBitmap.getWidth() / 2,
-                                inputBitmap.getWidth(),
-                                inputBitmap.getWidth()
-                        );
-                    }
-                    hintImage.setImageBitmap(displayBitmap);
-
-                    hintImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(v.getContext(), ContentViewActivity.class);
-                            intent.putExtra(ContentViewActivity.IMAGE_PARSE, hint);
-                            startActivity(intent);
+                        // zoom the image to improve view responsiveness
+                        Bitmap displayBitmap;
+                        if (inputBitmap.getWidth() >= inputBitmap.getHeight()) {
+                            displayBitmap = Bitmap.createBitmap(
+                                    inputBitmap,
+                                    inputBitmap.getWidth() / 2 - inputBitmap.getHeight() / 2,
+                                    0,
+                                    inputBitmap.getHeight(),
+                                    inputBitmap.getHeight()
+                            );
+                        } else {
+                            displayBitmap = Bitmap.createBitmap(
+                                    inputBitmap,
+                                    0,
+                                    inputBitmap.getHeight() / 2 - inputBitmap.getWidth() / 2,
+                                    inputBitmap.getWidth(),
+                                    inputBitmap.getWidth()
+                            );
                         }
-                    });
-                }
+                        hintImage.setImageBitmap(displayBitmap);
 
-                @Override
-                public void updateVideo(MediaStore.Video vid) {
-                    // TODO video display
-                }
+                        hintImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(v.getContext(), ContentViewActivity.class);
+                                intent.putExtra(ContentViewActivity.IMAGE_PARSE, hint);
+                                startActivity(intent);
+                            }
+                        });
+                    }
 
-                @Override
-                public void updateAudio(MediaStore.Audio aud) {
-                    // TODO audio display
-                }
-            });
+                    @Override
+                    public void onUrlReceive(String link) { }
+                });
+            }
+
+            if (hint.hasVideo()) {
+                hint.downloadVideoAudio(new Hint.DownloadVideoAudio() {
+                    @Override
+                    public void updateVideoAudio(String link) {
+                        //TODO: implement this.
+                        Log.v("In update Video", "Video url: " + link);
+                    }
+                }, Hint.PARSE_VIDEO_FIELD);
+            }
+
+            if (hint.hasAudio()) {
+                hint.downloadVideoAudio(new Hint.DownloadVideoAudio() {
+                    @Override
+                    public void updateVideoAudio(String link) {
+                        //TODO: implement this.
+                        Log.v("In update Audio", "Audio url: " + link);
+                    }
+                }, Hint.PARSE_AUDIO_FIELD);
+            }
 
             return view;
         }

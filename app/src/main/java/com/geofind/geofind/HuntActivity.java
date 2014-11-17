@@ -215,14 +215,13 @@ public class HuntActivity extends ActionBarActivity {
             hunt = (Hunt) intent.getExtras().getSerializable(getResources().
                     getString(R.string.intent_hunt_extra));
             setTitle(hunt.getTitle());
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
-            query.selectKeys(Arrays.asList("hints"));
-
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
+            query.selectKeys(Arrays.asList(Hunt.PARSE_HINTS_FIELD));
             query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
-                        final List<ParseObject> remoteHints = parseObject.getList("hints");
+                        final List<ParseObject> remoteHints = parseObject.getList(Hunt.PARSE_HINTS_FIELD);
                         ParseObject.fetchAllInBackground(remoteHints, new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> parseObjects,
@@ -601,8 +600,9 @@ public class HuntActivity extends ActionBarActivity {
     }
 
     private void saveUserData(String userID, final String huntID) {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");
-        query.whereEqualTo("userID", userID);
+        ParseQuery<ParseObject> query =
+                new ParseQuery<ParseObject>(getString(R.string.parse_userdata_class_name));
+        query.whereEqualTo(getString(R.string.parse_userID_field_name), userID);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -610,9 +610,9 @@ public class HuntActivity extends ActionBarActivity {
                     if (!parseObjects.isEmpty()) {
                         ParseObject userData = parseObjects.get(0);
                         if (huntID.contains("$")) {
-                            userData.add("ongoingHunts", huntID);
+                            userData.add(getString(R.string.parse_ongoingHunts_field_name), huntID);
                         } else {
-                            userData.add("finishedHunts", huntID);
+                            userData.add(getString(R.string.parse_finishedHunts_field_name), huntID);
                         }
                         userData.saveInBackground(new SaveCallback() {
                             @Override
@@ -640,8 +640,10 @@ public class HuntActivity extends ActionBarActivity {
         System.out.println("Destroying shit");
         String huntId = hunt.getParseID();
         if (!finishedGame) {
+            //TODO implement saving ongoing hunt better
             huntId += "$" + hintPagerAdapter.getCount();
         }
+        //TODO replace "userID" with google user id.
         saveUserData("userID", huntId);
         geofence.destroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);

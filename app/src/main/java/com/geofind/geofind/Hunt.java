@@ -23,6 +23,20 @@ public class Hunt implements Serializable {
     public static final float METERS_TO_KILOMETERS = 0.001f;
     public static final int DIGIT_PRECISION = 3;
 
+    public static final String PARSE_CLASS_NAME = "Hunt";
+    private static final String PARSE_TITLE_FIELD = "title";
+    private static final String PARSE_DESCRIPTION_FIELD = "description";
+    private static final String PARSE_CREATOR_ID_FIELD = "creatorID";
+    private static final String PARSE_FIRST_POINT_FIELD = "firstPoint";
+    private static final String PARSE_RADIUS_FIELD = "radius";
+    private static final String PARSE_TOTAL_DISTANCE_FIELD = "totalDistance";
+    private static final String PARSE_RATING_FIELD = "rating";
+    public static final String PARSE_TOTAL_RATING_FIELD = "totalRating";
+    public static final String PARSE_NUM_OF_RATERS_FIELD = "numOfRaters";
+    public static final String PARSE_HINTS_FIELD = "hints";
+    public static final String PARSE_COMMENTS_FIELD = "comments";
+
+
     private String _title;
     private String _description;
     private String _creatorID;
@@ -68,20 +82,20 @@ public class Hunt implements Serializable {
     }
 
     public Hunt(ParseObject remoteHunt) {
-        _title = remoteHunt.getString("title");
-        _description = remoteHunt.getString("description");
-        _creatorID = remoteHunt.getString("creatorID");
+        _title = remoteHunt.getString(PARSE_TITLE_FIELD);
+        _description = remoteHunt.getString(PARSE_DESCRIPTION_FIELD);
+        _creatorID = remoteHunt.getString(PARSE_CREATOR_ID_FIELD);
         _parseID = remoteHunt.getObjectId();
-        _firstPoint = new Point(remoteHunt.getParseGeoPoint("firstPoint"));
-        _radius = (float) remoteHunt.getDouble("radius");
-        _totalDistance = (float) remoteHunt.getDouble("totalDistance");
-        _totalRating = (float) remoteHunt.getDouble("totalRating");
-        _numOfRaters = remoteHunt.getInt("numOfRaters");
+        _firstPoint = new Point(remoteHunt.getParseGeoPoint(PARSE_FIRST_POINT_FIELD));
+        _radius = (float) remoteHunt.getDouble(PARSE_RADIUS_FIELD);
+        _totalDistance = (float) remoteHunt.getDouble(PARSE_TOTAL_DISTANCE_FIELD);
+        _totalRating = (float) remoteHunt.getDouble(PARSE_TOTAL_RATING_FIELD);
+        _numOfRaters = remoteHunt.getInt(PARSE_NUM_OF_RATERS_FIELD);
         _hints = new ArrayList<Hint>();
         _comments = new ArrayList<Comment>();
 
 
-        final List<ParseObject> remoteComments = remoteHunt.getList("comments");
+        final List<ParseObject> remoteComments = remoteHunt.getList(PARSE_COMMENTS_FIELD);
         ParseObject.fetchAllInBackground(remoteComments, new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -95,22 +109,6 @@ public class Hunt implements Serializable {
                 }
             }
         });
-
-
-
-
-        //TODO need to figure out how to retrieve hints on the fly.
-        /*_hints = new ArrayList<Hint>();
-
-        ArrayList<ParseObject> remoteHints = (ArrayList<ParseObject>) remoteHunt.get("hints");
-        for (ParseObject remoteHint : remoteHints) {
-            _hints.add(new Hint(remoteHint));
-        }
-
-        ArrayList<ParseObject> remoteComments = (ArrayList<ParseObject>) remoteHunt.get("comments");
-        for (ParseObject remoteComment : remoteComments) {
-            _comments.add(new Comment(remoteComment));
-        }*/
     }
 
     public String getTitle() {
@@ -148,34 +146,22 @@ public class Hunt implements Serializable {
         return 0;
     }
 
-    public float getTotalRating() {
-        return _totalRating;
-    }
-
-    public int getNumOfRaters() {
-        return _numOfRaters;
-    }
-
-    public ArrayList<Hint> getHints() {
-        return _hints;
-    }
-
-    public void addHint(Hint newHint) {
-        _hints.add(newHint);
+    public ArrayList<Comment> getComments() {
+        return _comments;
     }
 
     public ParseObject toParseObject(Context c) {
-        ParseObject remoteHunt = new ParseObject("Hunt");
+        ParseObject remoteHunt = new ParseObject(PARSE_CLASS_NAME);
 
-        remoteHunt.put("title", _title);
-        remoteHunt.put("description", _description);
-        remoteHunt.put("creatorID", _creatorID);
-        remoteHunt.put("firstPoint", _firstPoint.toParseGeoPoint());
-        remoteHunt.put("radius", _radius);
-        remoteHunt.put("totalDistance", _totalDistance);
-        remoteHunt.put("rating", _rating);
-        remoteHunt.put("totalRating", _totalRating);
-        remoteHunt.put("numOfRaters", _numOfRaters);
+        remoteHunt.put(PARSE_TITLE_FIELD, _title);
+        remoteHunt.put(PARSE_DESCRIPTION_FIELD, _description);
+        remoteHunt.put(PARSE_CREATOR_ID_FIELD, _creatorID);
+        remoteHunt.put(PARSE_FIRST_POINT_FIELD, _firstPoint.toParseGeoPoint());
+        remoteHunt.put(PARSE_RADIUS_FIELD, _radius);
+        remoteHunt.put(PARSE_TOTAL_DISTANCE_FIELD, _totalDistance);
+        remoteHunt.put(PARSE_RATING_FIELD, _rating);
+        remoteHunt.put(PARSE_TOTAL_RATING_FIELD, _totalRating);
+        remoteHunt.put(PARSE_NUM_OF_RATERS_FIELD, _numOfRaters);
 
         ArrayList<ParseObject> remoteComments = new ArrayList<ParseObject>();
 
@@ -183,24 +169,18 @@ public class Hunt implements Serializable {
             remoteComments.add(comment.toParseObject());
         }
 
-        remoteHunt.put("comments", remoteComments);
+        remoteHunt.put(PARSE_COMMENTS_FIELD, remoteComments);
 
         ArrayList<ParseObject> remoteHints = new ArrayList<ParseObject>();
-
-        //set first hint to solved
-        _hints.get(0).setState(Hint.State.SOLVED);
 
         for (Hint hint : _hints) {
             remoteHints.add(hint.toParseObject(c));
         }
 
-        remoteHunt.put("hints", remoteHints);
+        remoteHunt.put(PARSE_HINTS_FIELD, remoteHints);
 
         return remoteHunt;
 
     }
 
-    public ArrayList<Comment> getComments() {
-        return _comments;
-    }
 }

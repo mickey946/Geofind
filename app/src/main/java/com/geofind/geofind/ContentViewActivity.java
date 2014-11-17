@@ -2,19 +2,23 @@ package com.geofind.geofind;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
+
+import java.io.InputStream;
 
 
 public class ContentViewActivity extends ActionBarActivity {
@@ -75,25 +79,45 @@ public class ContentViewActivity extends ActionBarActivity {
         } else if (selectedVideoAudioString != null) { // user views his selected video or audio
             setUpVideoAudioView(selectedVideoAudioString);
         } else if (hintWithImage != null) { // user views a hint image
-            hintWithImage.downloadFiles(new Hint.DownloadFiles() {
+            hintWithImage.downloadImage(new Hint.DownloadImage() {
                 @Override
                 public void updateImage(Bitmap bitmap) {
-                    setUpImageView(bitmap);
+                    //setUpImageView(bitmap);
                 }
 
                 @Override
-                public void updateVideo(MediaStore.Video vid) {
-                    // TODO remove this for not downloading video for nothing
-                }
-
-                @Override
-                public void updateAudio(MediaStore.Audio aud) {
-                    // TODO remove this for not downloading audio for nothing
+                public void onUrlReceive(String url) {
+                        DownloadImageTask downloadImageTask = new DownloadImageTask();
+                        downloadImageTask.execute(url);
                 }
             });
         }
 
         // TODO retrieve files from parse
+    }
+
+    /**
+     * An {@link android.os.AsyncTask} used to download an image from Parse.
+     */
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap outputBitmap = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                outputBitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error loading an image: ", e.getMessage());
+                e.printStackTrace();
+            }
+            return outputBitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            // TODO add a progress bar to indicate download
+            setUpImageView(result);
+        }
     }
 
     /**

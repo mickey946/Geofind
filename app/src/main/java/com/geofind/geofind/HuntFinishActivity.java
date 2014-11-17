@@ -152,14 +152,14 @@ public class HuntFinishActivity extends ActionBarActivity {
         final Comment comment = new Comment(commentTitleTextView.getText().toString(),
                 commentReviewTextView.getText().toString(), commentRatingRatingBar.getRating());
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
         query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
-                    parseObject.add("comments", comment.toParseObject());
-                    parseObject.increment("numOfRaters");
-                    parseObject.increment("totalRating", comment.getRating());
+                    parseObject.add(Hunt.PARSE_COMMENTS_FIELD, comment.toParseObject());
+                    parseObject.increment(Hunt.PARSE_NUM_OF_RATERS_FIELD);
+                    parseObject.increment(Hunt.PARSE_TOTAL_RATING_FIELD, comment.getRating());
                     parseObject.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {

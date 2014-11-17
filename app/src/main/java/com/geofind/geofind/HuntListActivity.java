@@ -12,7 +12,6 @@ import android.view.MenuItem;
 
 import com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout;
 
-import java.util.concurrent.Callable;
 
 public class HuntListActivity extends ActionBarActivity implements ActionBar.TabListener {
 
