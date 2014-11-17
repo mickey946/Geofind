@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.snapshot.Snapshot;
@@ -103,7 +104,7 @@ public class SnapshotManager {
                         for (SnapshotMetadata m : snapshotResults.getSnapshots()) {
                             //loadFromSnapshot(m.freeze());
                             // This is a hack to clear saved games
-                           // Games.Snapshots.delete(mGoogleApiClient,m);
+                            //Games.Snapshots.delete(mGoogleApiClient,m);
                             gameStatus.addToSaveHunts(m.freeze());
 
 
@@ -224,17 +225,19 @@ public class SnapshotManager {
                     }
 
                     @Override
-                    protected void onPostExecute(final Snapshots.OpenSnapshotResult openSnapshotResult) {
+                    protected void onPostExecute(Snapshots.OpenSnapshotResult openSnapshotResult) {
 
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... params) {
-                                Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openSnapshotResult, 0);
-
-                                Log.i(TAG, writeSnapshot(toWrite, HuntID ));
-                                return null;
-                            }
-                        };
+                        final Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openSnapshotResult, 0);
+                        writeSnapshot(toWrite, HuntID);
+//                        new AsyncTask<Void, Void, Void>() {
+//                            @Override
+//                            protected Void doInBackground(Void... params) {
+//
+//
+//
+//                                return null;
+//                            }
+//                        }.execute();
 
 
                     }
@@ -285,7 +288,7 @@ public class SnapshotManager {
      * Generates metadata, takes a screenshot, and performs the write operation for saving a
      * snapshot.
      */
-    private String writeSnapshot(Snapshot snapshot, String HuntID) {
+    private void writeSnapshot(final Snapshot snapshot, String HuntID) {
         // Set the data payload for the snapshot.
 
 
@@ -296,8 +299,14 @@ public class SnapshotManager {
                 //.setDescription("Modified data at: " + Calendar.getInstance().getTime())
                 .setDescription(gameStatus.isFinished(HuntID) ? "Finished" : "OnGoing")
                 .build();
-        Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange).await();
-        return snapshot.toString();
+
+        Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange).setResultCallback( new ResultCallback<Snapshots.CommitSnapshotResult>() {
+            @Override
+            public void onResult(Snapshots.CommitSnapshotResult commitSnapshotResult) {
+                Log.d(TAG,snapshot.toString());
+            }
+        });
+
     }
 
 

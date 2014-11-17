@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -246,7 +247,7 @@ public class GameStatus {
         Log.d("GameStatus","adding " + metadata.getUniqueName() + ":" + metadata.getDescription());
     }
 
-    public List<String> getOnGoing(){
+    public Collection<String> getOnGoing(){
         ArrayList<String> hunts = new ArrayList<String>();
         for (Map.Entry<String,SnapshotMetadata> entry : _savedHunts.entrySet()){
             if (entry.getValue().getDescription().equalsIgnoreCase("OnGoing")){
@@ -256,7 +257,7 @@ public class GameStatus {
         return  hunts;
     }
 
-    public List<String> getFinished(){
+    public Collection<String> getFinished(){
         ArrayList<String> hunts = new ArrayList<String>();
         for (Map.Entry<String,SnapshotMetadata> entry : _savedHunts.entrySet()){
             if (entry.getValue().getDescription().equalsIgnoreCase("Finished")){
@@ -264,6 +265,10 @@ public class GameStatus {
             }
         }
         return  hunts;
+    }
+
+    public Collection<String> getPlayed(){
+        return _savedHunts.keySet();
     }
 
 }
