@@ -19,9 +19,8 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setRequestedClients(CLIENT_GAMES | CLIENT_PLUS | GameHelper.CLIENT_SNAPSHOT);
+        setRequestedClients(CLIENT_GAMES | CLIENT_PLUS);
         super.onCreate(savedInstanceState);
-
 
         setContentView(R.layout.activity_splash_screen);
     }
@@ -30,7 +29,6 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
     protected void onStart() {
         super.onStart();
         Log.d("onStart", "before connect");
-        beginUserInitiatedSignIn();
     }
 
     @Override
