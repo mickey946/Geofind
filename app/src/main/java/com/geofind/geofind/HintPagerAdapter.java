@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -60,13 +60,6 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         _fragments.add(fragment);
 
         return fragment;
-    }
-
-    public void invalidateFragment(int index) {
-        if (index < _fragments.size()) {
-            _fragments.get(index).getView().findViewById(R.id.item_hint_reveal_button).invalidate();
-        }
-
     }
 
     /**
@@ -179,13 +172,18 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
             });
 
             if (hint.hasImage()) {
+                // show the card view of the image with a loading spinner until the image is loaded
+                View imageLayout = view.findViewById(R.id.item_hint_image_layout);
+                imageLayout.setVisibility(View.VISIBLE);
+
+                final ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
+
                 hint.downloadImage(new Hint.DownloadImage() {
                     @Override
-                    public void updateImage(Bitmap inputBitmap) {
-                        View imageLayout = view.findViewById(R.id.item_hint_image_layout);
-                        imageLayout.setVisibility(View.VISIBLE);
-
-                        ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
+                    public void onImageReceive(Bitmap inputBitmap) {
+                        // the image has loaded, hide the spinner and show the image
+                        ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+                        progressBar.setVisibility(View.GONE);
 
                         // zoom the image to improve view responsiveness
                         Bitmap displayBitmap;
@@ -207,19 +205,20 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                             );
                         }
                         hintImage.setImageBitmap(displayBitmap);
+                    }
 
+                    @Override
+                    public void onUrlReceive(final String url) {
+                        // the url of the image has been received - pass it to the content view
                         hintImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Intent intent = new Intent(v.getContext(), ContentViewActivity.class);
-                                intent.putExtra(ContentViewActivity.IMAGE_PARSE, hint);
+                                intent.putExtra(ContentViewActivity.IMAGE_URL, url);
                                 startActivity(intent);
                             }
                         });
                     }
-
-                    @Override
-                    public void onUrlReceive(String link) { }
                 });
             }
 

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 import java.io.InputStream;
@@ -36,7 +37,7 @@ public class ContentViewActivity extends ActionBarActivity {
     /**
      * Intent tag for passing image parse id (image stored in parse).
      */
-    public static final String IMAGE_PARSE = "IMAGE_PARSE";
+    public static final String IMAGE_URL = "IMAGE_URL";
 
     /**
      * Intent tag for passing video or audio parse id (video or audio stored in parse).
@@ -56,7 +57,12 @@ public class ContentViewActivity extends ActionBarActivity {
     /**
      * The video view that shows hint video or audio.
      */
-    VideoView videoView;
+    private VideoView videoView;
+
+    /**
+     * The {@link android.widget.ProgressBar} that is used when loading content.
+     */
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,30 +73,22 @@ public class ContentViewActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
         String selectedImageUriString = bundle.getString(IMAGE_URI);
         String selectedVideoAudioString = bundle.getString(VIDEO_AUDIO_URI);
-        Hint hintWithImage = (Hint) bundle.getSerializable(IMAGE_PARSE);
+        String selectedImageUrl = bundle.getString(IMAGE_URL);
 
         if (selectedImageUriString != null) { // user views his selected image
             setUpImageView(selectedImageUriString);
         } else if (selectedVideoAudioString != null) { // user views his selected video or audio
             setUpVideoAudioView(selectedVideoAudioString);
-        } else if (hintWithImage != null) { // user views a hint image
-            hintWithImage.downloadImage(new Hint.DownloadImage() {
-                @Override
-                public void updateImage(Bitmap bitmap) {
-                    //setUpImageView(bitmap);
-                }
-
-                @Override
-                public void onUrlReceive(String url) {
-                        DownloadImageTask downloadImageTask = new DownloadImageTask();
-                        downloadImageTask.execute(url);
-                }
-            });
+        } else if (selectedImageUrl != null) { // user views a hint image
+            DownloadImageTask downloadImageTask = new DownloadImageTask();
+            downloadImageTask.execute(selectedImageUrl);
         }
 
         // TODO retrieve files from parse
@@ -115,7 +113,7 @@ public class ContentViewActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(Bitmap result) {
-            // TODO add a progress bar to indicate download
+            progressBar.setVisibility(View.GONE);
             setUpImageView(result);
         }
     }
