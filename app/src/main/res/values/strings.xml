@@ -168,5 +168,7 @@
     <string name="dialog_dismiss">Dismiss</string>
     <string name="item_hunt_list_pager_empty">No hunts to show.</string>
     <string name="title_activity_licence">LicenceActivity</string>
+    <string name="item_hint_play_video">Play Video</string>
+    <string name="item_hint_play_sound">Play Sound</string>
 
 </resources>

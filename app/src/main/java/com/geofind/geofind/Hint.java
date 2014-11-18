@@ -175,7 +175,7 @@ public class Hint implements Serializable {
     }
 
     public interface DownloadVideoAudio {
-        void updateVideoAudio(String link);
+        void onUrlReceive(String link);
     }
 
     public void downloadImage(DownloadImage callback) {
@@ -229,7 +229,7 @@ public class Hint implements Serializable {
                     }
                     ParseFile file = (ParseFile) parseObject.get(field);
                     if (file != null) {
-                        callback.updateVideoAudio(file.getUrl());
+                        callback.onUrlReceive(file.getUrl());
                     }
                 } else {
                     System.out.println("parse exception2 " + e.getMessage());

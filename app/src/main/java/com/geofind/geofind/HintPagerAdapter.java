@@ -173,8 +173,8 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
             if (hint.hasImage()) {
                 // show the card view of the image with a loading spinner until the image is loaded
-                View imageLayout = view.findViewById(R.id.item_hint_image_layout);
-                imageLayout.setVisibility(View.VISIBLE);
+                View imageCardView = view.findViewById(R.id.item_hint_image_layout);
+                imageCardView.setVisibility(View.VISIBLE);
 
                 final ImageView hintImage = (ImageView) view.findViewById(R.id.item_hint_picture);
 
@@ -182,7 +182,8 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                     @Override
                     public void onImageReceive(Bitmap inputBitmap) {
                         // the image has loaded, hide the spinner and show the image
-                        ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+                        ProgressBar progressBar = (ProgressBar)
+                                view.findViewById(R.id.image_progress_bar);
                         progressBar.setVisibility(View.GONE);
 
                         // zoom the image to improve view responsiveness
@@ -223,21 +224,51 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
             }
 
             if (hint.hasVideo()) {
+                View videoCardView = view.findViewById(R.id.item_hint_video_layout);
+                videoCardView.setVisibility(View.VISIBLE);
+
                 hint.downloadVideoAudio(new Hint.DownloadVideoAudio() {
                     @Override
-                    public void updateVideoAudio(String link) {
-                        //TODO: implement this.
-                        Log.v("In update Video", "Video url: " + link);
+                    public void onUrlReceive(final String url) {
+                        View videoPlayLayout = view.findViewById(R.id.item_hint_play_video_layout);
+                        videoPlayLayout.setVisibility(View.VISIBLE);
+
+                        Button playVideo = (Button) view.findViewById(R.id.item_hint_play_video);
+                        playVideo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(v.getContext(), ContentViewActivity.class);
+                                intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URL, url);
+                                startActivity(intent);
+                            }
+                        });
+
+                        Log.v("In update Video", "Video url: " + url);
                     }
                 }, Hint.PARSE_VIDEO_FIELD);
             }
 
             if (hint.hasAudio()) {
+                View audioCardView = view.findViewById(R.id.item_hint_audio_layout);
+                audioCardView.setVisibility(View.VISIBLE);
+
                 hint.downloadVideoAudio(new Hint.DownloadVideoAudio() {
                     @Override
-                    public void updateVideoAudio(String link) {
-                        //TODO: implement this.
-                        Log.v("In update Audio", "Audio url: " + link);
+                    public void onUrlReceive(final String url) {
+                        View videoPlayLayout = view.findViewById(R.id.item_hint_play_audio_layout);
+                        videoPlayLayout.setVisibility(View.VISIBLE);
+
+                        Button playAudio = (Button) view.findViewById(R.id.item_hint_play_audio);
+                        playAudio.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(v.getContext(), ContentViewActivity.class);
+                                intent.putExtra(ContentViewActivity.VIDEO_AUDIO_URL, url);
+                                startActivity(intent);
+                            }
+                        });
+
+                        Log.v("In update Audio", "Audio url: " + url);
                     }
                 }, Hint.PARSE_AUDIO_FIELD);
             }
