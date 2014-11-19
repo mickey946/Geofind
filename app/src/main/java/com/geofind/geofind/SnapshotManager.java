@@ -23,31 +23,21 @@ import java.util.concurrent.Callable;
  */
 public class SnapshotManager {
 
+    // Request code used to invoke sign in user interactions.
+    private static final int RC_SIGN_IN = 9001;
+    // Request code for listing saved games
+    private static final int RC_LIST_SAVED_GAMES = 9002;
+    // Request code for selecting a snapshot
+    private static final int RC_SELECT_SNAPSHOT = 9003;
+    // Request code for saving the game to a snapshot.
+    private static final int RC_SAVE_SNAPSHOT = 9004;
+    private static final int RC_LOAD_SNAPSHOT = 9005;
     private static String TAG = "SnapshotManager";
     private GoogleApiClient mGoogleApiClient;
     private GameStatus gameStatus;
     private String currentSaveName = "snapshotTemp";
     private Context context;
     private ProgressDialog mLoadingDialog = null;
-
-    public interface ExecFinished {
-        void onFinish();
-    }
-
-
-    // Request code used to invoke sign in user interactions.
-    private static final int RC_SIGN_IN = 9001;
-
-    // Request code for listing saved games
-    private static final int RC_LIST_SAVED_GAMES = 9002;
-
-    // Request code for selecting a snapshot
-    private static final int RC_SELECT_SNAPSHOT = 9003;
-
-    // Request code for saving the game to a snapshot.
-    private static final int RC_SAVE_SNAPSHOT = 9004;
-
-    private static final int RC_LOAD_SNAPSHOT = 9005;
 
     public SnapshotManager(Context context, GoogleApiClient client) {
         this.context = context;
@@ -123,7 +113,7 @@ public class SnapshotManager {
     /**
      * Loads a Snapshot from the user's synchronized storage.
      */
-    public void loadFromSnapshot(final SnapshotMetadata snapshotMetadata , final Callable onFinish) {
+    public void loadFromSnapshot(final SnapshotMetadata snapshotMetadata, final Callable onFinish) {
 //        if (mLoadingDialog == null) {
 //            mLoadingDialog = new ProgressDialog(context);
 //            mLoadingDialog.setMessage("loading");
@@ -165,7 +155,7 @@ public class SnapshotManager {
 
                 if (snapshot != null) {
                     //readSavedGame(snapshot);
-                    gameStatus.loadHunt(snapshot.readFully(), snapshot.getMetadata() );
+                    gameStatus.loadHunt(snapshot.readFully(), snapshot.getMetadata());
                 }
                 return status;
             }
@@ -208,45 +198,45 @@ public class SnapshotManager {
         task.execute();
     }
 
-
     public void saveSnapshot(final String HuntID) {
-        AsyncTask<Void, Void, Snapshots.OpenSnapshotResult> task =
-                new AsyncTask<Void, Void, Snapshots.OpenSnapshotResult>() {
-                    @Override
-                    protected Snapshots.OpenSnapshotResult doInBackground(Void... params) {
-                        SnapshotMetadata snapshotMetadata =
-                                gameStatus.getSnapshotMetadataById(HuntID);
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Snapshots.OpenSnapshotResult openResult;
+                SnapshotMetadata snapshotMetadata = gameStatus.getSnapshotMetadataById(HuntID);
 
-                        if (snapshotMetadata == null) {
-                            Log.d(TAG,"snapshot null");
-                            currentSaveName = "GeoFind-" + HuntID;
-                            return Games.Snapshots.open(mGoogleApiClient, currentSaveName, true)
-                                    .await();
-                        } else {
-                            Log.d(TAG,"continue snapshot");
-                            return Games.Snapshots.open(mGoogleApiClient, snapshotMetadata)
-                                    .await();
-                        }
-                    }
-
-                    @Override
-                    protected void onPostExecute(Snapshots.OpenSnapshotResult openSnapshotResult) {
-
-                        final Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openSnapshotResult, 0);
-                        writeSnapshot(toWrite, HuntID);
-//                        new AsyncTask<Void, Void, Void>() {
-//                            @Override
-//                            protected Void doInBackground(Void... params) {
+                if (snapshotMetadata == null) {
+                    Log.d(TAG, "snapshot null");
+                    currentSaveName = "GeoFind-" + HuntID;
+                    openResult = Games.Snapshots.open(mGoogleApiClient, currentSaveName, true)
+                            .await();
+                } else {
+                    Log.d(TAG, "continue snapshot");
+                    openResult = Games.Snapshots.open(mGoogleApiClient, snapshotMetadata)
+                            .await();
+                }
+                final Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openResult, 0);
+                writeSnapshot(toWrite, HuntID);
+                return null;
+            }
+//
+//                    @Override
+//                    protected void onPostExecute(Snapshots.OpenSnapshotResult openSnapshotResult) {
 //
 //
+////                        new AsyncTask<Void, Void, Void>() {
+////                            @Override
+////                            protected Void doInBackground(Void... params) {
+////
+////
+////
+////                                return null;
+////                            }
+////                        }.execute();
 //
-//                                return null;
-//                            }
-//                        }.execute();
-
-
-                    }
-                };
+//
+//                    }
+        };
         task.execute();
     }
 
@@ -296,7 +286,7 @@ public class SnapshotManager {
                     .await();
 
             if (retryCount < 10) {
-                return processSnapshotOpenResult(requestCode, resolveResult, retryCount+1);
+                return processSnapshotOpenResult(requestCode, resolveResult, retryCount + 1);
             } else {
                 String message = "Could not resolve snapshot conflicts";
                 Log.e(TAG, message);
@@ -315,7 +305,6 @@ public class SnapshotManager {
         // Fail, return null.
         return null;
     }
-
 
     /**
      * Generates metadata, takes a screenshot, and performs the write operation for saving a
@@ -340,6 +329,11 @@ public class SnapshotManager {
             }
         });
 
+    }
+
+
+    public interface ExecFinished {
+        void onFinish();
     }
 
 
