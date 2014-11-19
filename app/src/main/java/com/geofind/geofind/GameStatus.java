@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +30,7 @@ public class GameStatus {
         private ArrayList<Integer> revealedPoints;
         private boolean isFinished;
 
+        private SnapshotMetadata _metaData;
         public HuntStatus(String huntTitle, String huntID) {
             this.huntID = huntID;
             this.huntTitle = huntTitle;
@@ -38,14 +38,17 @@ public class GameStatus {
             huntTime = 0;
             revealedPoints = new ArrayList<Integer>();
             isFinished = false;
+            _metaData = null;
         }
 
-        public HuntStatus(JSONObject jsonObject) throws JSONException {
+        public HuntStatus(JSONObject jsonObject, SnapshotMetadata snapshotMetadata) throws JSONException {
+            _metaData = snapshotMetadata;
+            Log.d("GS",jsonObject.toString());
             huntTitle = jsonObject.getString("huntTitle");
             huntID = jsonObject.getString("huntID");
             huntTime = jsonObject.getInt("huntTime");
             huntPosition = jsonObject.getInt("huntPosition");
-            JSONArray rev = jsonObject.getJSONArray("revealedPoints");
+            JSONArray rev = new JSONArray(jsonObject.getString("revealedPoints")); // jsonObject.getJSONArray("revealedPoints");
             revealedPoints = new ArrayList<Integer>();
             for (int i = 0; i < rev.length(); i++) {
                 revealedPoints.add(rev.getInt(i));
@@ -81,6 +84,10 @@ public class GameStatus {
 
         public ArrayList<Integer> getRevealedPoints() {
             return revealedPoints;
+        }
+
+        public SnapshotMetadata getMetaData() {
+            return _metaData;
         }
     }
 
@@ -137,11 +144,11 @@ public class GameStatus {
         }
     }
 
-    public void loadHunt(byte[] data) {
+    public void loadHunt(byte[] data, SnapshotMetadata metadata) {
         try {
-            JSONObject jsonObject = new JSONObject(new String(data));
+            JSONObject jsonObject = new JSONObject(new String(data)).getJSONObject("Hunt");
             String id = jsonObject.getString("huntID");
-            _activeHunts.put(id, new HuntStatus(jsonObject));
+            _activeHunts.put(id, new HuntStatus(jsonObject, metadata));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -168,7 +175,7 @@ public class GameStatus {
 
             while (iter.hasNext()) {
                 String levelName = (String) iter.next();
-                _activeHunts.put(levelName, new HuntStatus(hunts.getJSONObject(levelName)));
+                _activeHunts.put(levelName, new HuntStatus(hunts.getJSONObject(levelName), null));
             }
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -250,6 +257,7 @@ public class GameStatus {
 
     public void addToSaveHunts(SnapshotMetadata metadata){
         _savedHunts.put(metadata.getUniqueName().substring(8), metadata);
+
         Log.d("GameStatus","adding " + metadata.getUniqueName() + ":" + metadata.getDescription());
     }
 

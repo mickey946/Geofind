@@ -37,6 +37,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 
 public class HuntActivity extends BaseGameActivity {
@@ -164,15 +165,15 @@ public class HuntActivity extends BaseGameActivity {
         Intent intent = getIntent();
         Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
         if (intent != null) {
+            final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
             hunt = (Hunt) intent.getExtras().getSerializable(getResources().
                     getString(R.string.intent_hunt_extra));
-            ((GeofindApp) getApplicationContext()).getGameStatus().startGame(
-                    hunt.getTitle(), hunt.getParseID());
+            gameStatus.startGame(hunt.getTitle(), hunt.getParseID());
             setTitle(hunt.getTitle());
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
             query.selectKeys(Arrays.asList("hints"));
 
-            final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
+
 
             query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
                 @Override
@@ -196,39 +197,51 @@ public class HuntActivity extends BaseGameActivity {
                                         }
                                     }
 
-                                    // recover solved and revealed points
-                                    ArrayList<Integer> revealedPoints =
-                                            new ArrayList<Integer>(
-                                                    gameStatus.getHuntRevealedPoints(
-                                                            hunt.getParseID()));
-                                    for (int index = 0;
-                                         index < gameStatus.getHuntPosition(hunt.getParseID());
-                                         index++) {
-                                        if (!revealedPoints.isEmpty()) {
-                                            if (revealedPoints.get(0) == index) {
-                                                hints.get(index).setState(Hint.State.REVEALED);
-                                                revealedPoints.remove(0);
+                                    snapshotManager.loadFromSnapshot(gameStatus.getSnapshotMetadataById(hunt.getParseID()), new Callable() {
+                                        @Override
+                                        public Object call() throws Exception {
+                                            // recover solved and revealed points
+                                            ArrayList<Integer> revealedPoints =
+                                                    new ArrayList<Integer>(
+                                                            gameStatus.getHuntRevealedPoints(
+                                                                    hunt.getParseID()));
+                                            for (int index = 0;
+                                                 index < gameStatus.getHuntPosition(hunt.getParseID());
+                                                 index++) {
+                                                if (!revealedPoints.isEmpty()) {
+                                                    if (revealedPoints.get(0) == index) {
+                                                        hints.get(index).setState(Hint.State.REVEALED);
+                                                        revealedPoints.remove(0);
+                                                    } else {
+                                                        hints.get(index).setState(Hint.State.SOLVED);
+                                                    }
+                                                    mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
+                                                            getString(R.string.hunt_activity_hint_number_title)
+                                                                    + hints.size(),
+                                                            hints.get(index).getState());
+                                                }
+
                                             }
-                                            else {
-                                                hints.get(index).setState(Hint.State.SOLVED);
-                                            }
+
+                                            // hide the progress bar
+                                            ProgressBar progressBar = (ProgressBar)
+                                                    findViewById(R.id.progress_bar);
+                                            progressBar.setVisibility(View.GONE);
+
+                                            // show the game layout
+                                            View slidingLayout = findViewById(R.id.sliding_layout);
+                                            slidingLayout.setVisibility(View.VISIBLE);
+
+                                            setUpGeofence();
+
+                                            setUpPagerView();
+
+                                            setUpSlidingUpPanel();
+
+                                            return null;
                                         }
-                                    }
+                                    });
 
-                                    // hide the progress bar
-                                    ProgressBar progressBar = (ProgressBar)
-                                            findViewById(R.id.progress_bar);
-                                    progressBar.setVisibility(View.GONE);
-
-                                    // show the game layout
-                                    View slidingLayout = findViewById(R.id.sliding_layout);
-                                    slidingLayout.setVisibility(View.VISIBLE);
-
-                                    setUpGeofence();
-
-                                    setUpPagerView();
-
-                                    setUpSlidingUpPanel();
 
                                 } else {
                                     Log.v("Parse Hint List fetching: ", "failed");

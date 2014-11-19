@@ -16,6 +16,7 @@ import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Ilia Marin on 14/11/2014.
@@ -122,7 +123,7 @@ public class SnapshotManager {
     /**
      * Loads a Snapshot from the user's synchronized storage.
      */
-    void loadFromSnapshot(final SnapshotMetadata snapshotMetadata) {
+    public void loadFromSnapshot(final SnapshotMetadata snapshotMetadata , final Callable onFinish) {
 //        if (mLoadingDialog == null) {
 //            mLoadingDialog = new ProgressDialog(context);
 //            mLoadingDialog.setMessage("loading");
@@ -164,7 +165,7 @@ public class SnapshotManager {
 
                 if (snapshot != null) {
                     //readSavedGame(snapshot);
-                    gameStatus.loadHunt(snapshot.readFully());
+                    gameStatus.loadHunt(snapshot.readFully(), snapshot.getMetadata() );
                 }
                 return status;
             }
@@ -187,6 +188,12 @@ public class SnapshotManager {
                     Log.i(TAG, "Error: Snapshot folder unavailable");
                     Toast.makeText(context, "Error: Snapshot folder unavailable.",
                             Toast.LENGTH_SHORT).show();
+                }
+
+                try {
+                    onFinish.call();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
 //                if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
