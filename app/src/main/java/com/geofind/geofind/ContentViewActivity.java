@@ -156,9 +156,11 @@ public class ContentViewActivity extends ActionBarActivity {
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        videoView.seekTo(savedInstanceState.getInt(POS_TAG));
-        if (savedInstanceState.getBoolean(PLAYING_TAG)) {
-            videoView.start();
+        if (videoView != null) {
+            videoView.seekTo(savedInstanceState.getInt(POS_TAG));
+            if (savedInstanceState.getBoolean(PLAYING_TAG)) {
+                videoView.start();
+            }
         }
     }
 
@@ -166,8 +168,10 @@ public class ContentViewActivity extends ActionBarActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(POS_TAG, videoView.getCurrentPosition());
-        outState.putBoolean(PLAYING_TAG, videoView.isPlaying());
+        if (videoView != null) {
+            outState.putInt(POS_TAG, videoView.getCurrentPosition());
+            outState.putBoolean(PLAYING_TAG, videoView.isPlaying());
+        }
     }
 
     @Override
