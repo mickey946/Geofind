@@ -209,11 +209,14 @@ public class SnapshotManager {
                     protected Snapshots.OpenSnapshotResult doInBackground(Void... params) {
                         SnapshotMetadata snapshotMetadata =
                                 gameStatus.getSnapshotMetadataById(HuntID);
+
                         if (snapshotMetadata == null) {
+                            Log.d(TAG,"snapshot null");
                             currentSaveName = "GeoFind-" + HuntID;
                             return Games.Snapshots.open(mGoogleApiClient, currentSaveName, true)
                                     .await();
                         } else {
+                            Log.d(TAG,"continue snapshot");
                             return Games.Snapshots.open(mGoogleApiClient, snapshotMetadata)
                                     .await();
                         }
@@ -267,6 +270,34 @@ public class SnapshotManager {
 //            final Snapshot snapshot = result.getSnapshot();
 //            final Snapshot conflictSnapshot = result.getConflictingSnapshot();
 //
+//            Log.d(TAG,"snapshot:" + snapshot.getMetadata().getUniqueName());
+//            Log.d(TAG,"conflict:" + conflictSnapshot.getMetadata().getUniqueName());
+
+            Snapshot snapshot = result.getSnapshot();
+            Snapshot conflictSnapshot = result.getConflictingSnapshot();
+
+            // Resolve between conflicts by selecting the newest of the conflicting snapshots.
+            Snapshot mResolvedSnapshot = snapshot;
+
+            if (snapshot.getMetadata().getLastModifiedTimestamp() <
+                    conflictSnapshot.getMetadata().getLastModifiedTimestamp()) {
+                mResolvedSnapshot = conflictSnapshot;
+            }
+
+            Snapshots.OpenSnapshotResult resolveResult = Games.Snapshots.resolveConflict(
+                    mGoogleApiClient, result.getConflictId(), mResolvedSnapshot)
+                    .await();
+
+            if (retryCount < 10) {
+                return processSnapshotOpenResult(requestCode, resolveResult, retryCount+1);
+            } else {
+                String message = "Could not resolve snapshot conflicts";
+                Log.e(TAG, message);
+                Toast.makeText(context, message, Toast.LENGTH_LONG);
+            }
+
+
+            //
 //            ArrayList<Snapshot> snapshotList = new ArrayList<Snapshot>(2);
 //            snapshotList.add(snapshot);
 //            snapshotList.add(conflictSnapshot);
