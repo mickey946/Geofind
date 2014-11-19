@@ -15,6 +15,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.example.games.basegameutils.BaseGameActivity;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.Callable;
@@ -52,6 +53,14 @@ public class HuntDetailsActivity extends BaseGameActivity {
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(
                     getResources().getString(R.string.intent_hunt_extra));
+
+            // if the hunt is finished, remove the start button
+            Boolean isFinished = intent.getExtras().getBoolean(
+                    getResources().getString(R.string.hunt_is_finished));
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            if (isFinished) {
+                fab.setVisibility(View.GONE);
+            }
 
             // hunt title
             TextView titleTextView = (TextView) findViewById(R.id.hunt_details_title);
@@ -136,8 +145,6 @@ public class HuntDetailsActivity extends BaseGameActivity {
             // hunt rating
             RatingBar ratingBar = (RatingBar) findViewById(R.id.hunt_details_rating);
             ratingBar.setRating(hunt.getRating());
-
-            // TODO comments
         }
     }
 

@@ -34,6 +34,11 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     private Context context;
 
     /**
+     * Is this a list of finished hunts (disabled start).
+     */
+    private Boolean isFinished;
+
+    /**
      * The distance unit of the hunts.
      */
     private String distanceUnit;
@@ -43,12 +48,13 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
      */
     private int mapWidth, mapHeight;
 
-    public HuntListAdapter(ArrayList<Hunt> hunts, Context context) {
+    public HuntListAdapter(ArrayList<Hunt> hunts, Boolean isFinished, Context context) {
         this.hunts = hunts;
         this.context = context;
         this.mapHeight = -1;
         this.mapWidth = -1;
         this.distanceUnit = context.getString(R.string.preferences_distance_units_kilometers);
+        this.isFinished = isFinished;
     }
 
     /**
@@ -143,20 +149,23 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
                             hunts.get(i).getRadius(), mapWidth, mapHeight));
         }
 
-        // set a listener to the button to start the hunt
-        viewHolder.startHuntButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), HuntActivity.class);
+        if (isFinished) { // this is a finished hunt, disable the start button
+            viewHolder.startHuntButton.setVisibility(View.GONE);
+        } else { // set a listener to the button to start the hunt
+            viewHolder.startHuntButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), HuntActivity.class);
 
-                // pass the hunt itself to the HuntDetailActivity
-                intent.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
-                        hunts.get(i));
+                    // pass the hunt itself to the HuntDetailActivity
+                    intent.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
+                            hunts.get(i));
 
-                // start the activity
-                v.getContext().startActivity(intent);
-            }
-        });
+                    // start the activity
+                    v.getContext().startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
@@ -203,6 +212,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             // pass the hunt itself to the HuntDetailActivity
             intent.putExtra(v.getResources().getString(R.string.intent_hunt_extra),
                     hunts.get(getPosition()));
+            intent.putExtra(v.getResources().getString(R.string.hunt_is_finished), isFinished);
 
             // start the activity
             v.getContext().startActivity(intent);
