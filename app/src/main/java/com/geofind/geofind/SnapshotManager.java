@@ -57,11 +57,11 @@ public class SnapshotManager {
     }
 
     public void loadSnapshot(final ExecFinished callback){
-        if (mLoadingDialog == null) {
-            mLoadingDialog = new ProgressDialog(context);
-            mLoadingDialog.setMessage("Loading");
-        }
-        mLoadingDialog.show();
+//        if (mLoadingDialog == null) {
+//            mLoadingDialog = new ProgressDialog(context);
+//            mLoadingDialog.setMessage("Loading");
+//        }
+//        mLoadingDialog.show();
 
         //Start an asynchronous task to read this snapshot and load it.
         AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult> task =
@@ -76,10 +76,10 @@ public class SnapshotManager {
                     @Override
                     protected void onPostExecute(Snapshots.LoadSnapshotsResult snapshotResults) {
 
-                        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-                            mLoadingDialog.dismiss();
-                            mLoadingDialog = null;
-                        }
+//                        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+//                            mLoadingDialog.dismiss();
+//                            mLoadingDialog = null;
+//                        }
                         int status = snapshotResults.getStatus().getStatusCode();
 
                         // Note that showing a toast is done here for debugging. Your application should
@@ -128,12 +128,12 @@ public class SnapshotManager {
      * Loads a Snapshot from the user's synchronized storage.
      */
     void loadFromSnapshot(final SnapshotMetadata snapshotMetadata) {
-        if (mLoadingDialog == null) {
-            mLoadingDialog = new ProgressDialog(context);
-            mLoadingDialog.setMessage("loading");
-        }
-
-        mLoadingDialog.show();
+//        if (mLoadingDialog == null) {
+//            mLoadingDialog = new ProgressDialog(context);
+//            mLoadingDialog.setMessage("loading");
+//        }
+//
+//        mLoadingDialog.show();
 
         AsyncTask<Void, Void, Integer> task = new AsyncTask<Void, Void, Integer>() {
             @Override
@@ -195,10 +195,10 @@ public class SnapshotManager {
                             Toast.LENGTH_SHORT).show();
                 }
 
-                if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-                    mLoadingDialog.dismiss();
-                    mLoadingDialog = null;
-                }
+//                if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+//                    mLoadingDialog.dismiss();
+//                    mLoadingDialog = null;
+//                }
 //                hideAlertBar();
 //                updateUi();
             }

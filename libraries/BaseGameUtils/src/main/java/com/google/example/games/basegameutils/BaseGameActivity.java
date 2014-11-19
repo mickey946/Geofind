@@ -52,10 +52,11 @@ public abstract class BaseGameActivity extends ActionBarActivity implements
     public static final int CLIENT_GAMES = GameHelper.CLIENT_GAMES;
     public static final int CLIENT_APPSTATE = GameHelper.CLIENT_APPSTATE;
     public static final int CLIENT_PLUS = GameHelper.CLIENT_PLUS;
+    public static final int CLIENT_SNAPSHOT = GameHelper.CLIENT_SNAPSHOT;
     public static final int CLIENT_ALL = GameHelper.CLIENT_ALL;
 
     // Requested clients. By default, that's just the games client.
-    protected int mRequestedClients = CLIENT_GAMES | CLIENT_PLUS;
+    protected int mRequestedClients = CLIENT_GAMES | CLIENT_PLUS | CLIENT_SNAPSHOT;
 
     private final static String TAG = "BaseGameActivity";
     protected boolean mDebugLog = false;

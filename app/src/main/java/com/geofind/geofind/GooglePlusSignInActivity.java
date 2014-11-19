@@ -19,7 +19,7 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setRequestedClients(CLIENT_GAMES | CLIENT_PLUS | GameHelper.CLIENT_SNAPSHOT);
+        setRequestedClients(CLIENT_GAMES | CLIENT_PLUS | CLIENT_SNAPSHOT);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash_screen);

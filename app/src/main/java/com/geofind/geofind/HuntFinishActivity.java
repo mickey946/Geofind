@@ -197,8 +197,9 @@ public class HuntFinishActivity extends BaseGameActivity {
     protected void onResume() {
         super.onResume();
 
-        if (hunt == null)
+        if (hunt == null) {
             return;
+        }
 
         // hunt total distance
         final String distanceUnit = getCurrentDistanceUnit();
