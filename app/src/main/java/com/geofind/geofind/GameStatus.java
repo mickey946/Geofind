@@ -271,4 +271,8 @@ public class GameStatus {
         return _savedHunts.keySet();
     }
 
+    public SnapshotMetadata getSnapshotMetadataById(String id) {
+        return _savedHunts.get(id);
+    }
+
 }

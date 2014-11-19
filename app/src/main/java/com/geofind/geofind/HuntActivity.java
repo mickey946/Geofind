@@ -579,7 +579,7 @@ public class HuntActivity extends BaseGameActivity {
         ((GeoFindApp) getApplicationContext()).getGameStatus().upDateGame(
                 hunt.getParseID(), playTime, revealed, isFinished);
 
-        snapshotManager.saveSnapshot(hunt.getParseID(), null);
+        snapshotManager.saveSnapshot(hunt.getParseID());
 
 
     }

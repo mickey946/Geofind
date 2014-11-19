@@ -16,8 +16,6 @@ import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Ilia Marin on 14/11/2014.
@@ -31,7 +29,7 @@ public class SnapshotManager {
     private Context context;
     private ProgressDialog mLoadingDialog = null;
 
-    public interface ExecFinished{
+    public interface ExecFinished {
         void onFinish();
     }
 
@@ -50,13 +48,13 @@ public class SnapshotManager {
 
     private static final int RC_LOAD_SNAPSHOT = 9005;
 
-    public SnapshotManager(Context context, GoogleApiClient client){
+    public SnapshotManager(Context context, GoogleApiClient client) {
         this.context = context;
         mGoogleApiClient = client;
-        gameStatus  = ((GeoFindApp)context.getApplicationContext()).getGameStatus();
+        gameStatus = ((GeoFindApp) context.getApplicationContext()).getGameStatus();
     }
 
-    public void loadSnapshot(final ExecFinished callback){
+    public void loadSnapshot(final ExecFinished callback) {
 //        if (mLoadingDialog == null) {
 //            mLoadingDialog = new ProgressDialog(context);
 //            mLoadingDialog.setMessage("Loading");
@@ -108,14 +106,11 @@ public class SnapshotManager {
                             gameStatus.addToSaveHunts(m.freeze());
 
 
-
                         }
 
                         snapshotResults.getSnapshots().release();
 
                         callback.onFinish();
-
-
 
 
                     }
@@ -141,7 +136,7 @@ public class SnapshotManager {
                 Snapshots.OpenSnapshotResult result;
                 if (snapshotMetadata != null && snapshotMetadata.getUniqueName() != null) {
                     Log.i(TAG, "Opening snapshot by metadata: " + snapshotMetadata);
-                    result = Games.Snapshots.open(mGoogleApiClient,snapshotMetadata).await();
+                    result = Games.Snapshots.open(mGoogleApiClient, snapshotMetadata).await();
                 } else {
                     Log.i(TAG, "Opening snapshot by name: " + currentSaveName);
                     result = Games.Snapshots.open(mGoogleApiClient, currentSaveName, true).await();
@@ -160,9 +155,8 @@ public class SnapshotManager {
                     // if it resolved OK, change the status to Ok
                     if (snapshot != null) {
                         status = GamesStatusCodes.STATUS_OK;
-                    }
-                    else {
-                        Log.w(TAG,"Conflict was not resolved automatically");
+                    } else {
+                        Log.w(TAG, "Conflict was not resolved automatically");
                     }
                 } else {
                     Log.e(TAG, "Error while loading: " + status);
@@ -208,18 +202,19 @@ public class SnapshotManager {
     }
 
 
-    public void saveSnapshot(final String HuntID ,final SnapshotMetadata snapshotMetadata){
-        AsyncTask<Void,Void,Snapshots.OpenSnapshotResult> task =
+    public void saveSnapshot(final String HuntID) {
+        AsyncTask<Void, Void, Snapshots.OpenSnapshotResult> task =
                 new AsyncTask<Void, Void, Snapshots.OpenSnapshotResult>() {
                     @Override
                     protected Snapshots.OpenSnapshotResult doInBackground(Void... params) {
-                        if (snapshotMetadata == null){
+                        SnapshotMetadata snapshotMetadata =
+                                gameStatus.getSnapshotMetadataById(HuntID);
+                        if (snapshotMetadata == null) {
                             currentSaveName = "GeoFind-" + HuntID;
-                            return Games.Snapshots.open(mGoogleApiClient,currentSaveName,true)
+                            return Games.Snapshots.open(mGoogleApiClient, currentSaveName, true)
                                     .await();
-                        }
-                        else {
-                            return Games.Snapshots.open(mGoogleApiClient,snapshotMetadata)
+                        } else {
+                            return Games.Snapshots.open(mGoogleApiClient, snapshotMetadata)
                                     .await();
                         }
                     }
@@ -250,8 +245,8 @@ public class SnapshotManager {
      *
      * @param requestCode - the request currently being processed.  This is used to forward on the
      *                    information to another activity, or to send the result intent.
-     * @param result The open snapshot result to resolve on open.
-     * @param retryCount - the current iteration of the retry.  The first retry should be 0.
+     * @param result      The open snapshot result to resolve on open.
+     * @param retryCount  - the current iteration of the retry.  The first retry should be 0.
      * @return The opened Snapshot on success; otherwise, returns null.
      */
     Snapshot processSnapshotOpenResult(int requestCode, Snapshots.OpenSnapshotResult result,
@@ -267,8 +262,8 @@ public class SnapshotManager {
         } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_CONTENTS_UNAVAILABLE) {
             return result.getSnapshot();
         } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
-            Log.e(TAG,"snapshot conflict");
-            Toast.makeText(context,"snapshot conflict",Toast.LENGTH_LONG);
+            Log.e(TAG, "snapshot conflict");
+            Toast.makeText(context, "snapshot conflict", Toast.LENGTH_LONG);
 //            final Snapshot snapshot = result.getSnapshot();
 //            final Snapshot conflictSnapshot = result.getConflictingSnapshot();
 //
@@ -300,10 +295,10 @@ public class SnapshotManager {
                 .setDescription(gameStatus.isFinished(HuntID) ? "Finished" : "OnGoing")
                 .build();
 
-        Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange).setResultCallback( new ResultCallback<Snapshots.CommitSnapshotResult>() {
+        Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange).setResultCallback(new ResultCallback<Snapshots.CommitSnapshotResult>() {
             @Override
             public void onResult(Snapshots.CommitSnapshotResult commitSnapshotResult) {
-                Log.d(TAG,snapshot.toString());
+                Log.d(TAG, snapshot.toString());
             }
         });
 
