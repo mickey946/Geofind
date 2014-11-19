@@ -28,6 +28,11 @@ public class HuntDetailsActivity extends BaseGameActivity {
     private Hunt hunt;
 
     /**
+     * Is the hunt finished?.
+     */
+    private Boolean isFinished;
+
+    /**
      * The location finder used to determine user's current location.
      */
     LocationFinder locationFinder;
@@ -55,7 +60,7 @@ public class HuntDetailsActivity extends BaseGameActivity {
                     getResources().getString(R.string.intent_hunt_extra));
 
             // if the hunt is finished, remove the start button
-            Boolean isFinished = intent.getExtras().getBoolean(
+            final Boolean isFinished = intent.getExtras().getBoolean(
                     getResources().getString(R.string.hunt_is_finished));
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
             if (isFinished) {
@@ -121,6 +126,7 @@ public class HuntDetailsActivity extends BaseGameActivity {
 
                     // pass the hunt to the map
                     intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+                    intent.putExtra(getResources().getString(R.string.hunt_is_finished), isFinished);
 
                     startActivity(intent);
 
