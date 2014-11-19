@@ -33,7 +33,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme.Roboto"
-        android:name=".GeoFindApp">
+        android:name=".GeofindApp">
 
         <!--google games api-->
         <meta-data

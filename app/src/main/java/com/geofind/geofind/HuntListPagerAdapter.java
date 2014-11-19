@@ -95,7 +95,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
                                 ParseObject userData = parseObjects.get(0);
                                 onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
                                 finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
-                                GameStatus gameStatus = ((GeoFindApp)(context.getApplicationContext())).getGameStatus();
+                                GameStatus gameStatus = ((GeofindApp)(context.getApplicationContext())).getGameStatus();
                                 switch (i) {
                                     case NEW_HUNTS:
                                         //TODO need to extract point numbers from onGoingHunts

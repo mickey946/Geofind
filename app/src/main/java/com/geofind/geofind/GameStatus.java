@@ -22,7 +22,7 @@ import java.util.Map;
 public class GameStatus {
 
 
-    private class HuntStatus {
+    public class HuntStatus {
 
         private String huntTitle;
         private String huntID;
@@ -75,7 +75,13 @@ public class GameStatus {
             isFinished=true;
         }
 
+        public int getHuntPosition() {
+            return huntPosition;
+        }
 
+        public ArrayList<Integer> getRevealedPoints() {
+            return revealedPoints;
+        }
     }
 
     private Map<String, HuntStatus> _activeHunts;
@@ -120,7 +126,7 @@ public class GameStatus {
         return false;
     }
 
-    public boolean upDateGame(String HuntId, long huntTime, boolean revealed, boolean isFinished) {
+    public boolean updateGame(String HuntId, long huntTime, boolean revealed, boolean isFinished) {
         if (_activeHunts.containsKey(HuntId)) {
             _activeHunts.get(HuntId).updateStatus(huntTime, revealed);
             if (isFinished)
@@ -219,7 +225,7 @@ public class GameStatus {
         }
     }
 
-    public HuntStatus GetHuntStatus(String HuntID) {
+    public HuntStatus getHuntStatus(String HuntID) {
         return _activeHunts.get(HuntID);
     }
 
@@ -271,8 +277,15 @@ public class GameStatus {
         return _savedHunts.keySet();
     }
 
-    public SnapshotMetadata getSnapshotMetadataById(String id) {
-        return _savedHunts.get(id);
+    public SnapshotMetadata getSnapshotMetadataById(String huntId) {
+        return _savedHunts.get(huntId);
     }
 
+    public ArrayList<Integer> getHuntRevealedPoints(String huntId) {
+        return _activeHunts.get(huntId).getRevealedPoints();
+    }
+
+    public int getHuntPosition(String huntId) {
+        return _activeHunts.get(huntId).getHuntPosition();
+    }
 }

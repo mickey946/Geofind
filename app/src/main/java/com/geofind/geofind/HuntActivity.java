@@ -166,11 +166,13 @@ public class HuntActivity extends BaseGameActivity {
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(getResources().
                     getString(R.string.intent_hunt_extra));
-            ((GeoFindApp) getApplicationContext()).getGameStatus().startGame(
+            ((GeofindApp) getApplicationContext()).getGameStatus().startGame(
                     hunt.getTitle(), hunt.getParseID());
             setTitle(hunt.getTitle());
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
             query.selectKeys(Arrays.asList("hints"));
+
+            final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
 
             query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
                 @Override
@@ -191,6 +193,25 @@ public class HuntActivity extends BaseGameActivity {
                                                     getString(R.string.hunt_activity_hint_number_title)
                                                             + hints.size(),
                                                     hint.getState());
+                                        }
+                                    }
+
+                                    // recover solved and revealed points
+                                    ArrayList<Integer> revealedPoints =
+                                            new ArrayList<Integer>(
+                                                    gameStatus.getHuntRevealedPoints(
+                                                            hunt.getParseID()));
+                                    for (int index = 0;
+                                         index < gameStatus.getHuntPosition(hunt.getParseID());
+                                         index++) {
+                                        if (!revealedPoints.isEmpty()) {
+                                            if (revealedPoints.get(0) == index) {
+                                                hints.get(index).setState(Hint.State.REVEALED);
+                                                revealedPoints.remove(0);
+                                            }
+                                            else {
+                                                hints.get(index).setState(Hint.State.SOLVED);
+                                            }
                                         }
                                     }
 
@@ -318,6 +339,7 @@ public class HuntActivity extends BaseGameActivity {
         // Set up the ViewPager, attaching the adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(hintPagerAdapter);
+        viewPager.setCurrentItem(hintPagerAdapter.getCount());
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -380,7 +402,7 @@ public class HuntActivity extends BaseGameActivity {
                         hints.get(index).getState());
                 mapManager.onLocationChanged(hints.get(index).getLocation().toLocation());
 
-                saveGame(false, index == hints.size() - 1 );
+                saveGame(false, index == hints.size() - 1);
                 revealNext(index);
             }
         };
@@ -407,7 +429,7 @@ public class HuntActivity extends BaseGameActivity {
                         getString(R.string.hunt_activity_hint_number_title) + index, hints.get(index).getState());
                 mapManager.onLocationChanged(hintPoint.toLocation());
 
-                saveGame(true, index == hints.size() - 1 );
+                saveGame(true, index == hints.size() - 1);
                 // Mark the current hint as revealed
                 revealNext(index);
 
@@ -576,7 +598,7 @@ public class HuntActivity extends BaseGameActivity {
         long passedTime = sharedPreferences.getLong("HuntTime", 0);
         long playTime = passedTime + currentTime - startTime;
 
-        ((GeoFindApp) getApplicationContext()).getGameStatus().upDateGame(
+        ((GeofindApp) getApplicationContext()).getGameStatus().updateGame(
                 hunt.getParseID(), playTime, revealed, isFinished);
 
         snapshotManager.saveSnapshot(hunt.getParseID());

@@ -51,7 +51,7 @@ public class SnapshotManager {
     public SnapshotManager(Context context, GoogleApiClient client) {
         this.context = context;
         mGoogleApiClient = client;
-        gameStatus = ((GeoFindApp) context.getApplicationContext()).getGameStatus();
+        gameStatus = ((GeofindApp) context.getApplicationContext()).getGameStatus();
     }
 
     public void loadSnapshot(final ExecFinished callback) {
