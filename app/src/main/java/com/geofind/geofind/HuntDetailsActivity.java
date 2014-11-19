@@ -15,6 +15,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.example.games.basegameutils.BaseGameActivity;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.Callable;
@@ -25,6 +26,11 @@ public class HuntDetailsActivity extends BaseGameActivity {
      * The hunt on which the activity displays the details.
      */
     private Hunt hunt;
+
+    /**
+     * Is the hunt finished?.
+     */
+    private Boolean isFinished;
 
     /**
      * The location finder used to determine user's current location.
@@ -52,6 +58,14 @@ public class HuntDetailsActivity extends BaseGameActivity {
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(
                     getResources().getString(R.string.intent_hunt_extra));
+
+            // if the hunt is finished, remove the start button
+            final Boolean isFinished = intent.getExtras().getBoolean(
+                    getResources().getString(R.string.hunt_is_finished));
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            if (isFinished) {
+                fab.setVisibility(View.GONE);
+            }
 
             // hunt title
             TextView titleTextView = (TextView) findViewById(R.id.hunt_details_title);
@@ -112,6 +126,7 @@ public class HuntDetailsActivity extends BaseGameActivity {
 
                     // pass the hunt to the map
                     intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+                    intent.putExtra(getResources().getString(R.string.hunt_is_finished), isFinished);
 
                     startActivity(intent);
 
@@ -136,8 +151,6 @@ public class HuntDetailsActivity extends BaseGameActivity {
             // hunt rating
             RatingBar ratingBar = (RatingBar) findViewById(R.id.hunt_details_rating);
             ratingBar.setRating(hunt.getRating());
-
-            // TODO comments
         }
     }
 

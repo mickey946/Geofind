@@ -79,7 +79,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
         final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery("Hunt");
-        SnapshotManager snapshotManager = new SnapshotManager(context,context.getGameHelper().getApiClient());
+        SnapshotManager snapshotManager = new SnapshotManager(context, context.getGameHelper().getApiClient());
         snapshotManager.loadSnapshot(new SnapshotManager.ExecFinished() {
             @Override
             public void onFinish() {
@@ -95,21 +95,21 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
                                 ParseObject userData = parseObjects.get(0);
                                 onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
                                 finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
-                                GameStatus gameStatus = ((GeofindApp)(context.getApplicationContext())).getGameStatus();
+                                GameStatus gameStatus = ((GeofindApp) (context.getApplicationContext())).getGameStatus();
                                 switch (i) {
                                     case NEW_HUNTS:
                                         //TODO need to extract point numbers from onGoingHunts
 //                                        List<String> notNewHunts = parse(onGoingHunts);
 //                                        notNewHunts.addAll(finishedHunts);
-                                        huntsQuery.whereNotContainedIn("objectId", gameStatus.getPlayed() );
+                                        huntsQuery.whereNotContainedIn("objectId", gameStatus.getPlayed());
                                         break;
                                     case ONGOING_HUNTS:
-                                        huntsQuery.whereContainedIn("objectId",gameStatus.getOnGoing());
+                                        huntsQuery.whereContainedIn("objectId", gameStatus.getOnGoing());
 //                                        huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
 //                                                whereNotContainedIn("objectId", finishedHunts);
                                         break;
                                     case FINISHED_HUNTS:
-                                        huntsQuery.whereContainedIn("objectId",gameStatus.getFinished());
+                                        huntsQuery.whereContainedIn("objectId", gameStatus.getFinished());
 //                                        huntsQuery.whereContainedIn("objectId", finishedHunts);
                                         break;
                                 }
@@ -157,6 +157,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
+        args.putBoolean(HuntListFragment.FINISHED_LIST_TAG, i == FINISHED_HUNTS);
         args.putSerializable(HuntListFragment.HUNT_LIST_TAG, hunts);
         fragment.setArguments(args);
 
@@ -195,6 +196,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
     public static class HuntListFragment extends Fragment {
 
         public static final String HUNT_LIST_TAG = "HUNT_LIST";
+        public static final String FINISHED_LIST_TAG = "FINISHED_LIST";
 
         public Context context;
         public HuntListAdapter adapter;
@@ -243,12 +245,13 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
             // get the related hunt list
             Bundle bundle = getArguments();
             ArrayList<Hunt> hunts = (ArrayList<Hunt>) bundle.getSerializable(HUNT_LIST_TAG);
+            Boolean isFinished = bundle.getBoolean(FINISHED_LIST_TAG);
 
             // set layoutManger
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
             // create an adapter
-            adapter = new HuntListAdapter(hunts, context);
+            adapter = new HuntListAdapter(hunts, isFinished, context);
 
             // set the distance unit
             String distanceUnit = getCurrentDistanceUnit();

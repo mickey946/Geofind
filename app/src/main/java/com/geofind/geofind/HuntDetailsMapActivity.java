@@ -23,6 +23,11 @@ public class HuntDetailsMapActivity extends BaseGameActivity {
      */
     Hunt hunt;
 
+    /**
+     * Is the hunt finished?
+     */
+    Boolean isFinished;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,7 @@ public class HuntDetailsMapActivity extends BaseGameActivity {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
                 hunt = (Hunt) bundle.getSerializable(getString(R.string.intent_hunt_extra));
+                isFinished = bundle.getBoolean(getString(R.string.hunt_is_finished));
                 if (hunt != null) {
                     MapFragment mapFragment =
                             (MapFragment) getFragmentManager().
@@ -56,6 +62,7 @@ public class HuntDetailsMapActivity extends BaseGameActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.hunt_details_map, menu);
+        menu.findItem(R.id.action_start_hunt).setVisible(!isFinished);
         return true;
     }
 
