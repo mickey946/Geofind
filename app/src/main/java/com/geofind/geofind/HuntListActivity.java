@@ -52,17 +52,7 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
         // of the activity.
         huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this, snapshotManager);
 
-        viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
-        viewPager.setAdapter(huntListPagerAdapter);
-        //huntListPagerAdapter.startUpdate(viewPager);
 
-        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
-        slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
-
-        Resources resources = getResources();
-        slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
-        slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setViewPager(viewPager);
 
 
     }
@@ -74,9 +64,21 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
     }
 
     @Override
-    protected void onStop() {
+    protected void onResume() {
+        super.onResume();
+        Log.d("HuntListActivity","OnResume");
+        huntListPagerAdapter.notifyDataSetChanged();
+        viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
+        viewPager.setAdapter(huntListPagerAdapter);
+        //huntListPagerAdapter.startUpdate(viewPager);
 
-        super.onStart();
+        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
+
+        Resources resources = getResources();
+        slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
+        slidingTabLayout.setDistributeEvenly(true);
+        slidingTabLayout.setViewPager(viewPager);
     }
 
     @Override
