@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -32,6 +33,7 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
      * The {@link com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout} that will display the tabs.
      */
     SlidingTabLayout slidingTabLayout;
+    private SnapshotManager snapshotManager;
 
 
     @Override
@@ -43,13 +45,16 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        snapshotManager = new SnapshotManager(this, getGameHelper().getApiClient());
+
 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the activity.
-        huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this);
+        huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this, snapshotManager);
 
         viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
         viewPager.setAdapter(huntListPagerAdapter);
+        huntListPagerAdapter.startUpdate(viewPager);
 
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
@@ -58,6 +63,8 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
         slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
+
+
     }
 
     @Override
@@ -117,6 +124,16 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
 
     @Override
     public void onSignInSucceeded() {
+        Log.d("Load", "sign in start");
+        snapshotManager.loadSnapshot(
+                new SnapshotManager.ExecFinished() {
+                    @Override
+                    public void onFinish() {
+                        Log.d("Load", "on finish snapshot load");
+                        huntListPagerAdapter.finishUpdate(viewPager);
+                    }
+                }
 
+        );
     }
 }
