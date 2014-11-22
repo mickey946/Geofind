@@ -97,7 +97,7 @@ public class HuntActivity extends BaseGameActivity {
      */
     FloatingActionButton fab;
 
-    private long startTime;
+//    private long startTime;
 
     private boolean finishedGame;
     private BroadcastReceiver geofenceReciever;
@@ -144,15 +144,15 @@ public class HuntActivity extends BaseGameActivity {
         if (keepScreenAwake) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-        startTime = SystemClock.elapsedRealtime();
+//        startTime = SystemClock.elapsedRealtime();
     }
 
     @Override
     protected void onPause() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        long currentTime = SystemClock.elapsedRealtime();
-        long pasedTime = sharedPreferences.getLong("HuntTime", 0);
-        sharedPreferences.edit().putLong("HuntTime", pasedTime + currentTime - startTime);
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        long currentTime = SystemClock.elapsedRealtime();
+//        long pasedTime = sharedPreferences.getLong("HuntTime", 0);
+//        sharedPreferences.edit().putLong("HuntTime", pasedTime + currentTime - startTime);
         mapManager.stopTrackCurrentLocation();
         super.onPause();
     }
@@ -516,10 +516,12 @@ public class HuntActivity extends BaseGameActivity {
         finishedGame = true;
         Intent intent = new Intent(this, HuntFinishActivity.class);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        long currentTime = SystemClock.elapsedRealtime();
-        long passedTime = sharedPreferences.getLong("HuntTime", 0);
-        long playTime = passedTime + currentTime - startTime;
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        long currentTime = SystemClock.elapsedRealtime();
+//        long passedTime = sharedPreferences.getLong("HuntTime", 0);
+//        long playTime = passedTime + currentTime - startTime;
+        final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
+
 
         int solved = 0;
         for (Hint hint : hints) {
@@ -529,7 +531,8 @@ public class HuntActivity extends BaseGameActivity {
 
         intent.putExtra(getResources().getString(R.string.hunt_finish_total_points), hints.size());
         intent.putExtra(getResources().getString(R.string.hunt_finish_solved_points), solved);
-        intent.putExtra(getResources().getString(R.string.hunt_finish_total_time), playTime);
+        intent.putExtra(getResources().getString(R.string.hunt_finish_total_time),
+                gameStatus.getHuntPlayedTime(hunt.getParseID()) );
         intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
 
         return intent;
@@ -607,12 +610,14 @@ public class HuntActivity extends BaseGameActivity {
     private void saveGame(boolean revealed, boolean isFinished) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
         long currentTime = SystemClock.elapsedRealtime();
-        long passedTime = sharedPreferences.getLong("HuntTime", 0);
-        long playTime = passedTime + currentTime - startTime;
+//        long passedTime = sharedPreferences.getLong("HuntTime", 0);
+//        long playTime = passedTime + currentTime - startTime;
+
 
         ((GeofindApp) getApplicationContext()).getGameStatus().updateGame(
-                hunt.getParseID(), playTime, revealed, isFinished);
+                hunt.getParseID(), revealed, isFinished);
 
         snapshotManager.saveSnapshot(hunt.getParseID());
 
@@ -644,5 +649,6 @@ public class HuntActivity extends BaseGameActivity {
     public void onSignInSucceeded() {
         Log.d("HuntActivity", "SignInSuccess");
         snapshotManager = new SnapshotManager(this, getGameHelper().getApiClient());
+        snapshotManager.saveSnapshot(hunt.getParseID());
     }
 }

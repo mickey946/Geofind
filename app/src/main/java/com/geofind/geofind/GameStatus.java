@@ -1,6 +1,7 @@
 package com.geofind.geofind;
 
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.android.gms.games.snapshot.SnapshotMetadata;
@@ -25,7 +26,7 @@ public class GameStatus {
 
         private String huntTitle;
         private String huntID;
-        private long huntTime;
+        private long huntStartTime, huntFinishTime;
         private int huntPosition;
         private ArrayList<Integer> revealedPoints;
         private boolean isFinished;
@@ -35,7 +36,7 @@ public class GameStatus {
             this.huntID = huntID;
             this.huntTitle = huntTitle;
             huntPosition = 0;
-            huntTime = 0;
+            huntStartTime = SystemClock.elapsedRealtime();
             revealedPoints = new ArrayList<Integer>();
             isFinished = false;
             _metaData = null;
@@ -46,8 +47,10 @@ public class GameStatus {
             Log.d("GS",jsonObject.toString());
             huntTitle = jsonObject.getString("huntTitle");
             huntID = jsonObject.getString("huntID");
-            huntTime = jsonObject.getInt("huntTime");
+            huntStartTime = jsonObject.getLong("huntStartTime");
+            huntFinishTime = jsonObject.getLong("huntFinishTime");
             huntPosition = jsonObject.getInt("huntPosition");
+
             JSONArray rev = new JSONArray(jsonObject.getString("revealedPoints")); // jsonObject.getJSONArray("revealedPoints");
             revealedPoints = new ArrayList<Integer>();
             for (int i = 0; i < rev.length(); i++) {
@@ -61,14 +64,15 @@ public class GameStatus {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("huntTitle", huntTitle);
             jsonObject.put("huntID", huntID);
-            jsonObject.put("huntTime", huntTime);
+            jsonObject.put("huntStartTime", huntStartTime);
+            jsonObject.put("huntFinishTime",huntFinishTime);
+            jsonObject.put("isFinished",isFinished);
             jsonObject.put("huntPosition", huntPosition);
             jsonObject.put("revealedPoints", revealedPoints);
             return jsonObject;
         }
 
-        public void updateStatus(long huntTime, boolean revealed) {
-            this.huntTime = huntTime;
+        public void updateStatus(boolean revealed) {
             if (revealed)
                 revealedPoints.add(huntPosition);
             huntPosition++;
@@ -76,6 +80,7 @@ public class GameStatus {
 
         public void markFinish(){
             isFinished=true;
+            huntFinishTime = SystemClock.elapsedRealtime();
         }
 
         public int getHuntPosition() {
@@ -89,10 +94,14 @@ public class GameStatus {
         public SnapshotMetadata getMetaData() {
             return _metaData;
         }
+
+        public long getHuntStartTime() {
+            return huntStartTime;
+        }
     }
 
     private Map<String, HuntStatus> _activeHunts;
-    private final String SERIAL_VERSION = "0.0";
+    private final String SERIAL_VERSION = "0.1";
     private Map<String, SnapshotMetadata> _savedHunts;
 
     public GameStatus() {
@@ -133,9 +142,9 @@ public class GameStatus {
         return false;
     }
 
-    public boolean updateGame(String HuntId, long huntTime, boolean revealed, boolean isFinished) {
+    public boolean updateGame(String HuntId, boolean revealed, boolean isFinished) {
         if (_activeHunts.containsKey(HuntId)) {
-            _activeHunts.get(HuntId).updateStatus(huntTime, revealed);
+            _activeHunts.get(HuntId).updateStatus(revealed);
             if (isFinished)
                 _activeHunts.get(HuntId).markFinish();
             return true;
@@ -166,7 +175,7 @@ public class GameStatus {
             JSONObject obj = new JSONObject(json);
             String format = obj.getString("version");
             if (!format.equals(SERIAL_VERSION)) {
-                throw new RuntimeException("Unexpected loot format " + format);
+                throw new RuntimeException("Unexpected format version" + format);
             }
 
 
@@ -232,11 +241,7 @@ public class GameStatus {
         }
     }
 
-    public HuntStatus getHuntStatus(String HuntID) {
-        return _activeHunts.get(HuntID);
-    }
-
-//
+    //
 //    public GameStatus unionWith(GameStatus gameStatus){
 //        GameStatus current = clone();
 //
@@ -295,5 +300,12 @@ public class GameStatus {
 
     public int getHuntPosition(String huntId) {
         return _activeHunts.get(huntId).getHuntPosition();
+    }
+    public long getHuntPlayedTime(String huntId){
+        if (_activeHunts.get(huntId).isFinished)
+        {
+            return _activeHunts.get(huntId).huntFinishTime - _activeHunts.get(huntId).huntStartTime;
+        }
+        return -1;
     }
 }
