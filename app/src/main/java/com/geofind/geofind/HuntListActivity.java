@@ -54,7 +54,7 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
 
         viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
         viewPager.setAdapter(huntListPagerAdapter);
-        huntListPagerAdapter.startUpdate(viewPager);
+        //huntListPagerAdapter.startUpdate(viewPager);
 
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
@@ -130,7 +130,7 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
                     @Override
                     public void onFinish() {
                         Log.d("Load", "on finish snapshot load");
-                        huntListPagerAdapter.finishUpdate(viewPager);
+//                        huntListPagerAdapter.finishUpdate(viewPager);
                     }
                 }
 
