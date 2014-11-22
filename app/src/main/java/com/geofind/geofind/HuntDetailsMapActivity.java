@@ -4,14 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.MapFragment;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 
-public class HuntDetailsMapActivity extends ActionBarActivity {
+public class HuntDetailsMapActivity extends BaseGameActivity {
 
     /**
      * Control dynamic map
@@ -22,6 +22,11 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
      * the displayed hunt
      */
     Hunt hunt;
+
+    /**
+     * Is the hunt finished?
+     */
+    Boolean isFinished;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
                 hunt = (Hunt) bundle.getSerializable(getString(R.string.intent_hunt_extra));
+                isFinished = bundle.getBoolean(getString(R.string.hunt_is_finished));
                 if (hunt != null) {
                     MapFragment mapFragment =
                             (MapFragment) getFragmentManager().
@@ -56,6 +62,7 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.hunt_details_map, menu);
+        menu.findItem(R.id.action_start_hunt).setVisible(!isFinished);
         return true;
     }
 
@@ -93,5 +100,15 @@ public class HuntDetailsMapActivity extends ActionBarActivity {
     public void onCreateSupportNavigateUpTaskStack(TaskStackBuilder builder) {
         super.onCreateSupportNavigateUpTaskStack(builder);
         onBackPressed();
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

@@ -4,18 +4,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+
+import com.google.example.games.basegameutils.BaseGameActivity;
 
 import java.util.ArrayList;
 
 
-public class CommentListActivity extends ActionBarActivity {
+public class CommentListActivity extends BaseGameActivity {
 
+    ArrayList<Comment> comments;
+    RecyclerView recyclerView;
     private CommentListAdapter adapter;
 
     @Override
@@ -28,20 +33,20 @@ public class CommentListActivity extends ActionBarActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // get a reference to recyclerView
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // create an adapter and set it's data
-        ArrayList<Comment> comments = new ArrayList<Comment>();
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
             comments = (ArrayList<Comment>) bundle.getSerializable(
                     getResources().getString(R.string.intent_hunt_comments_extra));
         }
-        adapter = new CommentListAdapter(comments, this);
+
+        adapter = new CommentListAdapter(new ArrayList<Comment>(), this);
 
         // set adapter
         recyclerView.setAdapter(adapter);
@@ -49,7 +54,6 @@ public class CommentListActivity extends ActionBarActivity {
         // set item animator to DefaultAnimator
         recyclerView.setItemAnimator(new DefaultItemAnimator());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,5 +89,22 @@ public class CommentListActivity extends ActionBarActivity {
     public void onCreateSupportNavigateUpTaskStack(TaskStackBuilder builder) {
         super.onCreateSupportNavigateUpTaskStack(builder);
         onBackPressed();
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
+
+        // set the adapter only after connection of the GoogleApiClient
+        adapter = new CommentListAdapter(comments, this);
+
+        // set adapter
+        recyclerView.setAdapter(adapter);
     }
 }

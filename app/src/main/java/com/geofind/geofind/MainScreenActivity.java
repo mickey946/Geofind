@@ -3,7 +3,6 @@ package com.geofind.geofind;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -13,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -24,8 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainScreenActivity extends Activity {
+public class MainScreenActivity extends BaseGameActivity {
 
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
+    }
     /**
      * Direction of moving of the image.
      */
@@ -74,6 +84,7 @@ public class MainScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         connectToParse();
         setContentView(R.layout.activity_main_screen);
+
         background = (ImageView) findViewById(R.id.background_image);
         background.post(new Runnable() {
             @Override
@@ -147,6 +158,7 @@ public class MainScreenActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (valueAnimator != null) {
                 valueAnimator.resume();

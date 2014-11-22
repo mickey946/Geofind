@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,15 +14,23 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
+import com.melnykov.fab.FloatingActionButton;
+
 import java.text.DecimalFormat;
 import java.util.concurrent.Callable;
 
-public class HuntDetailsActivity extends ActionBarActivity {
+public class HuntDetailsActivity extends BaseGameActivity {
 
     /**
      * The hunt on which the activity displays the details.
      */
     private Hunt hunt;
+
+    /**
+     * Is the hunt finished?.
+     */
+    private Boolean isFinished;
 
     /**
      * The location finder used to determine user's current location.
@@ -51,6 +58,14 @@ public class HuntDetailsActivity extends ActionBarActivity {
         if (intent != null) {
             hunt = (Hunt) intent.getExtras().getSerializable(
                     getResources().getString(R.string.intent_hunt_extra));
+
+            // if the hunt is finished, remove the start button
+            final Boolean isFinished = intent.getExtras().getBoolean(
+                    getResources().getString(R.string.hunt_is_finished));
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            if (isFinished) {
+                fab.setVisibility(View.GONE);
+            }
 
             // hunt title
             TextView titleTextView = (TextView) findViewById(R.id.hunt_details_title);
@@ -111,6 +126,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
                     // pass the hunt to the map
                     intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
+                    intent.putExtra(getResources().getString(R.string.hunt_is_finished), isFinished);
 
                     startActivity(intent);
 
@@ -135,8 +151,6 @@ public class HuntDetailsActivity extends ActionBarActivity {
             // hunt rating
             RatingBar ratingBar = (RatingBar) findViewById(R.id.hunt_details_rating);
             ratingBar.setRating(hunt.getRating());
-
-            // TODO comments
         }
     }
 
@@ -234,7 +248,7 @@ public class HuntDetailsActivity extends ActionBarActivity {
 
     }
 
-    private void updateLocationDisplay(){
+    private void updateLocationDisplay() {
 
 
         final String distanceUnit = getCurrentDistanceUnit();
@@ -284,5 +298,15 @@ public class HuntDetailsActivity extends ActionBarActivity {
         intent.putExtra(getResources().getString(R.string.intent_hunt_comments_extra),
                 hunt.getComments());
         startActivity(intent);
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

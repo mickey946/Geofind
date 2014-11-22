@@ -2,6 +2,7 @@ package com.geofind.geofind;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -57,11 +59,17 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
     /**
      * The host activity.
      */
-    Context context;
+    BaseGameActivity context;
 
-    public HuntListPagerAdapter(FragmentManager fm, Context context) {
+    /**
+     * The snapshot manager from the host activity.
+     */
+    SnapshotManager snapshotManager;
+
+    public HuntListPagerAdapter(FragmentManager fm, BaseGameActivity context, SnapshotManager snapshotManager) {
         super(fm);
         this.context = context;
+        this.snapshotManager = snapshotManager;
     }
 
     @Override
@@ -69,12 +77,11 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
         //TODO need to get data on user - List of Finished Hunts, List of OngoingHunts.
         // create new Hint fragment
         final Fragment fragment = new HuntListFragment();
+        Log.d("Load", "pager adaper get item " + i);
 
         // create and fill the hunts array to display them.
 
         ParseQuery<ParseObject> userQuery = ParseQuery.getQuery(context.getString(R.string.parse_userdata_class_name));
-        final ArrayList<String> onGoingHunts = new ArrayList<String>();
-        final ArrayList<String> finishedHunts = new ArrayList<String>();
 
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
         final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
@@ -83,56 +90,65 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
         userQuery.whereEqualTo(context.getString(R.string.parse_userID_field_name), "userID");
         userQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
+            public void done(final List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
                     if (!parseObjects.isEmpty()) {
-                        ParseObject userData = parseObjects.get(0);
-                        onGoingHunts.addAll((List<String>) userData.get(context.getString(R.string.parse_ongoingHunts_field_name)));
-                        finishedHunts.addAll((List<String>) userData.get(context.getString(R.string.parse_finishedHunts_field_name)));
-
-                        switch (i) {
-                            case NEW_HUNTS:
-                                //TODO need to extract point numbers from onGoingHunts
-                                List<String> notNewHunts = parse(onGoingHunts);
-                                notNewHunts.addAll(finishedHunts);
-                                huntsQuery.whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), notNewHunts);
-                                break;
-                            case ONGOING_HUNTS:
-                                huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), parse(onGoingHunts)).
-                                        whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), finishedHunts);
-                                break;
-                            case FINISHED_HUNTS:
-                                huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), finishedHunts);
-                                break;
-                        }
-
-                        huntsQuery.findInBackground(new FindCallback<ParseObject>() {
+                        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                             @Override
-                            public void done(List<ParseObject> parseObjects, ParseException e) {
-                                if (e == null) {
-                                    // remove progress bar
-                                    ((HuntListFragment) fragment).progressBar
-                                            .setVisibility(View.GONE);
+                            protected Void doInBackground(Void... params) {
+                                ParseObject userData = parseObjects.get(0);
+                                snapshotManager.waitforfinish();
+                                GameStatus gameStatus = ((GeofindApp) (context.getApplicationContext())).getGameStatus();
+                                Log.d("Load", "loading from parse for page " + i);
+                                switch (i) {
+                                    case NEW_HUNTS:
 
-                                    if (!parseObjects.isEmpty()) {
-                                        for (ParseObject parseObject : parseObjects) {
-                                            hunts.add(new Hunt(parseObject));
-                                        }
-                                        ((HuntListFragment) fragment).setHunts(hunts);
-
-                                    } else { // empty list
-                                        ((HuntListFragment) fragment).emptyListTextView
-                                                .setVisibility(View.VISIBLE);
-                                    }
-
-                                } else {
-                                    Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
-                                            Toast.LENGTH_LONG).show();
-                                    System.out.println(e.getMessage());
+//                                        List<String> notNewHunts = parse(onGoingHunts);
+//                                        notNewHunts.addAll(finishedHunts);
+                                        huntsQuery.whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getPlayed());
+                                        break;
+                                    case ONGOING_HUNTS:
+                                        huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getOnGoing());
+//                                        huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
+//                                                whereNotContainedIn("objectId", finishedHunts);
+                                        break;
+                                    case FINISHED_HUNTS:
+                                        huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getFinished());
+//                                        huntsQuery.whereContainedIn("objectId", finishedHunts);
+                                        break;
                                 }
-                            }
-                        });
 
+                                huntsQuery.findInBackground(new FindCallback<ParseObject>() {
+                                    @Override
+                                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                                        if (e == null) {
+                                            // remove progress bar
+                                            ((HuntListFragment) fragment).progressBar
+                                                    .setVisibility(View.GONE);
+
+                                            if (!parseObjects.isEmpty()) {
+                                                for (ParseObject parseObject : parseObjects) {
+                                                    hunts.add(new Hunt(parseObject));
+                                                }
+                                                ((HuntListFragment) fragment).setHunts(hunts);
+
+                                            } else { // empty list
+                                                ((HuntListFragment) fragment).emptyListTextView
+                                                        .setVisibility(View.VISIBLE);
+                                            }
+
+                                        } else {
+                                            Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
+                                                    Toast.LENGTH_LONG).show();
+                                            System.out.println(e.getMessage());
+                                        }
+                                    }
+                                });
+
+                                return null;
+                            }
+                        };
+                        task.execute();
                     } else {
                         Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
                     }
@@ -142,9 +158,14 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
             }
         });
 
+//
+//            }
+//        });
+
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
+        args.putBoolean(HuntListFragment.FINISHED_LIST_TAG, i == FINISHED_HUNTS);
         args.putSerializable(HuntListFragment.HUNT_LIST_TAG, hunts);
         fragment.setArguments(args);
 
@@ -183,6 +204,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
     public static class HuntListFragment extends Fragment {
 
         public static final String HUNT_LIST_TAG = "HUNT_LIST";
+        public static final String FINISHED_LIST_TAG = "FINISHED_LIST";
 
         public Context context;
         public HuntListAdapter adapter;
@@ -231,12 +253,13 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
             // get the related hunt list
             Bundle bundle = getArguments();
             ArrayList<Hunt> hunts = (ArrayList<Hunt>) bundle.getSerializable(HUNT_LIST_TAG);
+            Boolean isFinished = bundle.getBoolean(FINISHED_LIST_TAG);
 
             // set layoutManger
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
             // create an adapter
-            adapter = new HuntListAdapter(hunts, context);
+            adapter = new HuntListAdapter(hunts, isFinished, context);
 
             // set the distance unit
             String distanceUnit = getCurrentDistanceUnit();

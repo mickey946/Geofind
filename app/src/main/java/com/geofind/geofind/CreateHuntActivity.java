@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
@@ -22,7 +22,7 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 
 
-public class CreateHuntActivity extends ActionBarActivity {
+public class CreateHuntActivity extends BaseGameActivity {
 
     private static final String PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS =
             "PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS";
@@ -219,4 +219,13 @@ public class CreateHuntActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
+    }
 }

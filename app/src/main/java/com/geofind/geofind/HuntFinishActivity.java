@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +13,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 
-public class HuntFinishActivity extends ActionBarActivity {
+public class HuntFinishActivity extends BaseGameActivity {
 
     /**
      * The hunt that was finished.
@@ -197,8 +197,9 @@ public class HuntFinishActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
 
-        if (hunt == null)
+        if (hunt == null) {
             return;
+        }
 
         // hunt total distance
         final String distanceUnit = getCurrentDistanceUnit();
@@ -237,5 +238,15 @@ public class HuntFinishActivity extends ActionBarActivity {
         return sharedPreferences.getString(
                 this.getString(R.string.pref_key_distance_units),
                 this.getString(R.string.preferences_distance_units_kilometers));
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+
     }
 }

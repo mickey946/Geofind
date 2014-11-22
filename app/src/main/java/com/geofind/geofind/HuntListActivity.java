@@ -6,14 +6,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout;
+import com.google.example.games.basegameutils.BaseGameActivity;
 
-
-public class HuntListActivity extends ActionBarActivity implements ActionBar.TabListener {
+public class HuntListActivity extends BaseGameActivity implements ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -33,6 +33,7 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
      * The {@link com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout} that will display the tabs.
      */
     SlidingTabLayout slidingTabLayout;
+    private SnapshotManager snapshotManager;
 
 
     @Override
@@ -44,21 +45,16 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        snapshotManager = new SnapshotManager(this, getGameHelper().getApiClient());
+
 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the activity.
-        huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this);
+        huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this, snapshotManager);
 
-        viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
-        viewPager.setAdapter(huntListPagerAdapter);
 
-        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
-        slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
 
-        Resources resources = getResources();
-        slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
-        slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setViewPager(viewPager);
+
     }
 
     @Override
@@ -68,9 +64,21 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
     }
 
     @Override
-    protected void onStop() {
+    protected void onResume() {
+        super.onResume();
+        Log.d("HuntListActivity","OnResume");
+        huntListPagerAdapter.notifyDataSetChanged();
+        viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
+        viewPager.setAdapter(huntListPagerAdapter);
+        //huntListPagerAdapter.startUpdate(viewPager);
 
-        super.onStart();
+        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
+
+        Resources resources = getResources();
+        slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
+        slidingTabLayout.setDistributeEvenly(true);
+        slidingTabLayout.setViewPager(viewPager);
     }
 
     @Override
@@ -111,5 +119,23 @@ public class HuntListActivity extends ActionBarActivity implements ActionBar.Tab
 
     }
 
+    @Override
+    public void onSignInFailed() {
 
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+        Log.d("Load", "sign in start");
+        snapshotManager.loadSnapshot(
+                new SnapshotManager.ExecFinished() {
+                    @Override
+                    public void onFinish() {
+                        Log.d("Load", "on finish snapshot load");
+//                        huntListPagerAdapter.finishUpdate(viewPager);
+                    }
+                }
+
+        );
+    }
 }

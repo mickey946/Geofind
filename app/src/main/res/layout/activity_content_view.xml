@@ -3,6 +3,13 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
+    <VideoView
+        android:id="@+id/content_video_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
@@ -14,12 +21,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
-
-    <VideoView
-        android:id="@+id/content_video_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
 
 </FrameLayout>
