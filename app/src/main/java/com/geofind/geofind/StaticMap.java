@@ -112,6 +112,7 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
                 break;
         }
 
+        address += "&key=" + GeofindApp.BROWSER_API_KEY;
 
         return address;
 

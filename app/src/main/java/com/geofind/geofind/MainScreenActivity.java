@@ -36,6 +36,7 @@ public class MainScreenActivity extends BaseGameActivity {
     public void onSignInSucceeded() {
 
     }
+
     /**
      * Direction of moving of the image.
      */

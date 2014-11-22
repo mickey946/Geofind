@@ -14,6 +14,7 @@ import java.util.HashMap;
  */
 public class GeofindApp extends Application {
 
+    public static final String BROWSER_API_KEY = "AIzaSyAtwXqO2w5kV9a8iE-AcbcoI9DWlK0Q8Yk";
     // The following line should be changed to include the correct property id.
     private static final String PROPERTY_ID = "UA-56204480-2";
     HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
