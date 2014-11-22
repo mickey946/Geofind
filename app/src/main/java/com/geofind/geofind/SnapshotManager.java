@@ -239,7 +239,8 @@ public class SnapshotManager {
                             .await();
                 }
                 final Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openResult, 0);
-                writeSnapshot(toWrite, HuntID);
+                if(toWrite != null)
+                    writeSnapshot(toWrite, HuntID);
                 return null;
             }
 //
