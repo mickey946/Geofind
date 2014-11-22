@@ -150,7 +150,8 @@ public class HuntFinishActivity extends BaseGameActivity {
         }
 
         final Comment comment = new Comment(commentTitleTextView.getText().toString(),
-                commentReviewTextView.getText().toString(), commentRatingRatingBar.getRating());
+                commentReviewTextView.getText().toString(), commentRatingRatingBar.getRating(),
+                getGameHelper().getApiClient());
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
         query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
