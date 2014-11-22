@@ -26,8 +26,6 @@ import java.util.List;
 
 public class MainScreenActivity extends BaseGameActivity {
 
-    private final String parseAppID = "ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa";
-    private final String parseClientKey = "bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv";
 
     @Override
     public void onSignInFailed() {
@@ -38,7 +36,6 @@ public class MainScreenActivity extends BaseGameActivity {
     public void onSignInSucceeded() {
 
     }
-
     /**
      * Direction of moving of the image.
      */
@@ -218,20 +215,25 @@ public class MainScreenActivity extends BaseGameActivity {
     }
 
     private void connectToParse() {
-        Parse.initialize(this, parseAppID, parseClientKey);
+        Parse.initialize(this, getString(R.string.parse_app_id),
+                getString(R.string.parse_client_key));
 
+        //TODO: change to correct user id
         String user = "userID";
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");
+
+        ParseQuery<ParseObject> query =
+                new ParseQuery<ParseObject>(getString(R.string.parse_userID_field_name));
         query.whereEqualTo("userID", user);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
                     if (parseObjects.isEmpty()) {
-                        ParseObject userData = new ParseObject("UserData");
-                        userData.put("userID", "userID");
-                        userData.put("ongoingHunts", new ArrayList<String>());
-                        userData.put("finishedHunts", new ArrayList<String>());
+                        ParseObject userData =
+                                new ParseObject(getString(R.string.parse_userdata_class_name));
+                        userData.put(getString(R.string.parse_userID_field_name), "userID");
+                        userData.put(getString(R.string.parse_ongoingHunts_field_name), new ArrayList<String>());
+                        userData.put(getString(R.string.parse_finishedHunts_field_name), new ArrayList<String>());
 
                         userData.saveInBackground(new SaveCallback() {
                             @Override

@@ -80,28 +80,19 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
         // create and fill the hunts array to display them.
 
-//
-//        final ArrayList<String> onGoingHunts = new ArrayList<String>();
-//        final ArrayList<String> finishedHunts = new ArrayList<String>();
+        ParseQuery<ParseObject> userQuery = ParseQuery.getQuery(context.getString(R.string.parse_userdata_class_name));
 
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
-        final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery("Hunt");
-//        SnapshotManager snapshotManager = new SnapshotManager(context, context.getGameHelper().getApiClient());
-//        snapshotManager.loadSnapshot(new SnapshotManager.ExecFinished() {
-//            @Override
-//            public void onFinish() {
+        final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
 
-                ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("UserData");
                 //TODO replace the SECOND "userID" with google use id.
-                userQuery.whereEqualTo("userID", "userID");
+        userQuery.whereEqualTo(context.getString(R.string.parse_userID_field_name), "userID");
                 userQuery.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> parseObjects, ParseException e) {
                         if (e == null) {
                             if (!parseObjects.isEmpty()) {
                                 ParseObject userData = parseObjects.get(0);
-//                                onGoingHunts.addAll((List<String>) userData.get("ongoingHunts"));
-//                                finishedHunts.addAll((List<String>) userData.get("finishedHunts"));
                                 snapshotManager.waitforfinish();
                                 GameStatus gameStatus = ((GeofindApp) (context.getApplicationContext())).getGameStatus();
                                 Log.d("Load","loading from parse for page " + i);
@@ -110,15 +101,15 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
                                         //TODO need to extract point numbers from onGoingHunts
 //                                        List<String> notNewHunts = parse(onGoingHunts);
 //                                        notNewHunts.addAll(finishedHunts);
-                                        huntsQuery.whereNotContainedIn("objectId", gameStatus.getPlayed());
+                                        huntsQuery.whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getPlayed());
                                         break;
                                     case ONGOING_HUNTS:
-                                        huntsQuery.whereContainedIn("objectId", gameStatus.getOnGoing());
+                                        huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getOnGoing());
 //                                        huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
 //                                                whereNotContainedIn("objectId", finishedHunts);
                                         break;
                                     case FINISHED_HUNTS:
-                                        huntsQuery.whereContainedIn("objectId", gameStatus.getFinished());
+                                        huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getFinished());
 //                                        huntsQuery.whereContainedIn("objectId", finishedHunts);
                                         break;
                                 }

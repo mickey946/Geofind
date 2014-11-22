@@ -2,20 +2,24 @@ package com.geofind.geofind;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 import com.google.example.games.basegameutils.BaseGameActivity;
+import java.io.InputStream;
 
 
 public class ContentViewActivity extends BaseGameActivity {
@@ -33,12 +37,12 @@ public class ContentViewActivity extends BaseGameActivity {
     /**
      * Intent tag for passing image parse id (image stored in parse).
      */
-    public static final String IMAGE_PARSE = "IMAGE_PARSE";
+    public static final String IMAGE_URL = "IMAGE_URL";
 
     /**
-     * Intent tag for passing video or audio parse id (video or audio stored in parse).
+     * Intent tag for passing video or audio parse url (video or audio stored in parse).
      */
-    public static final String VIDEO_AUDIO_PARSE = "VIDEO_AUDIO";
+    public static final String VIDEO_AUDIO_URL = "VIDEO_AUDIO_URL";
 
     /**
      * A tag used to preserve video or audio playback position on orientation change.
@@ -53,7 +57,12 @@ public class ContentViewActivity extends BaseGameActivity {
     /**
      * The video view that shows hint video or audio.
      */
-    VideoView videoView;
+    private VideoView videoView;
+
+    /**
+     * The {@link android.widget.ProgressBar} that is used when loading content.
+     */
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,37 +73,50 @@ public class ContentViewActivity extends BaseGameActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
         String selectedImageUriString = bundle.getString(IMAGE_URI);
         String selectedVideoAudioString = bundle.getString(VIDEO_AUDIO_URI);
-        Hint hintWithImage = (Hint) bundle.getSerializable(IMAGE_PARSE);
+        String remoteImageUrl = bundle.getString(IMAGE_URL);
+        String remoteVideoAudioUrl = bundle.getString(VIDEO_AUDIO_URL);
 
         if (selectedImageUriString != null) { // user views his selected image
             setUpImageView(selectedImageUriString);
         } else if (selectedVideoAudioString != null) { // user views his selected video or audio
             setUpVideoAudioView(selectedVideoAudioString);
-        } else if (hintWithImage != null) { // user views a hint image
-            hintWithImage.downloadFiles(new Hint.DownloadFiles() {
-                @Override
-                public void updateImage(Bitmap bitmap) {
-                    setUpImageView(bitmap);
-                }
+        } else if (remoteImageUrl != null) { // user views a hint image
+            DownloadImageTask downloadImageTask = new DownloadImageTask();
+            downloadImageTask.execute(remoteImageUrl);
+        } else if (remoteVideoAudioUrl != null) { // user views a hint video or audio
+            setUpVideoAudioView(remoteVideoAudioUrl);
+        }
+    }
 
-                @Override
-                public void updateVideo(MediaStore.Video vid) {
-                    // TODO remove this for not downloading video for nothing
-                }
+    /**
+     * An {@link android.os.AsyncTask} used to download an image from Parse.
+     */
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
-                @Override
-                public void updateAudio(MediaStore.Audio aud) {
-                    // TODO remove this for not downloading audio for nothing
-                }
-            });
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap outputBitmap = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                outputBitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error loading an image: ", e.getMessage());
+                e.printStackTrace();
+            }
+            return outputBitmap;
         }
 
-        // TODO retrieve files from parse
+        protected void onPostExecute(Bitmap result) {
+            progressBar.setVisibility(View.GONE);
+            setUpImageView(result);
+        }
     }
 
     /**
@@ -121,6 +143,7 @@ public class ContentViewActivity extends BaseGameActivity {
      * @param selectedVideoAudioString The hint video or audio uri.toString().
      */
     private void setUpVideoAudioView(String selectedVideoAudioString) {
+        progressBar.setVisibility(View.GONE);
         Uri selectedVideoAudio = Uri.parse(selectedVideoAudioString);
         videoView = (VideoView) findViewById(R.id.content_video_view);
         videoView.setVisibility(View.VISIBLE);
@@ -133,9 +156,11 @@ public class ContentViewActivity extends BaseGameActivity {
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        videoView.seekTo(savedInstanceState.getInt(POS_TAG));
-        if (savedInstanceState.getBoolean(PLAYING_TAG)) {
-            videoView.start();
+        if (videoView != null) {
+            videoView.seekTo(savedInstanceState.getInt(POS_TAG));
+            if (savedInstanceState.getBoolean(PLAYING_TAG)) {
+                videoView.start();
+            }
         }
     }
 
@@ -143,8 +168,10 @@ public class ContentViewActivity extends BaseGameActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(POS_TAG, videoView.getCurrentPosition());
-        outState.putBoolean(PLAYING_TAG, videoView.isPlaying());
+        if (videoView != null) {
+            outState.putInt(POS_TAG, videoView.getCurrentPosition());
+            outState.putBoolean(PLAYING_TAG, videoView.isPlaying());
+        }
     }
 
     @Override

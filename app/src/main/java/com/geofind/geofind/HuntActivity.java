@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -100,9 +101,24 @@ public class HuntActivity extends BaseGameActivity {
 //    private long startTime;
 
     private boolean finishedGame;
-    private BroadcastReceiver geofenceReciever;
+    private BroadcastReceiver geofenceReceiver;
 
     private SnapshotManager snapshotManager;
+
+    /**
+     * Indicates if the user wants sound effects or not.
+     */
+    private boolean isSoundAllowed;
+
+    /**
+     * The {@link android.media.MediaPlayer} that plays the success sound.
+     */
+    private MediaPlayer successMediaPlayer;
+
+    /**
+     * The {@link android.media.MediaPlayer} that plays the failure sound.
+     */
+    private MediaPlayer failureMediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,8 +127,9 @@ public class HuntActivity extends BaseGameActivity {
 
         setContentView(R.layout.activity_hunt);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.hide();
+        setUpFloatingActionButton();
+
+        setUpSounds();
 
         setUpHunt();
 
@@ -128,14 +145,41 @@ public class HuntActivity extends BaseGameActivity {
         }
     }
 
+    /**
+     * Set up the {@link com.melnykov.fab.FloatingActionButton} that finishes the game.
+     */
+    private void setUpFloatingActionButton() {
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.hide();
+    }
+
+    /**
+     * Setup the {@link android.media.MediaPlayer}s that play the sounds.
+     */
+    private void setUpSounds() {
+        successMediaPlayer = MediaPlayer.create(this, R.raw.success_1_by_fins);
+        failureMediaPlayer = MediaPlayer.create(this, R.raw.aww_by_phmiller42);
+    }
+
+    /**
+     * Release (delete) the {@link android.media.MediaPlayer}s that play the sounds.
+     */
+    private void removeSounds() {
+        successMediaPlayer.release();
+        successMediaPlayer = null;
+        failureMediaPlayer.release();
+        failureMediaPlayer = null;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         if (mapManager != null) {
             mapManager.focusOnCurrentLocation();
         }
-        if (geofence != null)
+        if (geofence != null) {
             geofence.resumeGeofence();
+        }
 
         // keep the screen awake (if needed)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -144,6 +188,11 @@ public class HuntActivity extends BaseGameActivity {
         if (keepScreenAwake) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+
+        // turn the sounds on or off
+        isSoundAllowed = sharedPreferences.getBoolean(getString(R.string.pref_key_sound),
+                false);
+
 //        startTime = SystemClock.elapsedRealtime();
     }
 
@@ -170,16 +219,15 @@ public class HuntActivity extends BaseGameActivity {
                     getString(R.string.intent_hunt_extra));
             gameStatus.startGame(hunt.getTitle(), hunt.getParseID());
             setTitle(hunt.getTitle());
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("Hunt");
-            query.selectKeys(Arrays.asList("hints"));
-
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
+            query.selectKeys(Arrays.asList(Hunt.PARSE_HINTS_FIELD));
 
 
             query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
-                        final List<ParseObject> remoteHints = parseObject.getList("hints");
+                        final List<ParseObject> remoteHints = parseObject.getList(Hunt.PARSE_HINTS_FIELD);
                         ParseObject.fetchAllInBackground(remoteHints, new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> parseObjects,
@@ -400,13 +448,22 @@ public class HuntActivity extends BaseGameActivity {
         Log.d(TAG, "setUpGeofence");
         geofence = new GeofenceManager(this);
 
-        geofenceReciever = new BroadcastReceiver() {
+        geofenceReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String id = intent.getStringExtra(getString(R.string.PointIdIntentExtra));
                 int index = intent.getIntExtra(getString(R.string.PointIndexExtra), -1);
-                Log.d(TAG, "recieved from geofence point index" + index);
-                Log.d(TAG, "geofence point recieved: " + id);
+                Log.d(TAG, "received from geofence point index" + index);
+                Log.d(TAG, "geofence point received: " + id);
+
+                // Play the success sound
+                if (isSoundAllowed) {
+                    if (successMediaPlayer.isPlaying() || failureMediaPlayer.isPlaying()) {
+                        failureMediaPlayer.stop();
+                        successMediaPlayer.seekTo(0);
+                    }
+                    successMediaPlayer.start();
+                }
 
                 // Mark the current hint as solved
                 hints.get(index).setState(Hint.State.SOLVED);
@@ -420,7 +477,7 @@ public class HuntActivity extends BaseGameActivity {
             }
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                geofenceReciever, new IntentFilter(getString(R.string.GeofenceResultIntent)));
+                geofenceReceiver, new IntentFilter(getString(R.string.GeofenceResultIntent)));
 
         int unrevealedIndex = 0;
         while (unrevealedIndex < hints.size() &&
@@ -435,6 +492,15 @@ public class HuntActivity extends BaseGameActivity {
             @Override
             public void executeCallback(int index) {
                 Log.d(TAG, "Received from geofence cancel point index" + index);
+
+                // Play the failure sound
+                if (isSoundAllowed) {
+                    if (failureMediaPlayer.isPlaying() || successMediaPlayer.isPlaying()) {
+                        successMediaPlayer.stop();
+                        failureMediaPlayer.seekTo(0);
+                    }
+                    failureMediaPlayer.start();
+                }
 
                 hints.get(index).setState(Hint.State.REVEALED);
                 Point hintPoint = hints.get(index).getLocation();
@@ -577,8 +643,9 @@ public class HuntActivity extends BaseGameActivity {
     }
 
     private void saveUserData(String userID, final String huntID) {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("UserData");
-        query.whereEqualTo("userID", userID);
+        ParseQuery<ParseObject> query =
+                new ParseQuery<ParseObject>(getString(R.string.parse_userdata_class_name));
+        query.whereEqualTo(getString(R.string.parse_userID_field_name), userID);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -586,9 +653,9 @@ public class HuntActivity extends BaseGameActivity {
                     if (!parseObjects.isEmpty()) {
                         ParseObject userData = parseObjects.get(0);
                         if (huntID.contains("$")) {
-                            userData.add("ongoingHunts", huntID);
+                            userData.add(getString(R.string.parse_ongoingHunts_field_name), huntID);
                         } else {
-                            userData.add("finishedHunts", huntID);
+                            userData.add(getString(R.string.parse_finishedHunts_field_name), huntID);
                         }
                         userData.saveInBackground(new SaveCallback() {
                             @Override
@@ -626,16 +693,21 @@ public class HuntActivity extends BaseGameActivity {
 
     @Override
     protected void onDestroy() {
+        // release the MediaPlayers
+        removeSounds();
+
         //TODO replace "userID" with google user id.
         System.out.println("Destroying shit");
 
         String huntId = hunt.getParseID();
         if (!finishedGame) {
+            //TODO implement saving ongoing hunt better
             huntId += "$" + hintPagerAdapter.getCount();
         }
+        //TODO replace "userID" with google user id.
         saveUserData("userID", huntId);
         geofence.destroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(geofenceReciever);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(geofenceReceiver);
         super.onDestroy();
     }
 
