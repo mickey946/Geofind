@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
@@ -408,7 +409,7 @@ public class CreateHintActivity extends ActionBarActivity {
      * @param view The current view.
      */
     public void openVideoSelection(View view) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         intent.setType("video/*");
 
         // Verify the intent resolves
@@ -431,7 +432,13 @@ public class CreateHintActivity extends ActionBarActivity {
      * @param view The current view.
      */
     public void openAudioSelection(View view) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent;
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT,
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        }
         intent.setType("audio/*");
 
         // Verify the intent resolves

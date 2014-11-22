@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.parse.GetCallback;
@@ -171,12 +170,12 @@ public class Hint implements Serializable {
 
 
     public interface DownloadImage {
-        void updateImage(Bitmap im);
+        void onImageReceive(Bitmap im);
         void onUrlReceive(String link);
     }
 
     public interface DownloadVideoAudio {
-        void updateVideoAudio(String link);
+        void onUrlReceive(String link);
     }
 
     public void downloadImage(DownloadImage callback) {
@@ -203,7 +202,7 @@ public class Hint implements Serializable {
                             public void done(byte[] bytes, ParseException e) {
                                 if (e == null) {
                                     callback.onUrlReceive(file.getUrl());
-                                    callback.updateImage(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                    callback.onImageReceive(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                                 }
                                 else {
                                     System.out.println("parse exception1 " + e.getMessage());
@@ -230,7 +229,7 @@ public class Hint implements Serializable {
                     }
                     ParseFile file = (ParseFile) parseObject.get(field);
                     if (file != null) {
-                        callback.updateVideoAudio(file.getUrl());
+                        callback.onUrlReceive(file.getUrl());
                     }
                 } else {
                     System.out.println("parse exception2 " + e.getMessage());

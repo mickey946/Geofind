@@ -175,8 +175,9 @@ public class HuntActivity extends ActionBarActivity {
         if (mapManager != null) {
             mapManager.focusOnCurrentLocation();
         }
-        if (geofence != null)
+        if (geofence != null) {
             geofence.resumeGeofence();
+        }
 
         // keep the screen awake (if needed)
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
