@@ -3,6 +3,7 @@ package com.geofind.geofind;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 import com.google.example.games.basegameutils.BaseGameActivity;
+
 import java.io.InputStream;
 
 
@@ -143,7 +145,6 @@ public class ContentViewActivity extends BaseGameActivity {
      * @param selectedVideoAudioString The hint video or audio uri.toString().
      */
     private void setUpVideoAudioView(String selectedVideoAudioString) {
-        progressBar.setVisibility(View.GONE);
         Uri selectedVideoAudio = Uri.parse(selectedVideoAudioString);
         videoView = (VideoView) findViewById(R.id.content_video_view);
         videoView.setVisibility(View.VISIBLE);
@@ -152,6 +153,13 @@ public class ContentViewActivity extends BaseGameActivity {
         videoView.setMediaController(mediaController);
         videoView.setVideoURI(selectedVideoAudio);
         videoView.start();
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                progressBar.setVisibility(View.GONE);
+                mp.start();
+            }
+        });
     }
 
     @Override
