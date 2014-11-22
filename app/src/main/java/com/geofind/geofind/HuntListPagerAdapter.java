@@ -2,6 +2,7 @@ package com.geofind.geofind;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -76,7 +77,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
         //TODO need to get data on user - List of Finished Hunts, List of OngoingHunts.
         // create new Hint fragment
         final Fragment fragment = new HuntListFragment();
-        Log.d("Load","pager adaper get item " + i);
+        Log.d("Load", "pager adaper get item " + i);
 
         // create and fill the hunts array to display them.
 
@@ -85,20 +86,23 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
         final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
 
-                //TODO replace the SECOND "userID" with google use id.
+        //TODO replace the SECOND "userID" with google use id.
         userQuery.whereEqualTo(context.getString(R.string.parse_userID_field_name), "userID");
-                userQuery.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> parseObjects, ParseException e) {
-                        if (e == null) {
-                            if (!parseObjects.isEmpty()) {
+        userQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(final List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (!parseObjects.isEmpty()) {
+                        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... params) {
                                 ParseObject userData = parseObjects.get(0);
                                 snapshotManager.waitforfinish();
                                 GameStatus gameStatus = ((GeofindApp) (context.getApplicationContext())).getGameStatus();
-                                Log.d("Load","loading from parse for page " + i);
+                                Log.d("Load", "loading from parse for page " + i);
                                 switch (i) {
                                     case NEW_HUNTS:
-                                        //TODO need to extract point numbers from onGoingHunts
+
 //                                        List<String> notNewHunts = parse(onGoingHunts);
 //                                        notNewHunts.addAll(finishedHunts);
                                         huntsQuery.whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getPlayed());
@@ -141,14 +145,18 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
                                     }
                                 });
 
-                            } else {
-                                Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
+                                return null;
                             }
-                        } else {
-                            System.out.println("error");
-                        }
+                        };
+                        task.execute();
+                    } else {
+                        Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
                     }
-                });
+                } else {
+                    System.out.println("error");
+                }
+            }
+        });
 
 //
 //            }
