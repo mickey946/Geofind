@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.example.games.basegameutils.BaseGameActivity;
-import com.google.example.games.basegameutils.GameHelper;
 
 
 public class GooglePlusSignInActivity extends BaseGameActivity {
@@ -20,7 +19,11 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setRequestedClients(CLIENT_GAMES | CLIENT_PLUS | CLIENT_SNAPSHOT);
+
         super.onCreate(savedInstanceState);
+
+        getGameHelper().setMaxAutoSignInAttempts(
+                getResources().getInteger(R.integer.google_play_max_auto_sing_in));
 
         setContentView(R.layout.activity_splash_screen);
     }

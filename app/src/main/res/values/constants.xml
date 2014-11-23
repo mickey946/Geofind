@@ -44,6 +44,7 @@
     <string name="auto_complete_json_description">description</string>
     <string name="auto_complete_json_reference">reference</string>
     <string name="hunt_is_finished">IS_FINISHED</string>
+    <integer name="google_play_max_auto_sing_in">1</integer>
 
     <!--constants for parse-->
 
