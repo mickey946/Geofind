@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.geofind.geofind.widget.SlidingTabLayoutl;
+package com.geofind.geofind.widget.SlidingTabLayout;
 
 import android.R;
 import android.content.Context;
