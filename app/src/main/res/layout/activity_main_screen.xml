@@ -50,6 +50,7 @@
                 android:text="@string/main_screen_create_hunt" />
 
             <Button
+                android:id="@+id/main_screen_achievments"
                 style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_games_controller_white"
                 android:onClick="openAchievements"

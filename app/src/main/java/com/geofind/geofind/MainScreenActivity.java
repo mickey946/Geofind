@@ -226,6 +226,14 @@ public class MainScreenActivity extends BaseGameActivity {
                 notifiyForSignIn();
             }
         });
+        Button achievementsButton = (Button) findViewById(R.id.main_screen_achievments);
+        achievementsButton.setEnabled(true);
+        achievementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifiyForSignIn();
+            }
+        });
     }
 
     @Override
@@ -236,6 +244,14 @@ public class MainScreenActivity extends BaseGameActivity {
             @Override
             public void onClick(View v) {
                 openHuntCreation();
+            }
+        });
+        Button achievementsButton = (Button) findViewById(R.id.main_screen_achievments);
+        achievementsButton.setEnabled(true);
+        achievementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAchievements(v);
             }
         });
     }
