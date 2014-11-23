@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout;
+import com.geofind.geofind.widget.slidingtablayout.SlidingTabLayout;
 import com.geofind.geofind.basegameutils.BaseGameActivity;
 
 public class HuntListActivity extends BaseGameActivity implements ActionBar.TabListener {
@@ -30,7 +30,7 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
     ViewPager viewPager;
 
     /**
-     * The {@link com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout} that will display the tabs.
+     * The {@link com.geofind.geofind.widget.slidingtablayout.SlidingTabLayout} that will display the tabs.
      */
     SlidingTabLayout slidingTabLayout;
     private SnapshotManager snapshotManager;
