@@ -1,5 +1,7 @@
 package com.geofind.geofind;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.parse.ParseObject;
 
 import java.io.Serializable;
@@ -26,12 +28,11 @@ public class Comment implements Serializable {
     private String _creatorID;
 
 
-    public Comment(String title, String review, float rating) {
+    public Comment(String title, String review, float rating, GoogleApiClient googleApiClient) {
         _title = title;
         _review = review;
         _rating = rating;
-        //TODO change "creatorID"
-        _creatorID = "creatorID";
+        _creatorID =  Plus.PeopleApi.getCurrentPerson(googleApiClient).getId();
     }
 
     public Comment(ParseObject remoteComment) {

@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People;
@@ -60,28 +61,35 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
         viewHolder.comment.setText(comment.getReview());
         viewHolder.ratingBar.setRating(comment.getRating());
 
-        // TODO get the userID from the comment
         GoogleApiClient googleApiClient = gameHelper.getApiClient();
-        String userId = Plus.PeopleApi.getCurrentPerson(googleApiClient).getId();
-        Plus.PeopleApi.load(googleApiClient, userId)
-                .setResultCallback(new ResultCallback<People.LoadPeopleResult>() {
-                    @Override
-                    public void onResult(People.LoadPeopleResult loadPeopleResult) {
-                        PersonBuffer persons = loadPeopleResult.getPersonBuffer();
-                        Person currentPerson = persons.get(0);
-                        viewHolder.userName.setText(currentPerson.getDisplayName());
+        String userId = comment.getCreatorID();
+        if (userId != null) {
+            Plus.PeopleApi.load(googleApiClient, userId)
+                    .setResultCallback(new ResultCallback<People.LoadPeopleResult>() {
+                        @Override
+                        public void onResult(People.LoadPeopleResult loadPeopleResult) {
+                            if (loadPeopleResult.getStatus().getStatusCode() ==
+                                    CommonStatusCodes.SUCCESS) {
+                                PersonBuffer persons = loadPeopleResult.getPersonBuffer();
+                                Person currentPerson = persons.get(0);
+                                viewHolder.userName.setText(currentPerson.getDisplayName());
 
-                        if (currentPerson.hasImage()) {
-                            DownloadImageTask downloadImageTask = new
-                                    DownloadImageTask(viewHolder.userImage);
-                            downloadImageTask.execute(currentPerson.getImage().getUrl());
+                                if (currentPerson.hasImage()) {
+                                    DownloadImageTask downloadImageTask = new
+                                            DownloadImageTask(viewHolder.userImage);
+                                    downloadImageTask.execute(currentPerson.getImage().getUrl());
+                                }
+
+                                // show the comment and hide the progress bar
+                                viewHolder.commentView.setVisibility(View.VISIBLE);
+                                viewHolder.progressBar.setVisibility(View.INVISIBLE);
+                            }
                         }
-
-                        // show the comment and hide the progress bar
-                        viewHolder.commentView.setVisibility(View.VISIBLE);
-                        viewHolder.progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
+                    });
+        } else {
+            // should not happen
+            Log.wtf(getClass().getName(), "Comment creator id is null");
+        }
 
         // get user's preferred date format
         Format format = android.text.format.DateFormat.getDateFormat(context);
@@ -94,8 +102,6 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
         }
 
         viewHolder.date.setText(dateFormat.format(comment.getDateCreated()));
-
-        // TODO get user image
     }
 
     /**
