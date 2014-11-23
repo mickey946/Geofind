@@ -5,7 +5,7 @@
     tools:context="com.geofind.geofind.HuntListActivity"
     android:orientation="vertical">
 
-    <com.geofind.geofind.widget.slidingtablayout_.SlidingTabLayout
+    <com.geofind.geofind.widget.slidingtablayout.SlidingTabLayout
         android:background="@color/colorPrimary"
         android:id="@+id/sliding_tabs"
         android:layout_width="match_parent"
