@@ -43,14 +43,17 @@
                 android:text="@string/main_screen_play_hunt" />
 
             <Button
+                android:id="@+id/main_screen_create_hunt"
                 style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_add_white_48dp"
-                android:onClick="openHuntCreation"
+                android:enabled="false"
                 android:text="@string/main_screen_create_hunt" />
 
             <Button
+                android:id="@+id/main_screen_achievments"
                 style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_games_controller_white"
+                android:onClick="openAchievements"
                 android:text="@string/main_screen_google_play_games" />
 
             <Button

@@ -44,16 +44,11 @@
     <string name="auto_complete_json_description">description</string>
     <string name="auto_complete_json_reference">reference</string>
     <string name="hunt_is_finished">IS_FINISHED</string>
+    <integer name="google_play_max_auto_sing_in">1</integer>
 
     <!--constants for parse-->
-
     <string name="parse_app_id">ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa</string>
     <string name="parse_client_key">bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv</string>
-    <string name="parse_userdata_class_name">UserData</string>
-    <string name="parse_finishedHunts_field_name">finishedHunts</string>
-    <string name="parse_ongoingHunts_field_name">ongoingHunts</string>
-    <string name="parse_userID_field_name">userID</string>
     <string name="parse_objectID_field_name">objectId</string>
-
 
 </resources>

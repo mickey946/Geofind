@@ -170,5 +170,6 @@
     <string name="title_activity_licence">LicenceActivity</string>
     <string name="item_hint_play_video">Play Video</string>
     <string name="item_hint_play_sound">Play Sound</string>
+    <string name="main_screen_sign_in_dialog">You must sign in to create Hunts.</string>
 
 </resources>

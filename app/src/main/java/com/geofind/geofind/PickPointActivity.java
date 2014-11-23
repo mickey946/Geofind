@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.MapFragment;
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
 
 
 public class PickPointActivity extends BaseGameActivity {

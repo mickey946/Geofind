@@ -22,8 +22,8 @@ import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.plus.model.people.PersonBuffer;
-import com.google.example.games.basegameutils.BaseGameActivity;
-import com.google.example.games.basegameutils.GameHelper;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.GameHelper;
 
 import java.io.InputStream;
 import java.text.DateFormat;

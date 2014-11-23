@@ -70,10 +70,8 @@ public class SnapshotManager {
                     for (SnapshotMetadata m : snapshotResults.getSnapshots()) {
                         //loadFromSnapshot(m.freeze());
                         // This is a hack to clear saved games
-                        //Games.Snapshots.delete(mGoogleApiClient,m);
+//                        Games.Snapshots.delete(mGoogleApiClient,m);
                         gameStatus.addToSaveHunts(m.freeze());
-
-
                     }
 
                     snapshotResults.getSnapshots().release();
@@ -352,7 +350,6 @@ public class SnapshotManager {
                 Log.d(TAG, snapshot.toString());
             }
         });
-
     }
 
 

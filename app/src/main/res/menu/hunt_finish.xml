@@ -3,12 +3,12 @@
     tools:context="com.geofind.geofind.HuntFinishActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_share"
-        android:title="@string/action_share"
-        android:icon="@drawable/ic_share_white_24dp"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
+    <!--<item-->
+        <!--android:id="@+id/action_share"-->
+        <!--android:title="@string/action_share"-->
+        <!--android:icon="@drawable/ic_share_white_24dp"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="ifRoom" />-->
 
     <item
         android:id="@+id/action_settings"

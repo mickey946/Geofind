@@ -14,7 +14,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.plus.Plus;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
@@ -194,7 +196,7 @@ public class CreateHuntActivity extends BaseGameActivity {
      * Submit the Hunt and save it in the database.
      */
     public void submitHunt(String huntTitle, String huntDescription) {
-        String creatorID = "creatorID"; // TODO get the real creator ID.
+        String creatorID = Plus.PeopleApi.getCurrentPerson(getApiClient()).getId();
 
         Hunt hunt = new Hunt(huntTitle, huntDescription, creatorID, hints);
 
@@ -211,12 +213,19 @@ public class CreateHuntActivity extends BaseGameActivity {
                     Toast.makeText(getApplicationContext(), "Hunt was NOT created, please try again.",
                             Toast.LENGTH_LONG).show();
                 }
+
+                // TODO show progress bar for saving a hunt
+                finish();
             }
         });
 
-        //TODO consider moving the finish call to after Toast.
-        finish();
+        if (isSignedIn()) {
+            Games.Achievements.unlock(getApiClient(),
+                    getString(R.string.achievement_bob_the_builder));
 
+            Games.Achievements.increment(getApiClient(),
+                    getString(R.string.achievement_parttime_contractor), 1);
+        }
     }
 
     @Override

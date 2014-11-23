@@ -2,15 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.geofind.geofind.HuntActivity">
+
     <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_temp_finish"
-        android:title="Temporary finish"
         android:orderInCategory="100"
         app:showAsAction="never" />
 

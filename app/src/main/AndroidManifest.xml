@@ -51,6 +51,9 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBvR2kQHRNoXswE1JgZMFEZVlI7q2J9EIM" />
+
+        <meta-data android:name="unityplayer.ForwardNativeEventsToDalvik" android:value="true" />
+
         <activity
             android:name=".MainScreenActivity"
             android:theme="@style/AppTheme.NoActionBar"

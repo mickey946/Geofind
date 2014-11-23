@@ -3,39 +3,22 @@ package com.geofind.geofind;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
-import com.google.example.games.basegameutils.BaseGameActivity;
-import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.SaveCallback;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.google.android.gms.games.Games;
 
 
 public class MainScreenActivity extends BaseGameActivity {
-
-
-    @Override
-    public void onSignInFailed() {
-
-    }
-
-    @Override
-    public void onSignInSucceeded() {
-
-    }
 
     /**
      * Direction of moving of the image.
@@ -83,7 +66,7 @@ public class MainScreenActivity extends BaseGameActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        connectToParse();
+
         setContentView(R.layout.activity_main_screen);
 
         background = (ImageView) findViewById(R.id.background_image);
@@ -197,10 +180,8 @@ public class MainScreenActivity extends BaseGameActivity {
 
     /**
      * Start {@link com.geofind.geofind.CreateHuntActivity} so the user can create a hunt
-     *
-     * @param view The current view.
      */
-    public void openHuntCreation(View view) {
+    public void openHuntCreation() {
         Intent intent = new Intent(this, CreateHuntActivity.class);
         startActivity(intent);
     }
@@ -215,46 +196,69 @@ public class MainScreenActivity extends BaseGameActivity {
         startActivity(intent);
     }
 
-    private void connectToParse() {
-        Parse.initialize(this, getString(R.string.parse_app_id),
-                getString(R.string.parse_client_key));
-
-        //TODO: change to correct user id
-        String user = "userID";
-
-        ParseQuery<ParseObject> query =
-                new ParseQuery<ParseObject>(getString(R.string.parse_userID_field_name));
-        query.whereEqualTo("userID", user);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    if (parseObjects.isEmpty()) {
-                        ParseObject userData =
-                                new ParseObject(getString(R.string.parse_userdata_class_name));
-                        userData.put(getString(R.string.parse_userID_field_name), "userID");
-                        userData.put(getString(R.string.parse_ongoingHunts_field_name), new ArrayList<String>());
-                        userData.put(getString(R.string.parse_finishedHunts_field_name), new ArrayList<String>());
-
-                        userData.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    Log.v("Parse User Data Creation: ", "Success.");
-                                } else {
-                                    Log.v("Parse User Data Creation: ", "Failure.");
-                                }
+    public void notifiyForSignIn() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.main_screen_sign_in_dialog))
+                .setTitle(getString(R.string.preferences_account_sign_in_title))
+                .setPositiveButton(getString(R.string.preferences_account_sign_in_title),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface d, int id) {
+                                beginUserInitiatedSignIn();
+                                d.dismiss();
+                            }
+                        })
+                .setNegativeButton(getString(R.string.dialog_dismiss),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface d, int id) {
+                                d.cancel();
                             }
                         });
-                    }
-                    //Else : user data exists. do nothing!
+        builder.create().show();
+    }
 
-                } else {
-                    Log.v("ParseException, could not connect to Parse.", e.getMessage());
-                }
+    @Override
+    public void onSignInFailed() {
+        Button createHuntButton = (Button) findViewById(R.id.main_screen_create_hunt);
+        createHuntButton.setEnabled(true);
+        createHuntButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifiyForSignIn();
+            }
+        });
+        Button achievementsButton = (Button) findViewById(R.id.main_screen_achievments);
+        achievementsButton.setEnabled(true);
+        achievementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notifiyForSignIn();
             }
         });
     }
 
-    //TODO: All of Google Play Games buttons
+    @Override
+    public void onSignInSucceeded() {
+        Button createHuntButton = (Button) findViewById(R.id.main_screen_create_hunt);
+        createHuntButton.setEnabled(true);
+        createHuntButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openHuntCreation();
+            }
+        });
+        Button achievementsButton = (Button) findViewById(R.id.main_screen_achievments);
+        achievementsButton.setEnabled(true);
+        achievementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAchievements(v);
+            }
+        });
+    }
+
+    public void openAchievements(View view) {
+        if (isSignedIn()) {
+            startActivityForResult(Games.Achievements.getAchievementsIntent(getApiClient()), 1);
+        }
+    }
 }

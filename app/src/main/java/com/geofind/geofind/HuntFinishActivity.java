@@ -13,7 +13,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -65,15 +65,17 @@ public class HuntFinishActivity extends BaseGameActivity {
             String dateFormatted = formatter.format(date);
             totalTimeTextView.setText(dateFormatted);
         }
-
-        setUpReviewCard();
     }
 
     /**
      * Set up the review card view so that when of it's elements is in focus - hide the floating
      * action button. When done, show the button again.
      */
-    private void setUpReviewCard() {
+    private void setupReviewCard() {
+        // show the review card
+        View reviewCard = findViewById(R.id.hunt_finish_review_card_view);
+        reviewCard.setVisibility(View.VISIBLE);
+
         // get the floating action button
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -248,6 +250,7 @@ public class HuntFinishActivity extends BaseGameActivity {
 
     @Override
     public void onSignInSucceeded() {
-
+        // user is signed in, can review the hunt
+        setupReviewCard();
     }
 }

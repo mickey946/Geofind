@@ -3,7 +3,7 @@ package com.geofind.geofind;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
 
 import de.psdev.licensesdialog.LicensesDialogFragment;
 import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;

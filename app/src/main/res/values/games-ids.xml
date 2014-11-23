@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="achievement_geofind_rookie">CgkIieSKicgIEAIQAQ</string>
+    <string name="achievement_geofind_junior">CgkIieSKicgIEAIQBQ</string>
+    <string name="achievement_geofind_veteran">CgkIieSKicgIEAIQBg</string>
+    <string name="achievement_geofind_expert">CgkIieSKicgIEAIQBw</string>
+    <string name="achievement_bob_the_builder">CgkIieSKicgIEAIQCA</string>
+    <string name="achievement_parttime_contractor">CgkIieSKicgIEAIQCQ</string>
+    <string name="achievement_rookie_mistake">CgkIieSKicgIEAIQCg</string>
+    <string name="achievement_lazy_geofinder">CgkIieSKicgIEAIQDA</string>
+</resources>
