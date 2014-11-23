@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.google.android.gms.plus.Plus;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
@@ -194,7 +195,7 @@ public class CreateHuntActivity extends BaseGameActivity {
      * Submit the Hunt and save it in the database.
      */
     public void submitHunt(String huntTitle, String huntDescription) {
-        String creatorID = "creatorID"; // TODO get the real creator ID.
+        String creatorID = Plus.PeopleApi.getCurrentPerson(getApiClient()).getId();
 
         Hunt hunt = new Hunt(huntTitle, huntDescription, creatorID, hints);
 
@@ -214,9 +215,7 @@ public class CreateHuntActivity extends BaseGameActivity {
             }
         });
 
-        //TODO consider moving the finish call to after Toast.
         finish();
-
     }
 
     @Override

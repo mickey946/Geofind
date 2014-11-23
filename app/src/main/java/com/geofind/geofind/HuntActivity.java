@@ -31,7 +31,6 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.SaveCallback;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -97,9 +96,6 @@ public class HuntActivity extends BaseGameActivity {
      */
     FloatingActionButton fab;
 
-//    private long startTime;
-
-    private boolean finishedGame;
     private BroadcastReceiver geofenceReceiver;
 
     private SnapshotManager snapshotManager;
@@ -206,10 +202,7 @@ public class HuntActivity extends BaseGameActivity {
         }
 
         // turn the sounds on or off
-        isSoundAllowed = sharedPreferences.getBoolean(getString(R.string.pref_key_sound),
-                false);
-
-//        startTime = SystemClock.elapsedRealtime();
+        isSoundAllowed = sharedPreferences.getBoolean(getString(R.string.pref_key_sound), false);
     }
 
     @Override
@@ -222,7 +215,6 @@ public class HuntActivity extends BaseGameActivity {
      * Retrieve the hunt from the intent that started the activity and set it up.
      */
     private void setupHunt() {
-        finishedGame = false;
         Intent intent = getIntent();
         Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
         if (intent != null) {
@@ -512,11 +504,8 @@ public class HuntActivity extends BaseGameActivity {
                 saveGame(true, index == hints.size() - 1);
                 // Mark the current hint as revealed
                 revealNext(index);
-
             }
         });
-
-
     }
 
     /**
@@ -538,7 +527,6 @@ public class HuntActivity extends BaseGameActivity {
                     } else {
                         mapManager.onLocationChangedAnchored(point.toLocation());
                     }
-
                 }
             }
         }
@@ -570,15 +558,9 @@ public class HuntActivity extends BaseGameActivity {
     }
 
     private Intent generateFinishData() {
-        finishedGame = true;
         Intent intent = new Intent(this, HuntFinishActivity.class);
 
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        long currentTime = SystemClock.elapsedRealtime();
-//        long passedTime = sharedPreferences.getLong("HuntTime", 0);
-//        long playTime = passedTime + currentTime - startTime;
         final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
-
 
         int solved = 0;
         for (Hint hint : hints) {
@@ -622,47 +604,12 @@ public class HuntActivity extends BaseGameActivity {
             fab.setVisibility(View.VISIBLE);
             fab.show();
         }
-
     }
 
     public void finishHunt(View view) {
-        //TODO get user google ID and to this function!
-        saveUserData("userID", hunt.getParseID());
         Intent intent = generateFinishData();
         startActivity(intent);
         finish();
-    }
-
-    private void saveUserData(String userID, final String huntID) {
-        ParseQuery<ParseObject> query =
-                new ParseQuery<ParseObject>(getString(R.string.parse_userdata_class_name));
-        query.whereEqualTo(getString(R.string.parse_userID_field_name), userID);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    if (!parseObjects.isEmpty()) {
-                        ParseObject userData = parseObjects.get(0);
-                        if (huntID.contains("$")) {
-                            userData.add(getString(R.string.parse_ongoingHunts_field_name), huntID);
-                        } else {
-                            userData.add(getString(R.string.parse_finishedHunts_field_name), huntID);
-                        }
-                        userData.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    Log.v("Adding user data to parse: ", "Success");
-                                } else {
-                                    Log.v("Adding user data to parse: ", "Failure");
-                                }
-                            }
-                        });
-                    }
-
-                }
-            }
-        });
     }
 
     private void saveGame(boolean revealed, boolean isFinished) {
@@ -679,18 +626,10 @@ public class HuntActivity extends BaseGameActivity {
         // release the MediaPlayers
         removeSounds();
 
-        //TODO replace "userID" with google user id.
-        System.out.println("Destroying shit");
-
-        String huntId = hunt.getParseID();
-        if (!finishedGame) {
-            //TODO implement saving ongoing hunt better
-            huntId += "$" + hintPagerAdapter.getCount();
-        }
-        //TODO replace "userID" with google user id.
-        saveUserData("userID", huntId);
+        // destroy geofence
         geofence.destroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(geofenceReceiver);
+
         super.onDestroy();
     }
 

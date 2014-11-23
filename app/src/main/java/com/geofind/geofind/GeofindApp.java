@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.Parse;
 
 import java.util.HashMap;
 
@@ -35,6 +36,9 @@ public class GeofindApp extends Application {
         tracker.enableExceptionReporting(sharedPreferences.getBoolean(
                 getString(R.string.pref_crash_logs), true));
         tracker.setSessionTimeout(300);
+
+        Parse.initialize(this, getString(R.string.parse_app_id),
+                getString(R.string.parse_client_key));
     }
 
     synchronized Tracker getTracker(TrackerName trackerId) {

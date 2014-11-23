@@ -10,21 +10,11 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.geofind.geofind.basegameutils.BaseGameActivity;
-import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.SaveCallback;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainScreenActivity extends BaseGameActivity {
@@ -75,7 +65,7 @@ public class MainScreenActivity extends BaseGameActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        connectToParse();
+
         setContentView(R.layout.activity_main_screen);
 
         background = (ImageView) findViewById(R.id.background_image);
@@ -189,7 +179,6 @@ public class MainScreenActivity extends BaseGameActivity {
 
     /**
      * Start {@link com.geofind.geofind.CreateHuntActivity} so the user can create a hunt
-     *
      */
     public void openHuntCreation() {
         Intent intent = new Intent(this, CreateHuntActivity.class);
@@ -224,47 +213,6 @@ public class MainScreenActivity extends BaseGameActivity {
                             }
                         });
         builder.create().show();
-    }
-
-    private void connectToParse() {
-        Parse.initialize(this, getString(R.string.parse_app_id),
-                getString(R.string.parse_client_key));
-
-        //TODO: change to correct user id
-        String user = "userID";
-
-        ParseQuery<ParseObject> query =
-                new ParseQuery<ParseObject>(getString(R.string.parse_userID_field_name));
-        query.whereEqualTo("userID", user);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    if (parseObjects.isEmpty()) {
-                        ParseObject userData =
-                                new ParseObject(getString(R.string.parse_userdata_class_name));
-                        userData.put(getString(R.string.parse_userID_field_name), "userID");
-                        userData.put(getString(R.string.parse_ongoingHunts_field_name), new ArrayList<String>());
-                        userData.put(getString(R.string.parse_finishedHunts_field_name), new ArrayList<String>());
-
-                        userData.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    Log.v("Parse User Data Creation: ", "Success.");
-                                } else {
-                                    Log.v("Parse User Data Creation: ", "Failure.");
-                                }
-                            }
-                        });
-                    }
-                    //Else : user data exists. do nothing!
-
-                } else {
-                    Log.v("ParseException, could not connect to Parse.", e.getMessage());
-                }
-            }
-        });
     }
 
     //TODO: All of Google Play Games buttons

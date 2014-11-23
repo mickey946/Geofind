@@ -66,7 +66,8 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
      */
     SnapshotManager snapshotManager;
 
-    public HuntListPagerAdapter(FragmentManager fm, BaseGameActivity context, SnapshotManager snapshotManager) {
+    public HuntListPagerAdapter(FragmentManager fm, BaseGameActivity context,
+                                SnapshotManager snapshotManager) {
         super(fm);
         this.context = context;
         this.snapshotManager = snapshotManager;
@@ -74,94 +75,71 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(final int i) {
-        //TODO need to get data on user - List of Finished Hunts, List of OngoingHunts.
+        Log.d("Load", "pager adapter get item " + i);
+
         // create new Hint fragment
         final Fragment fragment = new HuntListFragment();
-        Log.d("Load", "pager adaper get item " + i);
 
         // create and fill the hunts array to display them.
-
-        ParseQuery<ParseObject> userQuery = ParseQuery.getQuery(context.getString(R.string.parse_userdata_class_name));
-
         final ArrayList<Hunt> hunts = new ArrayList<Hunt>();
         final ParseQuery<ParseObject> huntsQuery = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
 
-        //TODO replace the SECOND "userID" with google use id.
-        userQuery.whereEqualTo(context.getString(R.string.parse_userID_field_name), "userID");
-        userQuery.findInBackground(new FindCallback<ParseObject>() {
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            public void done(final List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    if (!parseObjects.isEmpty()) {
-                        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... params) {
-                                ParseObject userData = parseObjects.get(0);
-                                snapshotManager.waitforfinish();
-                                GameStatus gameStatus = ((GeofindApp) (context.getApplicationContext())).getGameStatus();
-                                Log.d("Load", "loading from parse for page " + i);
-                                switch (i) {
-                                    case NEW_HUNTS:
+            protected Void doInBackground(Void... params) {
+                snapshotManager.waitforfinish();
 
-//                                        List<String> notNewHunts = parse(onGoingHunts);
-//                                        notNewHunts.addAll(finishedHunts);
-                                        huntsQuery.whereNotContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getPlayed());
-                                        break;
-                                    case ONGOING_HUNTS:
-                                        huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getOnGoing());
-//                                        huntsQuery.whereContainedIn("objectId", parse(onGoingHunts)).
-//                                                whereNotContainedIn("objectId", finishedHunts);
-                                        break;
-                                    case FINISHED_HUNTS:
-                                        huntsQuery.whereContainedIn(context.getString(R.string.parse_objectID_field_name), gameStatus.getFinished());
-//                                        huntsQuery.whereContainedIn("objectId", finishedHunts);
-                                        break;
-                                }
+                GameStatus gameStatus = ((GeofindApp) (context.getApplicationContext())).
+                        getGameStatus();
 
-                                huntsQuery.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(List<ParseObject> parseObjects, ParseException e) {
-                                        if (e == null) {
-                                            // remove progress bar
-                                            ((HuntListFragment) fragment).progressBar
-                                                    .setVisibility(View.GONE);
-
-                                            if (!parseObjects.isEmpty()) {
-                                                for (ParseObject parseObject : parseObjects) {
-                                                    hunts.add(new Hunt(parseObject));
-                                                }
-                                                ((HuntListFragment) fragment).setHunts(hunts);
-
-                                            } else { // empty list
-                                                ((HuntListFragment) fragment).emptyListTextView
-                                                        .setVisibility(View.VISIBLE);
-                                            }
-
-                                        } else {
-                                            Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
-                                                    Toast.LENGTH_LONG).show();
-                                            System.out.println(e.getMessage());
-                                        }
-                                    }
-                                });
-
-                                return null;
-                            }
-                        };
-                        task.execute();
-                    } else {
-                        Log.v("Retrieving Hunts Failed: ", "Hunt List is empty.");
-                    }
-                } else {
-                    System.out.println("error");
+                switch (i) {
+                    case NEW_HUNTS:
+                        huntsQuery.whereNotContainedIn(
+                                context.getString(R.string.parse_objectID_field_name),
+                                gameStatus.getPlayed());
+                        break;
+                    case ONGOING_HUNTS:
+                        huntsQuery.whereContainedIn(
+                                context.getString(R.string.parse_objectID_field_name),
+                                gameStatus.getOnGoing());
+                        break;
+                    case FINISHED_HUNTS:
+                        huntsQuery.whereContainedIn(
+                                context.getString(R.string.parse_objectID_field_name),
+                                gameStatus.getFinished());
+                        break;
                 }
+
+                huntsQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                        if (e == null) {
+                            // remove progress bar
+                            ((HuntListFragment) fragment).progressBar
+                                    .setVisibility(View.GONE);
+
+                            if (!parseObjects.isEmpty()) {
+                                for (ParseObject parseObject : parseObjects) {
+                                    hunts.add(new Hunt(parseObject));
+                                }
+                                ((HuntListFragment) fragment).setHunts(hunts);
+
+                            } else { // empty list
+                                ((HuntListFragment) fragment).emptyListTextView
+                                        .setVisibility(View.VISIBLE);
+                            }
+
+                        } else {
+                            Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
+                                    Toast.LENGTH_LONG).show();
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                });
+
+                return null;
             }
-        });
-
-//
-//            }
-//        });
-
+        }.execute();
 
         // create and add arguments to pass them to it
         Bundle args = new Bundle();
