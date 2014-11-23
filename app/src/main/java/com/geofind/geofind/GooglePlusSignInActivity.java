@@ -3,18 +3,10 @@ package com.geofind.geofind;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
-
 public class GooglePlusSignInActivity extends BaseGameActivity {
-
-    private GoogleApiClient mGoogleApiClient;
-
-    TextView id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +28,7 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
 
     @Override
     public void onSignInFailed() {
-        Toast.makeText(this, "Connection failed / cancel pressed", Toast.LENGTH_LONG).show();
+        Log.d("Failed to connect at GooglePlusSignInActivity", "");
 
         Intent i = new Intent(GooglePlusSignInActivity.this, MainScreenActivity.class);
         startActivity(i);
@@ -47,9 +39,7 @@ public class GooglePlusSignInActivity extends BaseGameActivity {
 
     @Override
     public void onSignInSucceeded() {
-        mGoogleApiClient = getApiClient();
-        Log.d("mGoogleapi = ", mGoogleApiClient.toString());
-        UserData.init(mGoogleApiClient);
+        Log.d("Connected at GooglePlusSignInActivity", getApiClient().toString());
 
         Intent i = new Intent(GooglePlusSignInActivity.this, MainScreenActivity.class);
         startActivity(i);
