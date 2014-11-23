@@ -101,6 +101,8 @@ public class HuntActivity extends BaseGameActivity {
 
     private SnapshotManager snapshotManager;
 
+    private int solved = 0;
+
     /**
      * Indicates if the user wants sound effects or not.
      */
@@ -496,6 +498,10 @@ public class HuntActivity extends BaseGameActivity {
                     failureMediaPlayer.start();
                 }
 
+                // unlock achievement
+                Games.Achievements.unlock(getApiClient(),
+                        getString(R.string.achievement_rookie_mistake));
+
                 hints.get(index).setState(Hint.State.REVEALED);
                 Point hintPoint = hints.get(index).getLocation();
                 mapManager.setMarker(hintPoint.toLatLng(),
@@ -563,12 +569,6 @@ public class HuntActivity extends BaseGameActivity {
 
         final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
 
-        int solved = 0;
-        for (Hint hint : hints) {
-            if (hint.getState() == Hint.State.SOLVED)
-                solved++;
-        }
-
         intent.putExtra(getResources().getString(R.string.hunt_finish_total_points), hints.size());
         intent.putExtra(getResources().getString(R.string.hunt_finish_solved_points), solved);
         intent.putExtra(getResources().getString(R.string.hunt_finish_total_time),
@@ -606,17 +606,28 @@ public class HuntActivity extends BaseGameActivity {
             fab.show();
 
             // unlock achievements
-            Games.Achievements.unlock(getApiClient(),
-                    getString(R.string.achievement_geofind_rookie));
+            for (Hint hint : hints) {
+                if (hint.getState() == Hint.State.SOLVED)
+                    solved++;
+            }
 
-            Games.Achievements.increment(getApiClient(),
-                    getString(R.string.achievement_geofind_junior), 1);
+            if (solved >= hints.size() * 0.8) {
+                Games.Achievements.unlock(getApiClient(),
+                        getString(R.string.achievement_geofind_rookie));
 
-            Games.Achievements.increment(getApiClient(),
-                    getString(R.string.achievement_geofind_veteran), 1);
+                Games.Achievements.increment(getApiClient(),
+                        getString(R.string.achievement_geofind_junior), 1);
 
-            Games.Achievements.increment(getApiClient(),
-                    getString(R.string.achievement_geofind_expert), 1);
+                Games.Achievements.increment(getApiClient(),
+                        getString(R.string.achievement_geofind_veteran), 1);
+
+                Games.Achievements.increment(getApiClient(),
+                        getString(R.string.achievement_geofind_expert), 1);
+
+            } else if (solved == 0) {
+                Games.Achievements.unlock(getApiClient(),
+                        getString(R.string.achievement_lazy_geofinder));
+            }
         }
     }
 

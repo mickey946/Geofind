@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.plus.Plus;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -212,10 +213,16 @@ public class CreateHuntActivity extends BaseGameActivity {
                     Toast.makeText(getApplicationContext(), "Hunt was NOT created, please try again.",
                             Toast.LENGTH_LONG).show();
                 }
+
+                finish();
             }
         });
 
-        finish();
+        Games.Achievements.unlock(getApiClient(),
+                getString(R.string.achievement_bob_the_builder));
+
+        Games.Achievements.increment(getApiClient(),
+                getString(R.string.achievement_parttime_contractor), 1);
     }
 
     @Override
