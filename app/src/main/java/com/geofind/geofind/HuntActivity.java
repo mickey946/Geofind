@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.maps.MapFragment;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
@@ -600,9 +601,22 @@ public class HuntActivity extends BaseGameActivity {
             geofence.createGeofence(hints.get(i + 1).getLocation(),
                     GEOFENCE_RADIUS, i + 1);
             viewPager.setCurrentItem(i + 1, true); // scroll smoothly to the given index
-        } else {
+        } else { // finished hunt
             fab.setVisibility(View.VISIBLE);
             fab.show();
+
+            // unlock achievements
+            Games.Achievements.unlock(getApiClient(),
+                    getString(R.string.achievement_geofind_rookie));
+
+            Games.Achievements.increment(getApiClient(),
+                    getString(R.string.achievement_geofind_junior), 1);
+
+            Games.Achievements.increment(getApiClient(),
+                    getString(R.string.achievement_geofind_veteran), 1);
+
+            Games.Achievements.increment(getApiClient(),
+                    getString(R.string.achievement_geofind_expert), 1);
         }
     }
 

@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.google.android.gms.games.Games;
 
 
 public class MainScreenActivity extends BaseGameActivity {
@@ -215,8 +216,6 @@ public class MainScreenActivity extends BaseGameActivity {
         builder.create().show();
     }
 
-    //TODO: All of Google Play Games buttons
-
     @Override
     public void onSignInFailed() {
         Button createHuntButton = (Button) findViewById(R.id.main_screen_create_hunt);
@@ -239,6 +238,9 @@ public class MainScreenActivity extends BaseGameActivity {
                 openHuntCreation();
             }
         });
+    }
 
+    public void openAchievements(View view) {
+        startActivityForResult(Games.Achievements.getAchievementsIntent(getApiClient()), 1);
     }
 }
