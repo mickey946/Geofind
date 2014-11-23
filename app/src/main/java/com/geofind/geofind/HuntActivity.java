@@ -43,7 +43,7 @@ import java.util.concurrent.Callable;
 
 public class HuntActivity extends BaseGameActivity {
 
-    public static final int GEOFENCE_RADIUS = 50;
+    public static final int GEOFENCE_RADIUS = 100;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing

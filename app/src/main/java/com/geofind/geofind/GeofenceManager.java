@@ -81,6 +81,8 @@ public class GeofenceManager implements
 
     private boolean _cleanUp;
 
+    private float _lastAccuracy;
+
 
     /**
      * Contstructor and initializer
@@ -92,6 +94,7 @@ public class GeofenceManager implements
         simpleGeofenceStore = new SimpleGeofenceStore(activity);
         mCurrentGeofence = new ArrayList<Geofence>();
         _pointIndex = -1;
+        _lastAccuracy = -1;
         mInProgress = false;
         _cancelCallback = null;
         _pointCanceled = false;
@@ -113,6 +116,17 @@ public class GeofenceManager implements
         addGeofences();
         final String ID = composeID(point);
         _activeID = ID;
+
+//        if (getLocationClient().getLastLocation()!=null) {
+//            if(!mInProgress) {
+//                _lastAccuracy = getLocationClient().getLastLocation().getAccuracy();
+//            }
+//        }
+
+        if (_lastAccuracy > 0) {
+
+            radius = Math.max(radius, _lastAccuracy);
+        }
 
         Log.d(TAG, "create geofence " + ID + "with radius " + radius + "at" + pointIndex);
         _pointIndex = pointIndex;
@@ -241,6 +255,7 @@ public class GeofenceManager implements
     public void onConnected(Bundle bundle) {
         // Start with the request flag set to false
         mInProgress = false;
+        _lastAccuracy = getLocationClient().getLastLocation().getAccuracy();
         switch (mRequestType) {
             case ADD:
                 mTransitionPendingIntent = getTransitionPendingIntent();
