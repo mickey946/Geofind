@@ -564,16 +564,6 @@ public class HuntActivity extends BaseGameActivity {
                 intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.action_temp_finish:
-
-                //TODO get user google ID and to this function!
-                saveUserData("userID", hunt.getParseID());
-
-                intent = generateFinishData();
-
-                startActivity(intent);
-                finish();
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
