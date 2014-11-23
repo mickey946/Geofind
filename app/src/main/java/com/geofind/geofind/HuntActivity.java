@@ -9,7 +9,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,8 +23,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import com.google.android.gms.maps.MapFragment;
 import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.google.android.gms.maps.MapFragment;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -127,13 +126,13 @@ public class HuntActivity extends BaseGameActivity {
 
         setContentView(R.layout.activity_hunt);
 
-        setUpFloatingActionButton();
+        setupFloatingActionButton();
 
-        setUpSounds();
+        setupSounds();
 
-        setUpHunt();
+        setupHunt();
 
-        setUpMap();
+        setupMap();
 
         // stabilize the layout
         View layout = findViewById(R.id.main_content);
@@ -148,7 +147,7 @@ public class HuntActivity extends BaseGameActivity {
     /**
      * Set up the {@link com.melnykov.fab.FloatingActionButton} that finishes the game.
      */
-    private void setUpFloatingActionButton() {
+    private void setupFloatingActionButton() {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
     }
@@ -156,7 +155,7 @@ public class HuntActivity extends BaseGameActivity {
     /**
      * Setup the {@link android.media.MediaPlayer}s that play the sounds.
      */
-    private void setUpSounds() {
+    private void setupSounds() {
         successMediaPlayer = MediaPlayer.create(this, R.raw.success_1_by_fins);
         failureMediaPlayer = MediaPlayer.create(this, R.raw.aww_by_phmiller42);
     }
@@ -169,6 +168,23 @@ public class HuntActivity extends BaseGameActivity {
         successMediaPlayer = null;
         failureMediaPlayer.release();
         failureMediaPlayer = null;
+    }
+
+    private void setupGame() {
+        // hide the progress bar
+        ProgressBar progressBar = (ProgressBar)
+                findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
+
+        // show the game layout
+        View slidingLayout = findViewById(R.id.sliding_layout);
+        slidingLayout.setVisibility(View.VISIBLE);
+
+        setupGeofence();
+
+        setupPagerView();
+
+        setupSlidingUpPanel();
     }
 
     @Override
@@ -198,10 +214,6 @@ public class HuntActivity extends BaseGameActivity {
 
     @Override
     protected void onPause() {
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        long currentTime = SystemClock.elapsedRealtime();
-//        long pasedTime = sharedPreferences.getLong("HuntTime", 0);
-//        sharedPreferences.edit().putLong("HuntTime", pasedTime + currentTime - startTime);
         mapManager.stopTrackCurrentLocation();
         super.onPause();
     }
@@ -209,7 +221,7 @@ public class HuntActivity extends BaseGameActivity {
     /**
      * Retrieve the hunt from the intent that started the activity and set it up.
      */
-    private void setUpHunt() {
+    private void setupHunt() {
         finishedGame = false;
         Intent intent = getIntent();
         Log.d(TAG, "got intent is " + (intent == null ? "null" : intent.getType()));
@@ -221,7 +233,6 @@ public class HuntActivity extends BaseGameActivity {
             setTitle(hunt.getTitle());
             ParseQuery<ParseObject> query = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
             query.selectKeys(Arrays.asList(Hunt.PARSE_HINTS_FIELD));
-
 
             query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
                 @Override
@@ -245,52 +256,42 @@ public class HuntActivity extends BaseGameActivity {
                                         }
                                     }
 
-                                    snapshotManager.loadFromSnapshot(gameStatus.getSnapshotMetadataById(hunt.getParseID()), new Callable() {
-                                        @Override
-                                        public Object call() throws Exception {
-                                            // recover solved and revealed points
-                                            ArrayList<Integer> revealedPoints =
-                                                    new ArrayList<Integer>(
-                                                            gameStatus.getHuntRevealedPoints(
-                                                                    hunt.getParseID()));
-                                            for (int index = 0;
-                                                 index < gameStatus.getHuntPosition(hunt.getParseID());
-                                                 index++) {
-                                                if (!revealedPoints.isEmpty()) {
-                                                    if (revealedPoints.get(0) == index) {
-                                                        hints.get(index).setState(Hint.State.REVEALED);
-                                                        revealedPoints.remove(0);
-                                                    } else {
-                                                        hints.get(index).setState(Hint.State.SOLVED);
+                                    if (isSignedIn()) {
+                                        snapshotManager.loadFromSnapshot(
+                                                gameStatus.getSnapshotMetadataById(hunt.getParseID()), new Callable() {
+                                                    @Override
+                                                    public Object call() throws Exception {
+                                                        // recover solved and revealed points
+                                                        ArrayList<Integer> revealedPoints =
+                                                                new ArrayList<Integer>(
+                                                                        gameStatus.getHuntRevealedPoints(
+                                                                                hunt.getParseID()));
+                                                        for (int index = 0;
+                                                             index < gameStatus.getHuntPosition(hunt.getParseID());
+                                                             index++) {
+                                                            if (!revealedPoints.isEmpty()) {
+                                                                if (revealedPoints.get(0) == index) {
+                                                                    hints.get(index).setState(Hint.State.REVEALED);
+                                                                    revealedPoints.remove(0);
+                                                                } else {
+                                                                    hints.get(index).setState(Hint.State.SOLVED);
+                                                                }
+                                                                mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
+                                                                        getString(R.string.hunt_activity_hint_number_title)
+                                                                                + hints.size(),
+                                                                        hints.get(index).getState());
+                                                            }
+
+                                                        }
+
+                                                        setupGame();
+
+                                                        return null;
                                                     }
-                                                    mapManager.setMarker(hints.get(index).getLocation().toLatLng(),
-                                                            getString(R.string.hunt_activity_hint_number_title)
-                                                                    + hints.size(),
-                                                            hints.get(index).getState());
-                                                }
-
-                                            }
-
-                                            // hide the progress bar
-                                            ProgressBar progressBar = (ProgressBar)
-                                                    findViewById(R.id.progress_bar);
-                                            progressBar.setVisibility(View.GONE);
-
-                                            // show the game layout
-                                            View slidingLayout = findViewById(R.id.sliding_layout);
-                                            slidingLayout.setVisibility(View.VISIBLE);
-
-                                            setUpGeofence();
-
-                                            setUpPagerView();
-
-                                            setUpSlidingUpPanel();
-
-                                            return null;
-                                        }
-                                    });
-
-
+                                                });
+                                    } else { // user is not signed in, setup without saved games
+                                        setupGame();
+                                    }
                                 } else {
                                     Log.v("Parse Hint List fetching: ", "failed");
                                 }
@@ -307,7 +308,7 @@ public class HuntActivity extends BaseGameActivity {
     /**
      * Set up the sliding up panel with listeners.
      */
-    private void setUpSlidingUpPanel() {
+    private void setupSlidingUpPanel() {
         slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         slidingUpPanel.setAnchorPoint(SLIDING_UP_PANEL_ANCHOR_POINT);
         slidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -389,7 +390,7 @@ public class HuntActivity extends BaseGameActivity {
     /**
      * Set up the pager view.
      */
-    private void setUpPagerView() {
+    private void setupPagerView() {
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
         // ViewPager and its adapters use support library fragments, so we must use
@@ -423,7 +424,7 @@ public class HuntActivity extends BaseGameActivity {
     /**
      * Set up the map view.
      */
-    private void setUpMap() {
+    private void setupMap() {
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.hunt_map);
         mapManager = new MapManager(this, mapFragment, true);
@@ -444,8 +445,8 @@ public class HuntActivity extends BaseGameActivity {
     /**
      * Set up the geofence
      */
-    private void setUpGeofence() {
-        Log.d(TAG, "setUpGeofence");
+    private void setupGeofence() {
+        Log.d(TAG, "setupGeofence");
         geofence = new GeofenceManager(this);
 
         geofenceReceiver = new BroadcastReceiver() {
@@ -598,7 +599,7 @@ public class HuntActivity extends BaseGameActivity {
         intent.putExtra(getResources().getString(R.string.hunt_finish_total_points), hints.size());
         intent.putExtra(getResources().getString(R.string.hunt_finish_solved_points), solved);
         intent.putExtra(getResources().getString(R.string.hunt_finish_total_time),
-                gameStatus.getHuntPlayedTime(hunt.getParseID()) );
+                gameStatus.getHuntPlayedTime(hunt.getParseID()));
         intent.putExtra(getResources().getString(R.string.intent_hunt_extra), hunt);
 
         return intent;
@@ -675,20 +676,12 @@ public class HuntActivity extends BaseGameActivity {
     }
 
     private void saveGame(boolean revealed, boolean isFinished) {
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        final GameStatus gameStatus = ((GeofindApp) getApplicationContext()).getGameStatus();
-        long currentTime = SystemClock.elapsedRealtime();
-//        long passedTime = sharedPreferences.getLong("HuntTime", 0);
-//        long playTime = passedTime + currentTime - startTime;
-
-
         ((GeofindApp) getApplicationContext()).getGameStatus().updateGame(
                 hunt.getParseID(), revealed, isFinished);
 
-        snapshotManager.saveSnapshot(hunt.getParseID());
-
-
+        if (isSignedIn()) {
+            snapshotManager.saveSnapshot(hunt.getParseID());
+        }
     }
 
     @Override
@@ -714,7 +707,6 @@ public class HuntActivity extends BaseGameActivity {
     @Override
     public void onSignInFailed() {
         Log.d("HuntActivity", "SignInFailed");
-
     }
 
     @Override
