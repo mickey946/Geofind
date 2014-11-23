@@ -94,7 +94,6 @@
     <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-6.1.71" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-21.0.0" level="project" />
-    <orderEntry type="module" module-name="BaseGameUtils" exported="" />
   </component>
 </module>
 

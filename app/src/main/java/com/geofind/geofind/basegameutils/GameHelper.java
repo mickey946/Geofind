@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.example.games.basegameutils;
+package com.geofind.geofind.basegameutils;
 
 import java.util.ArrayList;
 

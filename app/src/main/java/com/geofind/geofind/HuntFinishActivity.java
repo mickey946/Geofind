@@ -13,7 +13,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.GetCallback;
 import com.parse.ParseException;

@@ -25,7 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.MapFragment;
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.GetCallback;

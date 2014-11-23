@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;

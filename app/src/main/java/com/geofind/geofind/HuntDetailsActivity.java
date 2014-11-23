@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.text.DecimalFormat;

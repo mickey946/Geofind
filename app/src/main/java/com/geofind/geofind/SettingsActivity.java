@@ -12,8 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.analytics.Tracker;
-import com.google.example.games.basegameutils.BaseGameActivity;
-import com.google.example.games.basegameutils.GameHelper;
+import com.geofind.geofind.basegameutils.BaseGameActivity;
+import com.geofind.geofind.basegameutils.GameHelper;
 
 
 public class SettingsActivity extends BaseGameActivity {
@@ -95,7 +95,7 @@ public class SettingsActivity extends BaseGameActivity {
         private Preference.OnPreferenceClickListener signInClick, signOutClick;
 
         /**
-         * The {@link com.google.example.games.basegameutils.GameHelper} of the activity.
+         * The {@link com.geofind.geofind.basegameutils.GameHelper} of the activity.
          */
         private GameHelper gameHelper;
 
