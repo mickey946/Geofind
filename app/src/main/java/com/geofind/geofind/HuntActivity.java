@@ -499,8 +499,10 @@ public class HuntActivity extends BaseGameActivity {
                 }
 
                 // unlock achievement
-                Games.Achievements.unlock(getApiClient(),
-                        getString(R.string.achievement_rookie_mistake));
+                if (isSignedIn()) {
+                    Games.Achievements.unlock(getApiClient(),
+                            getString(R.string.achievement_rookie_mistake));
+                }
 
                 hints.get(index).setState(Hint.State.REVEALED);
                 Point hintPoint = hints.get(index).getLocation();
@@ -611,22 +613,24 @@ public class HuntActivity extends BaseGameActivity {
                     solved++;
             }
 
-            if (solved >= hints.size() * 0.8) {
-                Games.Achievements.unlock(getApiClient(),
-                        getString(R.string.achievement_geofind_rookie));
+            if (isSignedIn()) {
+                if (solved >= hints.size() * 0.8) {
+                    Games.Achievements.unlock(getApiClient(),
+                            getString(R.string.achievement_geofind_rookie));
 
-                Games.Achievements.increment(getApiClient(),
-                        getString(R.string.achievement_geofind_junior), 1);
+                    Games.Achievements.increment(getApiClient(),
+                            getString(R.string.achievement_geofind_junior), 1);
 
-                Games.Achievements.increment(getApiClient(),
-                        getString(R.string.achievement_geofind_veteran), 1);
+                    Games.Achievements.increment(getApiClient(),
+                            getString(R.string.achievement_geofind_veteran), 1);
 
-                Games.Achievements.increment(getApiClient(),
-                        getString(R.string.achievement_geofind_expert), 1);
+                    Games.Achievements.increment(getApiClient(),
+                            getString(R.string.achievement_geofind_expert), 1);
 
-            } else if (solved == 0) {
-                Games.Achievements.unlock(getApiClient(),
-                        getString(R.string.achievement_lazy_geofinder));
+                } else if (solved == 0) {
+                    Games.Achievements.unlock(getApiClient(),
+                            getString(R.string.achievement_lazy_geofinder));
+                }
             }
         }
     }

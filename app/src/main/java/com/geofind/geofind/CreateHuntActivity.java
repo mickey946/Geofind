@@ -214,15 +214,18 @@ public class CreateHuntActivity extends BaseGameActivity {
                             Toast.LENGTH_LONG).show();
                 }
 
+                // TODO show progress bar for saving a hunt
                 finish();
             }
         });
 
-        Games.Achievements.unlock(getApiClient(),
-                getString(R.string.achievement_bob_the_builder));
+        if (isSignedIn()) {
+            Games.Achievements.unlock(getApiClient(),
+                    getString(R.string.achievement_bob_the_builder));
 
-        Games.Achievements.increment(getApiClient(),
-                getString(R.string.achievement_parttime_contractor), 1);
+            Games.Achievements.increment(getApiClient(),
+                    getString(R.string.achievement_parttime_contractor), 1);
+        }
     }
 
     @Override

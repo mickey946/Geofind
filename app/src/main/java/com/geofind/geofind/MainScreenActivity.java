@@ -241,6 +241,8 @@ public class MainScreenActivity extends BaseGameActivity {
     }
 
     public void openAchievements(View view) {
-        startActivityForResult(Games.Achievements.getAchievementsIntent(getApiClient()), 1);
+        if (isSignedIn()) {
+            startActivityForResult(Games.Achievements.getAchievementsIntent(getApiClient()), 1);
+        }
     }
 }
