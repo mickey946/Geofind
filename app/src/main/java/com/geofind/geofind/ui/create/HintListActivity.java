@@ -22,10 +22,21 @@ import com.geofind.geofind.ui.common.RetainedFragment;
 
 import java.util.ArrayList;
 
-
+/**
+ * An {@link android.app.Activity} used to display the created
+ * {@link com.geofind.geofind.structures.Hint} list.
+  */
 public class HintListActivity extends BaseGameActivity {
 
+    /**
+     * A {@link com.geofind.geofind.ui.common.RetainedFragment} that saves the state of the
+     * {@link android.app.Activity}across it's life time.
+     */
     private RetainedFragment<ArrayList<Hint>> retainedFragment;
+
+    /**
+     * The {@link com.geofind.geofind.ui.create.HintListAdapter} of the {@link android.app.Activity}.
+     */
     private HintListAdapter adapter;
 
     @Override
@@ -133,6 +144,7 @@ public class HintListActivity extends BaseGameActivity {
 
     /**
      * Add a new hint to the list.
+     * @param hint The {@link com.geofind.geofind.structures.Hint} to add.
      */
     public void addHint(Hint hint) {
         // add a new hint

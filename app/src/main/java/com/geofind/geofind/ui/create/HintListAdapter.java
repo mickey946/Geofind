@@ -25,24 +25,37 @@ import com.geofind.geofind.structures.Hint;
 import java.util.ArrayList;
 
 /**
+ * A {@link android.support.v7.widget.RecyclerView.Adapter} for the
+ * {@link com.geofind.geofind.ui.create.HintListActivity}.
+ * <p/>
  * Created by mickey on 06/10/14.
  */
 public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHolder> {
 
+    /**
+     * A reference for the {@link android.view.ActionMode} of the {@link android.app.Activity}.
+     */
     protected Object actionMode;
 
     /**
      * The hints to display.
      */
     private ArrayList<Hint> hints;
+
     /**
      * The host activity.
      */
     private Context context;
+
     /**
-     * This is true when the map image is drawn
+     * The map width.
      */
-    private int mapWidth, mapHeight;
+    private int mapWidth;
+
+    /**
+     * The map height.
+     */
+    private int mapHeight;
 
     public HintListAdapter(Context context) {
         hints = new ArrayList<Hint>();

@@ -32,24 +32,98 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-
+/**
+ * An {@link android.app.Activity} that used for creating a
+ * {@link com.geofind.geofind.structures.Hint}.
+ */
 public class CreateHintActivity extends BaseGameActivity {
 
+    /**
+     * A {@link android.preference.Preference} name for dismissing the info card.
+     */
     private static final String PREF_CREATE_HINT_POINT_DISMISS = "PREF_CREATE_HINT_POINT_DISMISS";
 
+    /**
+     * The maximum file size in bytes.
+     */
     public static final int MAX_FILE_SIZE = 10000000;
 
+    /**
+     * The {@link android.content.SharedPreferences} of the activity.
+     */
     private SharedPreferences sharedPreferences;
 
-    private TextView hintTextTextView;
+    /**
+     * The {@link android.widget.TextView} that shows the
+     * {@link com.geofind.geofind.structures.Hint}'s text.
+     */
+    private TextView hintText;
+
+    /**
+     * The {@link com.geofind.geofind.structures.Hint} to display and edit.
+     */
     private Hint hint = null;
+
+    /**
+     * The index of the {@link com.geofind.geofind.structures.Hint} int the hint list.
+     */
     private Integer index = null;
-    private ImageView Map;
+
+    /**
+     * The {@link android.widget.ImageView} that shows the selected point on a map.
+     */
+    private ImageView map;
+
+    /**
+     * A {@link android.widget.ProgressBar} that is shown until the map is loaded.
+     */
     private ProgressBar progressBar;
-    private int mapWidth = -1, mapHeight = -1;
+
+    /**
+     * The map's width.
+     */
+    private int mapWidth = -1;
+
+    /**
+     * The map's height.
+     */
+    private int mapHeight = -1;
+
+    /**
+     * The {@link com.geofind.geofind.structures.Point} of the
+     * {@link com.geofind.geofind.structures.Hint}.
+     */
     private Point hintPoint;
-    byte[] imageByteArray, videoByteArray, audioByteArray;
-    private Uri imageUri, videoUri, audioUri;
+
+    /**
+     * A byte array representing the selected image.
+     */
+    byte[] imageByteArray;
+
+    /**
+     * A byte array representing the selected video.
+     */
+    byte[] videoByteArray;
+
+    /**
+     * A byte array representing the selected audio.
+     */
+    byte[] audioByteArray;
+
+    /**
+     * The {@link android.net.Uri} of the selected image.
+     */
+    private Uri imageUri;
+
+    /**
+     * The {@link android.net.Uri} of the selected video.
+     */
+    private Uri videoUri;
+
+    /**
+     * The {@link android.net.Uri} of the selected audio.
+     */
+    private Uri audioUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,34 +142,35 @@ public class CreateHintActivity extends BaseGameActivity {
             hidePointInfo();
         }
 
-        hintTextTextView = (TextView) findViewById(R.id.create_hint_description);
+        hintText = (TextView) findViewById(R.id.create_hint_description);
 
         Intent intent = getIntent();
         if (intent != null) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-                hint = (Hint) bundle.getSerializable(getResources().getString(R.string.intent_hint_extra));
+                hint = (Hint) bundle.getSerializable(getResources()
+                        .getString(R.string.intent_hint_extra));
                 index = bundle.getInt(getResources().getString(R.string.intent_hint_index_extra));
                 if (hint != null) { // the user is editing and existing hint
-                    hintTextTextView.setText(hint.getText());
+                    hintText.setText(hint.getText());
                     hintPoint = hint.getLocation();
                 }
             }
         }
 
         // load the picked point map
-        Map = (ImageView) findViewById(R.id.create_hint_map);
+        map = (ImageView) findViewById(R.id.create_hint_map);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        final StaticMap staticMap = new StaticMap(Map, progressBar);
-        ViewTreeObserver vto = Map.getViewTreeObserver();
+        final StaticMap staticMap = new StaticMap(map, progressBar);
+        ViewTreeObserver vto = map.getViewTreeObserver();
         if (mapHeight == -1 || mapWidth == -1) {
             if (vto.isAlive()) {
                 vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        Map.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        mapHeight = Map.getHeight();
-                        mapWidth = Map.getWidth();
+                        map.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mapHeight = map.getHeight();
+                        mapWidth = map.getWidth();
                         if (hint == null) {
                             staticMap.execute(new StaticMap.StaticMapDescriptor(mapWidth, mapHeight));
                         } else {
@@ -138,15 +213,17 @@ public class CreateHintActivity extends BaseGameActivity {
      * @return whether the user filled all the required fields or not
      */
     public boolean checkInput() {
-        boolean legal = !hintTextTextView.getText().toString().trim().equals("");
+        boolean legal = !hintText.getText().toString().trim().equals("");
 
         if (!legal) {
-            Toast.makeText(this, getString(R.string.create_hint_fields_error), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.create_hint_fields_error),
+                    Toast.LENGTH_LONG).show();
         }
 
         if (hintPoint == null) {
             legal = false;
-            Toast.makeText(this, getString(R.string.create_hint_point_missing), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.create_hint_point_missing),
+                    Toast.LENGTH_LONG).show();
         }
 
         return legal;
@@ -173,7 +250,7 @@ public class CreateHintActivity extends BaseGameActivity {
                 audioStr = audioUri.toString();
             }
 
-            Hint hint = new Hint(hintTextTextView.getText().toString(), hintPoint,
+            Hint hint = new Hint(hintText.getText().toString(), hintPoint,
                     imageStr, videoStr, audioStr);
 
             // send away the hint (and it's index, if present)
@@ -187,6 +264,10 @@ public class CreateHintActivity extends BaseGameActivity {
         } // else: do not exit
     }
 
+    /**
+     * Open the {@link com.geofind.geofind.ui.create.PickPointActivity}.
+     * @param view The current view.
+     */
     public void openPointPicker(View view) {
         Intent intent = new Intent(this, PickPointActivity.class);
         if (hintPoint != null)
@@ -205,9 +286,9 @@ public class CreateHintActivity extends BaseGameActivity {
             if (resultCode == RESULT_OK) { // The user picked a point
                 Bundle bundle = data.getExtras();
                 hintPoint = (Point) bundle.getSerializable(getString(R.string.intent_hint_extra));
-                Map.setVisibility(View.INVISIBLE);
+                map.setVisibility(View.INVISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
-                new StaticMap(Map, progressBar).execute(
+                new StaticMap(map, progressBar).execute(
                         new StaticMap.StaticMapDescriptor(hintPoint.toLatLng(), mapWidth, mapHeight));
             }
 
@@ -354,7 +435,8 @@ public class CreateHintActivity extends BaseGameActivity {
                     }
 
                 } catch (Exception e) {
-                    Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.create_hint_kitkat_file_error),
+                            Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 } finally {
                     if (!isTooBig) {
@@ -405,7 +487,8 @@ public class CreateHintActivity extends BaseGameActivity {
             startActivityForResult(intent,
                     getResources().getInteger(R.integer.intent_picture_result));
         } else { // No file manager available
-            Toast.makeText(this, getString(R.string.create_hint_file_manager_error), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.create_hint_file_manager_error),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -528,6 +611,10 @@ public class CreateHintActivity extends BaseGameActivity {
         editor.apply();
     }
 
+    /**
+     * Remove selected image.
+     * @param view The current view.
+     */
     public void removeSelectedImage(View view) {
         // hide the image view
         ImageView imageView = (ImageView) findViewById(R.id.create_hint_image);
@@ -543,6 +630,10 @@ public class CreateHintActivity extends BaseGameActivity {
 
     }
 
+    /**
+     * Remove selected video.
+     * @param view The current view.
+     */
     public void removeSelectedVideo(View view) {
         // hide the play video button
         View playVideoView = findViewById(R.id.create_hint_play_video_layout);
@@ -558,6 +649,10 @@ public class CreateHintActivity extends BaseGameActivity {
 
     }
 
+    /**
+     * Remove selected audio.
+     * @param view The current view.
+     */
     public void removeSelectedAudio(View view) {
         // hide the play audio button
         View playVideoView = findViewById(R.id.create_hint_play_audio_layout);
@@ -575,11 +670,9 @@ public class CreateHintActivity extends BaseGameActivity {
 
     @Override
     public void onSignInFailed() {
-
     }
 
     @Override
     public void onSignInSucceeded() {
-
     }
 }
