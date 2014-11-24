@@ -28,19 +28,33 @@ import java.util.List;
  */
 public class GeoAutoComplete {
 
-    public static final String LOG_TAG = "AutoComplete";
+    public static final String LOG_TAG = GeoAutoComplete.class.getSimpleName();
 
+    /**
+     * Definition of the column in the relieved data from google auto-complete
+     */
     private static final int DESCRIPTION_COL = 1;
     private static final int REFERENCE_COL = 2;
 
-    private SearchView searchView; // Autocomplete text view
-    private Context _context; // The map context
-    private MapManager _mapManager; // the map manager of the current map
+    /**
+     * The {@link android.support.v7.widget.SearchView} for text entering
+     */
+    private SearchView searchView;
+
+    /**
+     * The {@link android.content.Context} which holds the maps
+     */
+    private Context context;
+
+    /**
+     * The {@link com.geofind.geofind.geoutils.MapManager} that will display the searched location
+     */
+    private MapManager mapManager;
 
 
     public GeoAutoComplete(MapManager mapManager, Context context, SearchView searchView) {
-        _mapManager = mapManager;
-        _context = context;
+        this.mapManager = mapManager;
+        this.context = context;
         this.searchView = searchView;
         initAutoCompleteLocation();
     }
@@ -196,17 +210,33 @@ public class GeoAutoComplete {
                 parameters;
     }
 
-    public enum DownloadTypes {PLACES, PLACES_DETAILS}
+    /**
+     * AsyncTask job types
+     */
+    public enum DownloadTypes {
+        /**
+         * Download the list for display in auto complete box
+         */
+        PLACES,
+
+        /**
+         * Download the details of the selected place
+         */
+        PLACES_DETAILS
+    }
 
     /**
      * Asynchronous download command
      */
     private class DownloadTask extends AsyncTask<String, Void, String> {
 
-        DownloadTypes _type;
+        /**
+         * The {@link com.geofind.geofind.geoutils.GeoAutoComplete.DownloadTask} of the current task
+         */
+        DownloadTypes type;
 
         public DownloadTask(DownloadTypes type) {
-            _type = type;
+            this.type = type;
         }
 
         @Override
@@ -231,8 +261,10 @@ public class GeoAutoComplete {
                 // Reading data from url
                 iStream = urlConnection.getInputStream();
 
+                // Add buffering of the downloaded data
                 BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
 
+                // Compose the download buffer to a single string
                 StringBuilder sb = new StringBuilder();
 
                 String line;
@@ -246,6 +278,7 @@ public class GeoAutoComplete {
             } catch (Exception e) {
                 Log.d(LOG_TAG, "Exception while downloading url" + e.toString());
             } finally {
+                // Close all the opened streams
                 if (iStream != null) {
                     try {
                         iStream.close();
@@ -271,7 +304,7 @@ public class GeoAutoComplete {
             if (s.isEmpty()) {
                 return;
             }
-            switch (_type) {
+            switch (type) {
                 case PLACES:
                     ParseTask placeParser = new ParseTask(DownloadTypes.PLACES);
                     placeParser.execute(s);
@@ -288,10 +321,14 @@ public class GeoAutoComplete {
      */
     private class ParseTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
 
-        DownloadTypes _parseType;
+        /**
+         * The {@link com.geofind.geofind.geoutils.GeoAutoComplete.DownloadTypes} of the data to be
+         * parsed.
+         */
+        DownloadTypes parseType;
 
         public ParseTask(DownloadTypes type) {
-            _parseType = type;
+            parseType = type;
         }
 
         @Override
@@ -310,7 +347,7 @@ public class GeoAutoComplete {
                 }
 
                 // Parse received data
-                switch (_parseType) {
+                switch (parseType) {
                     case PLACES:
                         PlaceJSONParser placeParser = new PlaceJSONParser();
                         list = placeParser.parse(jObject);
@@ -331,10 +368,10 @@ public class GeoAutoComplete {
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> results) {
-            switch (_parseType) {
+            switch (parseType) {
                 case PLACES:
-                    final String key = _context.getString(R.string.auto_complete_json_description);
-                    final String value = _context.getString(R.string.auto_complete_json_reference);
+                    final String key = context.getString(R.string.auto_complete_json_description);
+                    final String value = context.getString(R.string.auto_complete_json_reference);
                     String[] from = new String[]{key};
                     int[] to = new int[]{android.R.id.text1};
 
@@ -345,7 +382,7 @@ public class GeoAutoComplete {
                                 {result.hashCode(), result.get(key), result.get(value)});
                     }
                     SimpleCursorAdapter adapter =
-                            new SimpleCursorAdapter(_context, R.layout.simple_list_item_1_white,
+                            new SimpleCursorAdapter(context, R.layout.simple_list_item_1_white,
                                     matrixCursor, from, to, 0);
 
                     // Setting the adapter
@@ -365,7 +402,7 @@ public class GeoAutoComplete {
                     double longitude = Double.parseDouble(hm.get("lng"));
 
                     // display the parsed location on the map
-                    _mapManager.displayFoundLocation(new LatLng(latitude, longitude));
+                    mapManager.displayFoundLocation(new LatLng(latitude, longitude));
                     break;
             }
         }

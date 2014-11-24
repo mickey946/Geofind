@@ -67,12 +67,12 @@ public class PickPointActivity extends BaseGameActivity {
             // send away the point
             Intent intent = new Intent();
 
-            Point resultPoint = _mapManager.get_selectedPoint();
+            Point resultPoint = _mapManager.getSelectedPoint();
 
             if (resultPoint == null) {
                 setResult(RESULT_CANCELED, intent);
             } else {
-                intent.putExtra(getString(R.string.intent_hint_extra), _mapManager.get_selectedPoint());
+                intent.putExtra(getString(R.string.intent_hint_extra), _mapManager.getSelectedPoint());
                 setResult(RESULT_OK, intent);
             }
 

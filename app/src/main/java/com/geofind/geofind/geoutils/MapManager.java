@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
 
 import com.geofind.geofind.structures.Hint;
 import com.geofind.geofind.structures.Point;
@@ -37,39 +36,81 @@ import java.util.concurrent.Callable;
  */
 public class MapManager {
 
-    public static final String LOG_TAG = "MapManager";
+    public static final String TAG = MapManager.class.getName();
 
+    /**
+     * The zooming of the map when nothing is drawn on it
+     */
     private static final int DEFAULT_ZOOM = 17;
 
-    // Markers
+    /**
+     * The {@link com.google.android.gms.maps.model.MarkerOptions } which used to add new marker
+     */
     protected MarkerOptions markerOptions;
-    // Visualize objects
-    private SearchView _atvLocation;
-    private MapFragment _mapFragment;
-    private Activity _activity;
-    // display parameters
-    private float _offsetX, _offsetY;
-    private int _zoomLevel;
-    private int _mapWidth, _mapHeight;
-    // zoom handling object
-    private Callable<Void> _zoomUpdate;
-    private GeoUtils.IndexCallback _indexCallback;
-    private HashMap<Marker, Integer> _markerMap;
 
-    // Google map interface object
-    private GoogleMap _mMap;
-    private Point _selectedPoint;
+    /**
+     * The {@link com.google.android.gms.maps.MapFragment} which displaying the current map
+     */
+    private MapFragment mapFragment;
 
-    //Current location provider
-    private LocationFinder _locationFinder;
+    /**
+     * The host activity
+     */
+    private Activity activity;
+
+    /**
+     * The offset in which to move the map center. used when the map is covered by the sliding panel
+     */
+    private float offsetX, offsetY;
+
+    /**
+     * The zoom level in which to display the map
+     */
+    private int zoomLevel;
+
+    /**
+     * Map dimensions
+     */
+    private int mapWidth, mapHeight;
+
+    /**
+     * The callback to be called when the zoom changed to update the drawn circle
+     */
+    private Callable<Void> zoomUpdate;
+
+    /**
+     * the {@link com.geofind.geofind.geoutils.GeoUtils.IndexCallback} to be called when pressed
+     * on marker
+     */
+    private GeoUtils.IndexCallback indexCallback;
+
+    /**
+     * Held all the {@link com.google.android.gms.maps.model.Marker} that are drawn on the map, and
+     * the corresponding point index.
+     */
+    private HashMap<Marker, Integer> markerMap;
+
+    /**
+     * Google map interface object
+     */
+    private GoogleMap map;
+
+    /**
+     * The current selected {@link com.geofind.geofind.structures.Point}
+     */
+    private Point selectedPoint;
+
+    /**
+     * Current location provider
+     */
+    private LocationFinder locationFinder;
 
     /**
      * Map Manager constructor for usage with AutoComplete
      */
     public MapManager(Activity activity, MapFragment map, SearchView atvLocation) {
-        _mapFragment = map;
-        _activity = activity;
-        _atvLocation = atvLocation;
+        mapFragment = map;
+        this.activity = activity;
         new GeoAutoComplete(this, activity, atvLocation);
         initMap(true);
     }
@@ -78,47 +119,48 @@ public class MapManager {
      * Default constructor .
      */
     public MapManager(Activity activity, MapFragment map, boolean focusOnCurrent) {
-        _mapFragment = map;
-        _activity = activity;
+        mapFragment = map;
+        this.activity = activity;
         initMap(focusOnCurrent);
     }
 
 
     /**
      * Common initialization
+     *
      * @param focusOnCurrent
      */
     private void initMap(final boolean focusOnCurrent) {
 
         // Getting Google Play availability status
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(_activity.getBaseContext());
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity.getBaseContext());
         if (status != ConnectionResult.SUCCESS) {
             int requestCode = 10;
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, _activity, requestCode);
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, activity, requestCode);
             dialog.show();
         }
-        if (_mMap == null) {
-            _mMap = _mapFragment.getMap();
-            if (_mMap == null) {
-                Toast.makeText(_activity, "Error creating map", Toast.LENGTH_LONG).show();
+        if (map == null) {
+            map = mapFragment.getMap();
+            if (map == null) {
+                Log.e(TAG,"Creating map failure");
             }
-            _markerMap = new HashMap<Marker, Integer>();
+            markerMap = new HashMap<Marker, Integer>();
 
-            _mapHeight = 0;
-            _mapWidth = 0;
+            mapHeight = 0;
+            mapWidth = 0;
 
             // update the zoom parameters when the view is created
-            ViewTreeObserver vto = _mapFragment.getView().getViewTreeObserver();
+            ViewTreeObserver vto = mapFragment.getView().getViewTreeObserver();
             if (vto.isAlive()) {
                 vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        _mapFragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        _mapWidth = _mapFragment.getView().getWidth();
-                        _mapHeight = _mapFragment.getView().getHeight();
-                        if (_zoomUpdate != null) {
+                        mapFragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mapWidth = mapFragment.getView().getWidth();
+                        mapHeight = mapFragment.getView().getHeight();
+                        if (zoomUpdate != null) {
                             try {
-                                _zoomUpdate.call();
+                                zoomUpdate.call();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -128,22 +170,22 @@ public class MapManager {
                 });
             }
         }
-        _locationFinder = new LocationFinder(_activity, new Callable<Void>() {
+        locationFinder = new LocationFinder(activity, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                Log.d("MapManager","LocationFinder updated");
+                Log.d(TAG, "LocationFinder updated");
                 if (focusOnCurrent)
-                    onLocationChanged(_locationFinder.getCurrentLocation());
+                    onLocationChanged(locationFinder.getCurrentLocation());
                 return null;
             }
         });
-        _locationFinder.startLocation();
-        _mMap.setMyLocationEnabled(true);
-        _offsetX = 0;
-        _offsetY = 0;
-        _zoomLevel = DEFAULT_ZOOM;
+        locationFinder.startLocation();
+        map.setMyLocationEnabled(true);
+        offsetX = 0;
+        offsetY = 0;
+        zoomLevel = DEFAULT_ZOOM;
         if (focusOnCurrent)
-        focusOnCurrentLocation();
+            focusOnCurrentLocation();
 
 
     }
@@ -154,14 +196,14 @@ public class MapManager {
      * @param indexCallback the callback method
      */
     public void setMarkerCallback(GeoUtils.IndexCallback indexCallback) {
-        _indexCallback = indexCallback;
-        _mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        this.indexCallback = indexCallback;
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // move camera to the current location
-                _mMap.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                map.moveCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-                _indexCallback.executeCallback(_markerMap.get(marker));
+                MapManager.this.indexCallback.executeCallback(markerMap.get(marker));
 
                 return true;
             }
@@ -174,13 +216,13 @@ public class MapManager {
      * @param onMapClick the callback method
      */
     public void setOnMapClick(final Callable onMapClick) {
-        _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 try {
                     onMapClick.call();
                 } catch (Exception e) {
-                    Log.e(LOG_TAG, "OnMapClick exception" + e.toString());
+                    Log.e(TAG, "OnMapClick exception" + e.toString());
                     e.printStackTrace();
                 }
             }
@@ -188,35 +230,51 @@ public class MapManager {
     }
 
 
-    //Single time focus
+    /**
+     * Single time focus
+     * @see LocationFinder#updateLocation()
+     */
     public void focusOnCurrentLocation() {
 
-        _locationFinder.updateLocation();
+        locationFinder.updateLocation();
     }
 
-    // focus and keep tracking
+    /**
+     * focus and keep tracking
+     *
+     * @see com.geofind.geofind.geoutils.LocationFinder#startPeriodicUpdates(long, long)
+     */
     public void focusOnCurrentLocation(long updateInterval, long fastestInterval) {
-        _locationFinder.startPeriodicUpdates(updateInterval, fastestInterval);
+        locationFinder.startPeriodicUpdates(updateInterval, fastestInterval);
     }
 
+    /**
+     * Stop tracking current location
+     */
     public void stopTrackCurrentLocation() {
-        _locationFinder.stopPeriodicUpdates();
+        locationFinder.stopPeriodicUpdates();
     }
 
-    // show or hide the location button
+    /**
+     * show or hide the location button
+     */
     public void showMyLocationButton(boolean show) {
-        _mMap.getUiSettings().setMyLocationButtonEnabled(show);
+        map.getUiSettings().setMyLocationButtonEnabled(show);
     }
 
-    // show or hide the zoom buttons
+    /**
+     * show or hide the zoom buttons
+     */
     public void showZoomButton(boolean show) {
-        _mMap.getUiSettings().setZoomControlsEnabled(show);
+        map.getUiSettings().setZoomControlsEnabled(show);
     }
 
-    // disable interactive features
+    /**
+     * disable interactive features
+     */
     public void setStaticMapMode() {
-        _mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        _mMap.getUiSettings().setAllGesturesEnabled(false);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setAllGesturesEnabled(false);
 
 
     }
@@ -228,21 +286,21 @@ public class MapManager {
      */
     public void enableMarkers(final boolean onlyOne) {
 
-        _mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 markerOptions = new MarkerOptions();
 
                 markerOptions.position(latLng);
                 markerOptions.title("lat: " + latLng.latitude + " lng: " + latLng.longitude);
-                _selectedPoint = new Point(latLng);
+                selectedPoint = new Point(latLng);
 
                 if (onlyOne) {
-                    _mMap.clear();
+                    map.clear();
                 }
-                Marker marker = _mMap.addMarker(markerOptions);
+                Marker marker = map.addMarker(markerOptions);
 
-                new ReverseGeocodingTask(_activity.getBaseContext(), marker).execute(latLng);
+                new ReverseGeocodingTask(activity.getBaseContext(), marker).execute(latLng);
             }
         });
     }
@@ -254,13 +312,13 @@ public class MapManager {
      * @param location the location of the marker
      */
     public void displayFoundLocation(LatLng location) {
-        _mMap.clear(); // Only one marker can be set
-        _mMap.addMarker(new MarkerOptions()
+        map.clear(); // Only one marker can be set
+        map.addMarker(new MarkerOptions()
                 .position(location));
-        _mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-        _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
+        map.moveCamera(CameraUpdateFactory.newLatLng(location));
+        map.animateCamera(CameraUpdateFactory.zoomTo(zoomLevel));
 
-        _selectedPoint = new Point(location);
+        selectedPoint = new Point(location);
     }
 
 
@@ -272,22 +330,22 @@ public class MapManager {
      * @param state    the state of the hint, influence the color of the marker
      */
     public void setMarker(LatLng location, String title, Hint.State state) {
-        Marker marker = _mMap.addMarker(new MarkerOptions()
+        Marker marker = map.addMarker(new MarkerOptions()
                 .position(location)
                 .title(title)
                 .icon(BitmapDescriptorFactory.
                         defaultMarker(state == Hint.State.REVEALED ?
                                 BitmapDescriptorFactory.HUE_RED : BitmapDescriptorFactory.HUE_GREEN)));
 
-        _markerMap.put(marker, _markerMap.size());
+        markerMap.put(marker, markerMap.size());
     }
 
     /**
      * Add offset to the display point, used when occluded by other bars
      */
     public void setMapOffset(float offsetX, float offsetY) {
-        _offsetX = offsetX;
-        _offsetY = offsetY;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
     }
 
     /**
@@ -295,19 +353,17 @@ public class MapManager {
      *
      * @param location the location to be focused on
      */
-
-
     public void onLocationChanged(Location location) {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
         LatLng latLng = new LatLng(latitude, longitude);
 
-        _mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, _zoomLevel),
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel),
                 new GoogleMap.CancelableCallback() {
                     @Override
                     public void onFinish() { // wait for the animation to end so we won't break it
-                        _mMap.animateCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
+                        map.animateCamera(CameraUpdateFactory.scrollBy(offsetX, offsetY));
                     }
 
                     @Override
@@ -331,8 +387,8 @@ public class MapManager {
 
         LatLng latLng = new LatLng(latitude, longitude);
 
-        _mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, _zoomLevel));
-        _mMap.animateCamera(CameraUpdateFactory.scrollBy(_offsetX, _offsetY));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+        map.animateCamera(CameraUpdateFactory.scrollBy(offsetX, offsetY));
     }
 
 
@@ -356,38 +412,34 @@ public class MapManager {
         circleOptions.strokeColor(Color.BLACK);
 
         // Fill color of the circle
-        // 0x represents, this is an hexadecimal code
-        // 55 represents percentage of transparency. For 100% transparency, specify 00.
-        // For 0% transparency ( ie, opaque ) , specify ff
-        // The remaining 6 characters(00ff00) specify the fill color
         circleOptions.fillColor(0x33aa0000);
 
         // Border width of the circle
         circleOptions.strokeWidth(2);
 
         // Adding the circle to the GoogleMap
-        _mMap.addCircle(circleOptions);
+        map.addCircle(circleOptions);
 
-        if (_mapWidth == 0 || _mapHeight == 0) {
+        if (mapWidth == 0 || mapHeight == 0) {
             // the map size is not available
-            _zoomUpdate = new Callable<Void>() {
+            zoomUpdate = new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
-                    Log.d(LOG_TAG, "OnCall W = " + _mapWidth + " H = " + _mapWidth);
-                    _zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
-                            _mapWidth, _mapHeight) - 2;
-                    Log.d(LOG_TAG, "OnCall Zoom = " + _zoomLevel);
+                    Log.d(TAG, "OnCall W = " + mapWidth + " H = " + mapWidth);
+                    zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
+                            mapWidth, mapHeight) - 2;
+                    Log.d(TAG, "OnCall Zoom = " + zoomLevel);
 
-                    _mMap.animateCamera(CameraUpdateFactory.zoomTo(_zoomLevel));
+                    map.animateCamera(CameraUpdateFactory.zoomTo(zoomLevel));
                     return null;
                 }
             };
             // temporary zoom level
-            _zoomLevel = DEFAULT_ZOOM;
+            zoomLevel = DEFAULT_ZOOM;
         } else {
             // calculate the zoom level
-            _zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
-                    _mapWidth, _mapHeight) - 2;
+            zoomLevel = GeoUtils.getBoundsZoomLevel(position, radius / 1000f,
+                    mapWidth, mapHeight) - 2;
         }
 
 
@@ -395,16 +447,23 @@ public class MapManager {
         l.setLatitude(position.latitude);
         l.setLongitude(position.longitude);
 
-        Log.d("MapManager","DrawCircle Update ");
+        Log.d("MapManager", "DrawCircle Update ");
         onLocationChangedAnchored(l);
     }
 
-    public Point get_selectedPoint() {
-        return _selectedPoint;
+    /**
+     *
+     * @return the currently selected point
+     */
+    public Point getSelectedPoint() {
+        return selectedPoint;
     }
 
-    public void setLocationRequired(boolean locationRequired){
-        _locationFinder.set_requireLocationEnabled(locationRequired);
+    /**
+     * @see com.geofind.geofind.geoutils.LocationFinder#setRequireLocationEnabled(boolean)
+     */
+    public void setLocationRequired(boolean locationRequired) {
+        locationFinder.setRequireLocationEnabled(locationRequired);
     }
 
     /**
@@ -467,7 +526,7 @@ public class MapManager {
         }
 
         /**
-         * Set the found address to the text box or marker
+         * Set the found address in the marker title
          */
         @Override
         protected void onPostExecute(String addressText) {

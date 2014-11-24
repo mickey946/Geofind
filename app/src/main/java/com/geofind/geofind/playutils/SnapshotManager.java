@@ -23,15 +23,43 @@ import java.util.concurrent.ExecutionException;
  */
 public class SnapshotManager {
 
-    // Request code for saving the game to a snapshot.
+
+    private static String TAG = SnapshotManager.class.getName();
+
+    /**
+     * Request code for saving the game to a snapshot.
+     */
     private static final int RC_SAVE_SNAPSHOT = 9004;
+
+    /**
+     * Request code for load the game from a snapshot.
+     */
     private static final int RC_LOAD_SNAPSHOT = 9005;
-    private static String TAG = "SnapshotManager";
+
+    /**
+     * The api client
+     */
     private GoogleApiClient googleApiClient;
+
+    /**
+     * The container of the game status
+     */
     private GameStatus gameStatus;
+
+    /**
+     * the name of the snapshot to save
+     */
     private String currentSaveName = "snapshotTemp";
+
+    /**
+     * The context of the host activity
+     */
     private Context context;
-    private AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult> task;
+
+    /**
+     * Loading snapshot task
+     */
+    private AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult> loadSnapshotsTask;
 
     public SnapshotManager(final Context context, GoogleApiClient googleApiClient1) {
         this.context = context;
@@ -39,9 +67,12 @@ public class SnapshotManager {
         gameStatus = ((GeofindApp) context.getApplicationContext()).getGameStatus();
     }
 
+    /**
+     * Loads the saved snapshots from google plus account
+     */
     public void loadSnapshotList() {
         Log.d(TAG, "Assigning and executing AsyncTask for loading snapshots");
-        task = new AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult>() {
+        loadSnapshotsTask = new AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult>() {
             @Override
             protected Snapshots.LoadSnapshotsResult doInBackground(Void... params) {
 
@@ -90,9 +121,12 @@ public class SnapshotManager {
         }.execute();
     }
 
+    /**
+     * block the thread until the snapshot loading finish
+     */
     public void waitForFinish() {
         try {
-            task.get();
+            loadSnapshotsTask.get();
             Log.d(TAG, "Snapshot list loading is finished");
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -168,6 +202,9 @@ public class SnapshotManager {
         task.execute();
     }
 
+    /**
+     * save the hunt to google play
+     */
     public void saveSnapshot(final String HuntID) {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -216,12 +253,6 @@ public class SnapshotManager {
             return result.getSnapshot();
         } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
             Log.e(TAG, "snapshot conflict");
-//            Toast.makeText(context, "snapshot conflict", Toast.LENGTH_LONG);
-//            final Snapshot snapshot = result.getSnapshot();
-//            final Snapshot conflictSnapshot = result.getConflictingSnapshot();
-//
-//            Log.d(TAG,"snapshot:" + snapshot.getMetadata().getUniqueName());
-//            Log.d(TAG,"conflict:" + conflictSnapshot.getMetadata().getUniqueName());
 
             Snapshot snapshot = result.getSnapshot();
             Snapshot conflictSnapshot = result.getConflictingSnapshot();
@@ -251,7 +282,7 @@ public class SnapshotManager {
     }
 
     /**
-     * Generates metadata, takes a screenshot, and performs the write operation for saving a
+     * Generates metadata, and performs the write operation for saving a
      * snapshot.
      */
     private void writeSnapshot(final Snapshot snapshot, String HuntID) {
@@ -261,8 +292,6 @@ public class SnapshotManager {
         snapshot.getSnapshotContents().writeBytes(gameStatus.HuntToBytes(HuntID));
         // Save the snapshot.
         SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
-                //.setCoverImage(getScreenShot())
-                //.setDescription("Modified data at: " + Calendar.getInstance().getTime())
                 .setDescription(gameStatus.isFinished(HuntID) ? "Finished" : "OnGoing")
                 .build();
 
@@ -276,7 +305,13 @@ public class SnapshotManager {
     }
 
 
+    /**
+     * Interface to callback that called when the process finished
+     */
     public interface ExecFinished {
+        /**
+         * the method to be called when the execution finished
+         */
         void onFinish();
     }
 }
