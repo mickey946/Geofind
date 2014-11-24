@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -230,31 +231,44 @@ public class CreateHuntActivity extends BaseGameActivity {
      * @param huntTitle The hunt title.
      * @param huntDescription The hunt description.
      */
-    public void submitHunt(String huntTitle, String huntDescription) {
-        String creatorID = Plus.PeopleApi.getCurrentPerson(getApiClient()).getId();
+    public void submitHunt(final String huntTitle, final String huntDescription) {
+        new AsyncTask<Void, Void, Void>() {
 
-        Hunt hunt = new Hunt(huntTitle, huntDescription, creatorID, hints);
-
-        ParseObject remoteHunt = hunt.toParseObject(getApplicationContext());
-
-        remoteHunt.saveInBackground(new SaveCallback() {
             @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.create_hunt_submit_successful),
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.v(TAG, "Hunt was not saved, Parse Exception: " + e.getMessage());
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.create_hunt_sumbit_failure),
-                            Toast.LENGTH_LONG).show();
-                }
+            protected Void doInBackground(Void... params) {
+                getApiClient().blockingConnect();
+                String creatorID = Plus.PeopleApi.getCurrentPerson(getApiClient()).getId();
 
+                Hunt hunt = new Hunt(huntTitle, huntDescription, creatorID, hints);
+
+                ParseObject remoteHunt = hunt.toParseObject(getApplicationContext());
+
+                remoteHunt.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Toast.makeText(getApplicationContext(),
+                                    getString(R.string.create_hunt_submit_successful),
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.v(TAG, "Hunt was not saved, Parse Exception: " + e.getMessage());
+                            Toast.makeText(getApplicationContext(),
+                                    getString(R.string.create_hunt_sumbit_failure),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
                 // TODO show progress bar for saving a hunt
                 finish();
             }
-        });
+        }.execute();
+
 
         if (isSignedIn()) {
             Games.Achievements.unlock(getApiClient(),
