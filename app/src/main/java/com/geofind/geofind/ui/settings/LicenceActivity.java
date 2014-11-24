@@ -13,7 +13,11 @@ import de.psdev.licensesdialog.licenses.MITLicense;
 import de.psdev.licensesdialog.model.Notice;
 import de.psdev.licensesdialog.model.Notices;
 
-
+/**
+ * An {@link android.app.Activity} that shows a
+ * {@link de.psdev.licensesdialog.LicensesDialogFragment} with all the open source licences used in
+ * this project.
+ */
 public class LicenceActivity extends BaseGameActivity {
 
     @Override
@@ -32,6 +36,12 @@ public class LicenceActivity extends BaseGameActivity {
                 "Android Compatibility Library v7",
                 "https://source.android.com/",
                 "Copyright (c) 2005-2011 The Android Open Source Project",
+                new ApacheSoftwareLicense20()));
+
+        notices.addNotice(new Notice(
+                "BaseGameUtils library",
+                "https://github.com/playgameservices/android-basic-samples/tree/master/BasicSamples/libraries/BaseGameUtils",
+                "Copyright (C) 2013 Google Inc.",
                 new ApacheSoftwareLicense20()));
 
         notices.addNotice(new Notice(
@@ -66,7 +76,7 @@ public class LicenceActivity extends BaseGameActivity {
 
         // the licence of this very dialog is already included.
 
-        // TODO add Google Services, Maps and Parse licences
+        // TODO add Maps licences
 
         final LicensesDialogFragment fragment = LicensesDialogFragment.newInstance(
                 notices, false, true);
