@@ -61,9 +61,9 @@ public class SnapshotManager {
      */
     private AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult> loadSnapshotsTask;
 
-    public SnapshotManager(final Context context, GoogleApiClient googleApiClient1) {
+    public SnapshotManager(final Context context, GoogleApiClient googleApiClient) {
         this.context = context;
-        this.googleApiClient = googleApiClient1;
+        this.googleApiClient = googleApiClient;
         gameStatus = ((GeofindApp) context.getApplicationContext()).getGameStatus();
     }
 

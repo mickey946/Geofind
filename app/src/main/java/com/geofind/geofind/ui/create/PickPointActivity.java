@@ -14,10 +14,16 @@ import com.geofind.geofind.structures.Point;
 import com.google.android.gms.maps.MapFragment;
 import com.geofind.geofind.playutils.BaseGameActivity;
 
-
+/**
+ * An {@link android.app.Activity} that is used for picking a
+ * {@link com.geofind.geofind.structures.Point} for a {@link com.geofind.geofind.structures.Hint}.
+ */
 public class PickPointActivity extends BaseGameActivity {
 
-    MapManager _mapManager;
+    /**
+     * The {@link com.geofind.geofind.geoutils.MapManager} for the map.
+     */
+    MapManager mapManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +47,8 @@ public class PickPointActivity extends BaseGameActivity {
 
         MapFragment mapFragment =
                 (MapFragment) getFragmentManager().findFragmentById(R.id.pick_point_map);
-        _mapManager = new MapManager(this, mapFragment, searchView);
-        _mapManager.enableMarkers(true);
+        mapManager = new MapManager(this, mapFragment, searchView);
+        mapManager.enableMarkers(true);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -50,7 +56,7 @@ public class PickPointActivity extends BaseGameActivity {
             if (bundle != null) {
                 Point point = (Point) bundle.getSerializable(
                         getResources().getString(R.string.intent_hint_point_extra));
-                _mapManager.displayFoundLocation(point.toLatLng());
+                mapManager.displayFoundLocation(point.toLatLng());
             }
         }
 
@@ -67,12 +73,12 @@ public class PickPointActivity extends BaseGameActivity {
             // send away the point
             Intent intent = new Intent();
 
-            Point resultPoint = _mapManager.getSelectedPoint();
+            Point resultPoint = mapManager.getSelectedPoint();
 
             if (resultPoint == null) {
                 setResult(RESULT_CANCELED, intent);
             } else {
-                intent.putExtra(getString(R.string.intent_hint_extra), _mapManager.getSelectedPoint());
+                intent.putExtra(getString(R.string.intent_hint_extra), mapManager.getSelectedPoint());
                 setResult(RESULT_OK, intent);
             }
 
@@ -85,11 +91,9 @@ public class PickPointActivity extends BaseGameActivity {
 
     @Override
     public void onSignInFailed() {
-
     }
 
     @Override
     public void onSignInSucceeded() {
-
     }
 }

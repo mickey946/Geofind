@@ -18,9 +18,15 @@ import com.google.android.gms.analytics.Tracker;
 import com.geofind.geofind.playutils.BaseGameActivity;
 import com.geofind.geofind.playutils.GameHelper;
 
-
+/**
+ * An {@link android.app.Activity} used for settings.
+ */
 public class SettingsActivity extends BaseGameActivity {
 
+    /**
+     * The {@link com.geofind.geofind.ui.settings.SettingsActivity} of this
+     * {@link android.app.Activity}.
+     */
     SettingsFragment settingsFragment;
 
     @Override
@@ -84,6 +90,9 @@ public class SettingsActivity extends BaseGameActivity {
         settingsFragment.setButtonToSignOut();
     }
 
+    /**
+     * A {@link android.preference.PreferenceFragment} used to contain the settings.
+     */
     public static class SettingsFragment extends PreferenceFragment implements
             SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -105,15 +114,27 @@ public class SettingsActivity extends BaseGameActivity {
         public SettingsFragment() {
         }
 
+        /**
+         * Set the {@link com.geofind.geofind.playutils.GameHelper} for this
+         * {@link com.geofind.geofind.ui.settings.SettingsActivity.SettingsFragment}.
+         * @param gameHelper The {@link com.geofind.geofind.playutils.GameHelper} of the
+         * {@link android.app.Activity}.
+         */
         public void setGameHelper(GameHelper gameHelper) {
             this.gameHelper = gameHelper;
         }
 
+        /**
+         * Change the sign in\out button into a sign in button.
+         */
         public void setButtonToSignIn() {
             signInOut.setOnPreferenceClickListener(signInClick);
             signInOut.setTitle(getString(R.string.preferences_account_sign_in_title));
         }
 
+        /**
+         * Change the sign in\out button into a sign out button.
+         */
         public void setButtonToSignOut() {
             signInOut.setOnPreferenceClickListener(signOutClick);
             signInOut.setTitle(getString(R.string.preferences_account_sign_out_title));
@@ -169,6 +190,9 @@ public class SettingsActivity extends BaseGameActivity {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         }
 
+        /**
+         * Setup the preference screen.
+         */
         private void setupSimplePreferencesScreen() {
             // Add 'general' preferences.
             addPreferencesFromResource(R.xml.preferences);

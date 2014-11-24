@@ -19,7 +19,9 @@ import com.geofind.geofind.ui.settings.SettingsActivity;
 
 import java.util.ArrayList;
 
-
+/**
+ * An {@link android.app.Activity} that shows the comments of a hunt.
+ */
 public class CommentListActivity extends BaseGameActivity {
 
     ArrayList<Comment> comments;
@@ -40,11 +42,11 @@ public class CommentListActivity extends BaseGameActivity {
 
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         // create an adapter and set it's data
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
+            //noinspection unchecked
             comments = (ArrayList<Comment>) bundle.getSerializable(
                     getResources().getString(R.string.intent_hunt_comments_extra));
         }

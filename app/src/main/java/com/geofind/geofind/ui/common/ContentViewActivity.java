@@ -25,7 +25,9 @@ import com.geofind.geofind.ui.settings.SettingsActivity;
 
 import java.io.InputStream;
 
-
+/**
+ * An {@link android.app.Activity} that is used for displaying images, videos and audios.
+ */
 public class ContentViewActivity extends BaseGameActivity {
 
     /**
@@ -59,7 +61,7 @@ public class ContentViewActivity extends BaseGameActivity {
     private static final String PLAYING_TAG = "PLAYING";
 
     /**
-     * The video view that shows hint video or audio.
+     * The {@link android.widget.VideoView} that shows hint video or audio.
      */
     private VideoView videoView;
 
@@ -88,14 +90,14 @@ public class ContentViewActivity extends BaseGameActivity {
         String remoteVideoAudioUrl = bundle.getString(VIDEO_AUDIO_URL);
 
         if (selectedImageUriString != null) { // user views his selected image
-            setUpImageView(selectedImageUriString);
+            setupImageView(selectedImageUriString);
         } else if (selectedVideoAudioString != null) { // user views his selected video or audio
-            setUpVideoAudioView(selectedVideoAudioString);
+            setupVideoAudioView(selectedVideoAudioString);
         } else if (remoteImageUrl != null) { // user views a hint image
             DownloadImageTask downloadImageTask = new DownloadImageTask();
             downloadImageTask.execute(remoteImageUrl);
         } else if (remoteVideoAudioUrl != null) { // user views a hint video or audio
-            setUpVideoAudioView(remoteVideoAudioUrl);
+            setupVideoAudioView(remoteVideoAudioUrl);
         }
     }
 
@@ -119,7 +121,7 @@ public class ContentViewActivity extends BaseGameActivity {
 
         protected void onPostExecute(Bitmap result) {
             progressBar.setVisibility(View.GONE);
-            setUpImageView(result);
+            setupImageView(result);
         }
     }
 
@@ -128,14 +130,18 @@ public class ContentViewActivity extends BaseGameActivity {
      *
      * @param selectedImageUriString The hint image uri.toString().
      */
-    private void setUpImageView(String selectedImageUriString) {
+    private void setupImageView(String selectedImageUriString) {
         Uri selectedImageUri = Uri.parse(selectedImageUriString);
         ImageView imageView = (ImageView) findViewById(R.id.content_image_view);
         imageView.setImageURI(selectedImageUri);
         imageView.setVisibility(View.VISIBLE);
     }
 
-    private void setUpImageView(Bitmap bitmap) {
+    /**
+     * Setup the {@link android.widget.ImageView} to show the given bitmap.
+     * @param bitmap The bitmap to show.
+     */
+    private void setupImageView(Bitmap bitmap) {
         ImageView imageView = (ImageView) findViewById(R.id.content_image_view);
         imageView.setImageBitmap(bitmap);
         imageView.setVisibility(View.VISIBLE);
@@ -146,7 +152,7 @@ public class ContentViewActivity extends BaseGameActivity {
      *
      * @param selectedVideoAudioString The hint video or audio uri.toString().
      */
-    private void setUpVideoAudioView(String selectedVideoAudioString) {
+    private void setupVideoAudioView(String selectedVideoAudioString) {
         Uri selectedVideoAudio = Uri.parse(selectedVideoAudioString);
         videoView = (VideoView) findViewById(R.id.content_video_view);
         videoView.setVisibility(View.VISIBLE);

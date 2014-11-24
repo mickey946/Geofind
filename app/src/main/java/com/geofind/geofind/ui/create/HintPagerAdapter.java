@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,38 +16,38 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.geofind.geofind.geoutils.GeofenceManager;
 import com.geofind.geofind.R;
+import com.geofind.geofind.geoutils.GeofenceManager;
 import com.geofind.geofind.structures.Hint;
 import com.geofind.geofind.ui.common.ContentViewActivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
+ * A {@link android.support.v4.app.FragmentStatePagerAdapter} that used for
+ * {@link com.geofind.geofind.ui.create.HintListActivity}.
+ * <p/>
  * Created by mickey on 04/10/14.
  */
 public class HintPagerAdapter extends FragmentStatePagerAdapter {
 
     /**
-     * The hints that are currently displayed in the HuntActivity.
+     * The {@link java.util.ArrayList} of {@link com.geofind.geofind.structures.Hint}s that are
+     * currently displayed in the HuntActivity.
      */
     private ArrayList<Hint> hints;
 
     /**
-     * The geofence manager instance for revealing the point
+     * The {@link com.geofind.geofind.geoutils.GeofenceManager} instance for revealing the point
      */
     private GeofenceManager geofence;
 
-    private List<HintFragment> _fragments;
-
-    public HintPagerAdapter(FragmentManager fm, ArrayList<Hint> hints, GeofenceManager geofenceManager) {
+    public HintPagerAdapter(FragmentManager fm, ArrayList<Hint> hints,
+                            GeofenceManager geofenceManager) {
         super(fm);
         this.hints = hints;
-        Log.i(this.getClass().getName(), "set geofence to Hint adapter:" + (geofenceManager == null));
         this.geofence = geofenceManager;
-        _fragments = new ArrayList<HintFragment>();
     }
 
     @Override
@@ -61,19 +60,9 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         args.putSerializable(HintFragment.HINT_TAG, hints.get(i));
         args.putSerializable(HintFragment.INDEX_TAG, i);
         fragment.setArguments(args);
-        fragment.set_geofenceManager(geofence);
-        _fragments.add(fragment);
+        fragment.setGeofenceManager(geofence);
 
         return fragment;
-    }
-
-    /**
-     * Add a hint to the end of the list.
-     *
-     * @param hint The new hint to add.
-     */
-    public void addHint(Hint hint) {
-        hints.add(hint);
     }
 
     @Override
@@ -107,15 +96,16 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
         public static String INDEX_TAG = "HINT_INDEX";
 
         /**
-         * The geofence control class for revealing the hint point
+         * The {@link com.geofind.geofind.geoutils.GeofenceManager} that controls class for
+         * revealing the hint point.
          */
-        private GeofenceManager _geofenceManager;
+        private GeofenceManager geofenceManager;
 
         /**
          * give the access to the geofence manager for revealing the hint point
          */
-        public void set_geofenceManager(GeofenceManager geofenceManager) {
-            this._geofenceManager = geofenceManager;
+        public void setGeofenceManager(GeofenceManager geofenceManager) {
+            this.geofenceManager = geofenceManager;
         }
 
         @Override
@@ -160,7 +150,7 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
             revealButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    _geofenceManager.removeGeofences(hint.getLocation());
+                    geofenceManager.removeGeofences(hint.getLocation());
                     /**
                      * on revealing the point update it's text and icon
                      */
@@ -247,8 +237,6 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                                 startActivity(intent);
                             }
                         });
-
-                        Log.v("In update Video", "Video url: " + url);
                     }
                 }, Hint.PARSE_VIDEO_FIELD);
             }
@@ -272,8 +260,6 @@ public class HintPagerAdapter extends FragmentStatePagerAdapter {
                                 startActivity(intent);
                             }
                         });
-
-                        Log.v("In update Audio", "Audio url: " + url);
                     }
                 }, Hint.PARSE_AUDIO_FIELD);
             }

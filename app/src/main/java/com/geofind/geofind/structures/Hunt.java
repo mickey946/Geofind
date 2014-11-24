@@ -16,14 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by mickey on 01/10/14.
+ * An object which represents a Geofind hunt.
  */
 public class Hunt implements Serializable {
 
+    //Constants for unit conversion.
     public static final float METERS_TO_MILES = 0.000621371f;
     public static final float METERS_TO_KILOMETERS = 0.001f;
     public static final int DIGIT_PRECISION = 3;
 
+    //String constants for Parse.com class and fields names.
     public static final String PARSE_CLASS_NAME = "Hunt";
     private static final String PARSE_TITLE_FIELD = "title";
     private static final String PARSE_DESCRIPTION_FIELD = "description";
@@ -37,18 +39,64 @@ public class Hunt implements Serializable {
     public static final String PARSE_HINTS_FIELD = "hints";
     public static final String PARSE_COMMENTS_FIELD = "comments";
 
-
+    /**
+     * This hunts title.
+     */
     private String _title;
+
+    /**
+     * This hunts description.
+     */
     private String _description;
+
+    /**
+     * The google id of user who created this hunt.
+     */
     private String _creatorID;
+
+    /**
+     * The parse.com database id of this hunt.
+     */
     private String _parseID;
+
+    /**
+     * The {@link com.geofind.geofind.structures.Point} representation of this hunt's first point.
+     */
     private Point _firstPoint;
+
+    /**
+     * The distance between the two furthest point inf this hunt.
+     */
     private float _radius;
+
+    /**
+     * The sum of distances between every two adjacent points in this hunt.
+     */
     private float _totalDistance;
+
+    /**
+     * The current rating of this hunt.
+     */
     private float _rating;
+
+    /**
+     * The sum of all user's rating's this hunt has received.
+     */
     private float _totalRating;
+
+    /**
+     * The number of users who rated this hunt.
+     */
     private int _numOfRaters;
+
+    /**
+     * The list of hints for this hunt.
+     */
     private ArrayList<Hint> _hints;
+
+    /**
+     * the list of comments this hunt has received.
+     */
     private ArrayList<Comment> _comments;
 
     /**
@@ -82,6 +130,12 @@ public class Hunt implements Serializable {
         _comments = new ArrayList<Comment>();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param remoteHunt - The {com.parse.ParseObject} representation of this hunt, which was received
+     *                   from parse.com database.
+     */
     public Hunt(ParseObject remoteHunt) {
         _title = remoteHunt.getString(PARSE_TITLE_FIELD);
         _description = remoteHunt.getString(PARSE_DESCRIPTION_FIELD);
@@ -112,34 +166,59 @@ public class Hunt implements Serializable {
         });
     }
 
+    /**
+     * Returns this hunt's title.
+     *
+     * @return - this hunt's title.
+     */
     public String getTitle() {
         return _title;
     }
 
+    /**
+     * Returns this hunt's description.
+     * @return - this hunt's description.
+     */
     public String getDescription() {
         return _description;
     }
 
-    public String getCreator() {
-        return _creatorID;
-    }
-
+    /**
+     * Returns this hunt's parse.com database id.
+     * @return - this hunt's parse.com database id.
+     */
     public String getParseID() {
         return _parseID;
     }
 
+    /**
+     * Returns a LatLng object which represents the first point of this hunt.
+     * @return - a LatLng object which represents the first point of this hunt.
+     */
     public LatLng getCenterPosition() {
         return _firstPoint.toLatLng();
     }
 
+    /**
+     * Returns this hunt's radius.
+     * @return - this hunt's radius.
+     */
     public float getRadius() {
         return _radius;
     }
 
+    /**
+     * Returns this hun's total distance.
+     * @return - this hun's total distance.
+     */
     public Float getTotalDistance() {
         return _totalDistance;
     }
 
+    /**
+     * Returns this hunt's current rating.
+     * @return - this hunt's current rating.
+     */
     public float getRating() {
         if (_numOfRaters != 0) {
             return _totalRating / _numOfRaters;
@@ -147,10 +226,19 @@ public class Hunt implements Serializable {
         return 0;
     }
 
+    /**
+     * Returns this hunt's comment list.
+     * @return - this hunt's comment list.
+     */
     public ArrayList<Comment> getComments() {
         return _comments;
     }
 
+    /**
+     * Returns a {@link com.parse.ParseObject} representation of this hunt.
+     * @param c - The application context this hunt exists in.
+     * @return - a {@link com.parse.ParseObject} representation of this hunt.
+     */
     public ParseObject toParseObject(Context c) {
         ParseObject remoteHunt = new ParseObject(PARSE_CLASS_NAME);
 

@@ -235,6 +235,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
 
             // get the related hunt list
             Bundle bundle = getArguments();
+            @SuppressWarnings("unchecked")
             ArrayList<Hunt> hunts = (ArrayList<Hunt>) bundle.getSerializable(HUNT_LIST_TAG);
             Boolean isFinished = bundle.getBoolean(FINISHED_LIST_TAG);
 
@@ -261,13 +262,5 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
             adapter.setHunts(hunts);
             adapter.notifyDataSetChanged();
         }
-    }
-
-    private List<String> parse(List<String> idList) {
-        ArrayList<String> result = new ArrayList<String>();
-        for (String id : idList) {
-            result.add(id.substring(0, id.indexOf('$')));
-        }
-        return result;
     }
 }
