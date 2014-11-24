@@ -45,6 +45,12 @@ public class LicenceActivity extends BaseGameActivity {
                 new ApacheSoftwareLicense20()));
 
         notices.addNotice(new Notice(
+                "PolyUtil.java",
+                "https://github.com/googlemaps/android-maps-utils/blob/master/library/src/com/google/maps/android/PolyUtil.java",
+                "Copyright (C) 2013 Google Inc.",
+                new ApacheSoftwareLicense20()));
+
+        notices.addNotice(new Notice(
                 "Android Sliding Up Panel",
                 "https://github.com/umano/AndroidSlidingUpPanel",
                 "Copyright © 2014 SoThree, Inc.",

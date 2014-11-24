@@ -21,7 +21,9 @@ import com.geofind.geofind.ui.play.HuntListActivity;
 import com.geofind.geofind.ui.settings.SettingsActivity;
 import com.google.android.gms.games.Games;
 
-
+/**
+ * An {@link android.app.Activity} that shows the main screen.
+ */
 public class MainScreenActivity extends BaseGameActivity {
 
     /**
@@ -200,7 +202,10 @@ public class MainScreenActivity extends BaseGameActivity {
         startActivity(intent);
     }
 
-    public void notifiyForSignIn() {
+    /**
+     * Show an {@link android.app.AlertDialog} that asks the user to sign in.
+     */
+    public void notifyForSignIn() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.main_screen_sign_in_dialog))
                 .setTitle(getString(R.string.preferences_account_sign_in_title))
@@ -227,7 +232,7 @@ public class MainScreenActivity extends BaseGameActivity {
         createHuntButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notifiyForSignIn();
+                notifyForSignIn();
             }
         });
         Button achievementsButton = (Button) findViewById(R.id.main_screen_achievments);
@@ -235,7 +240,7 @@ public class MainScreenActivity extends BaseGameActivity {
         achievementsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notifiyForSignIn();
+                notifyForSignIn();
             }
         });
     }
@@ -260,6 +265,10 @@ public class MainScreenActivity extends BaseGameActivity {
         });
     }
 
+    /**
+     * Open the {@link com.google.android.gms.games.achievement.Achievements} activity.
+     * @param view The current view.
+     */
     public void openAchievements(View view) {
         if (isSignedIn()) {
             startActivityForResult(Games.Achievements.getAchievementsIntent(getApiClient()), 1);
