@@ -34,6 +34,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
+ * An {@link android.support.v7.widget.RecyclerView.Adapter} for the
+ * {@link com.geofind.geofind.ui.play.CommentListActivity}.
+ *
  * Created by Mickey on 05/11/2014.
  */
 public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.ViewHolder> {
@@ -117,6 +120,7 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
             this.userImage = userImage;
         }
 
+        @Override
         protected Bitmap doInBackground(String... urls) {
             String url = urls[0];
             Bitmap outputBitmap = null;
@@ -130,6 +134,7 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
             return outputBitmap;
         }
 
+        @Override
         protected void onPostExecute(Bitmap result) {
             userImage.setImageBitmap(result);
         }
@@ -140,14 +145,49 @@ public class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.
         return comments.size();
     }
 
+    /**
+     * A {@link android.support.v7.widget.RecyclerView.ViewHolder} that holds the view of a comment.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+        /**
+         * The {@link android.view.View} that holds the comment.
+         */
         public View commentView;
+
+        /**
+         * The {@link android.widget.TextView} that shows the user display name.
+         */
         public TextView userName;
+
+        /**
+         * The {@link android.widget.TextView} that shows the comment title.
+         */
         public TextView commentTitle;
+
+        /**
+         * The {@link android.widget.TextView} that shows the comment.
+         */
         public TextView comment;
+
+        /**
+         * The {@link android.widget.TextView} that shows the comment date.
+         */
         public TextView date;
+
+        /**
+         * The {@link android.widget.ImageView} that shows the user profile picture.
+         */
         public ImageView userImage;
+
+        /**
+         * The {@link android.widget.RatingBar} that shows the rating of the comment.
+         */
         public RatingBar ratingBar;
+
+        /**
+         * The {@link android.widget.ProgressBar} that is shown until the comment is loaded.
+         */
         public ProgressBar progressBar;
 
         public ViewHolder(View itemView) {

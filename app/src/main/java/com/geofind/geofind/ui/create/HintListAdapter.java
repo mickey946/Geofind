@@ -135,7 +135,7 @@ public class HintListAdapter extends RecyclerView.Adapter<HintListAdapter.ViewHo
                         mapHeight = viewHolder.imgMapHint.getHeight();
                         mapWidth = viewHolder.imgMapHint.getWidth();
 
-                        // should be called when imgMapPreview exists
+                        // should be called when mapPreview exists
                         new StaticMap(viewHolder.imgMapHint, viewHolder.progressBar).execute(
                                 new StaticMap.StaticMapDescriptor(
                                         hints.get(i).getLocation().toLatLng(), mapWidth, mapHeight));

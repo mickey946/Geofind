@@ -3,19 +3,22 @@ package com.geofind.geofind.ui.play;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.geofind.geofind.R;
+import com.geofind.geofind.playutils.BaseGameActivity;
 import com.geofind.geofind.playutils.SnapshotManager;
 import com.geofind.geofind.ui.settings.SettingsActivity;
 import com.geofind.geofind.ui.widget.slidingtablayout.SlidingTabLayout.SlidingTabLayout;
-import com.geofind.geofind.playutils.BaseGameActivity;
 
-public class HuntListActivity extends BaseGameActivity implements ActionBar.TabListener {
+/**
+ * An {@link android.app.Activity} that shows the lists of the available
+ * {@link com.geofind.geofind.structures.Hunt}s to play.
+ */
+public class HuntListActivity extends BaseGameActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -37,7 +40,11 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
      */
     SlidingTabLayout slidingTabLayout;
 
-    private SnapshotManager snapshotManager;
+    /**
+     * The {@link com.geofind.geofind.playutils.SnapshotManager} that loads the saved hunts of the
+     * player.
+     */
+    SnapshotManager snapshotManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,28 +109,10 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
     }
 
     @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
-    }
-
-    @Override
     public void onSignInFailed() {
-
     }
 
     @Override
     public void onSignInSucceeded() {
-
-
     }
 }

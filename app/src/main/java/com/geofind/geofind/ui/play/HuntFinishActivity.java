@@ -32,19 +32,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-
+/**
+ * An {@link android.app.Activity} that shows statistics of a game play.
+ */
 public class HuntFinishActivity extends BaseGameActivity {
 
     /**
-     * The hunt that was finished.
+     * The {@link com.geofind.geofind.structures.Hunt} that was finished.
      */
     private Hunt hunt;
 
     /**
-     * The floating action button that is used for finishing the game.
+     * The {@link com.melnykov.fab.FloatingActionButton} that is used for finishing the game.
      */
     FloatingActionButton fab;
 
+    /**
+     * The name of the class.
+     */
+    private static final String TAG = HuntFinishActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +67,13 @@ public class HuntFinishActivity extends BaseGameActivity {
             TextView totalTimeTextView = (TextView) findViewById(R.id.hunt_finish_total_time);
 
             totalPointsTextView.setText(
-                    Integer.toString(intent.getIntExtra(getResources().getString(R.string.hunt_finish_total_points), 0)));
+                    Integer.toString(intent.getIntExtra(getResources()
+                            .getString(R.string.hunt_finish_total_points), 0)));
             solvedPointsTextView.setText(
-                    Integer.toString(intent.getIntExtra(getResources().getString(R.string.hunt_finish_solved_points), 0)));
-            Date date = new Date(intent.getLongExtra(getResources().getString(R.string.hunt_finish_total_time), 0));
+                    Integer.toString(intent.getIntExtra(getResources()
+                            .getString(R.string.hunt_finish_solved_points), 0)));
+            Date date = new Date(intent.getLongExtra(getResources()
+                    .getString(R.string.hunt_finish_total_time), 0));
             DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
             formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             String dateFormatted = formatter.format(date);
@@ -151,7 +160,8 @@ public class HuntFinishActivity extends BaseGameActivity {
 
         if ((commentTitleTextView.getText().toString().isEmpty()) |
                 (commentReviewTextView.getText().toString().isEmpty())) {
-            Toast.makeText(getApplicationContext(), "Cannot submit an incomplete review.",
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.hunt_finish_incomplete_review_error),
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -172,18 +182,21 @@ public class HuntFinishActivity extends BaseGameActivity {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
-                                Toast.makeText(getApplicationContext(), "Your review was submitted successfully!",
+                                Toast.makeText(getApplicationContext(),
+                                        getString(R.string.hunt_finish_review_submit_successful),
                                         Toast.LENGTH_SHORT).show();
                             } else {
-                                Log.v("Review was not saved", "Parse Exception: " + e.getMessage());
-                                Toast.makeText(getApplicationContext(), "Review was NOT submitted, please try again.",
+                                Log.v(TAG, "Review was not saved, Parse Exception: " + e.getMessage());
+                                Toast.makeText(getApplicationContext(),
+                                        getString(R.string.hunt_finish_review_submit_failure),
                                         Toast.LENGTH_LONG).show();
                             }
                         }
                     });
                 } else {
-                    Log.v("Review was not saved", "Parse Exception: " + e.getMessage());
-                    Toast.makeText(getApplicationContext(), "Review was NOT submitted, please try again.",
+                    Log.v(TAG, "Review was not saved, Parse Exception: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.hunt_finish_review_submit_failure),
                             Toast.LENGTH_LONG).show();
                 }
             }

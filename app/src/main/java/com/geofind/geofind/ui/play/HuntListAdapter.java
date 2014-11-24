@@ -21,19 +21,21 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
+ * A {@link android.support.v7.widget.RecyclerView.Adapter} for the
+ * {@link com.geofind.geofind.ui.play.HuntListActivity}.
+ *
  * Created by mickey on 01/10/14.
  * Edited by Ilia on 16/10/14.
  */
 public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHolder> {
 
-
     /**
-     * The array of displayed hunts.
+     * The {@link java.util.ArrayList} of displayed hunts.
      */
     private ArrayList<Hunt> hunts;
 
     /**
-     * The host activity.
+     * The host {@link android.app.Activity}.
      */
     private Context context;
 
@@ -62,15 +64,6 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
     }
 
     /**
-     * Get the hunts array list.
-     *
-     * @return The array list of the hunts.
-     */
-    public ArrayList<Hunt> getHunts() {
-        return hunts;
-    }
-
-    /**
      * Set the array list of the hunts.
      *
      * @param hunts The array list of the hunts to be displayed
@@ -79,10 +72,19 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         this.hunts = hunts;
     }
 
+    /**
+     * Set the distance unit that will be displayed to the user.
+     *
+     * @param distanceUnit km or miles
+     */
     public void setDistanceUnit(String distanceUnit) {
         this.distanceUnit = distanceUnit;
     }
 
+    /**
+     * Get the distance unit that should be displayed to the user.
+     * @return The displayed distance unit (km or miles).
+     */
     public String getDistanceUnit() {
         return distanceUnit;
     }
@@ -132,11 +134,11 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
                     @Override
                     public void onGlobalLayout() {
                         viewHolder.itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        mapHeight = viewHolder.imgMapPreview.getHeight();
-                        mapWidth = viewHolder.imgMapPreview.getWidth();
+                        mapHeight = viewHolder.mapPreview.getHeight();
+                        mapWidth = viewHolder.mapPreview.getWidth();
 
-                        // should be called when imgMapPreview exists
-                        new StaticMap(viewHolder.imgMapPreview, viewHolder.progressBar)
+                        // should be called when mapPreview exists
+                        new StaticMap(viewHolder.mapPreview, viewHolder.progressBar)
                                 .execute(new StaticMap.StaticMapDescriptor(
                                         hunts.get(i).getCenterPosition(),
                                         hunts.get(i).getRadius(), mapWidth, mapHeight));
@@ -147,7 +149,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         } else {
             // The recycler view doesn't create new tiles, so we reuse previous tile and assume
             // the same dimension for image view
-            new StaticMap(viewHolder.imgMapPreview, viewHolder.progressBar)
+            new StaticMap(viewHolder.mapPreview, viewHolder.progressBar)
                     .execute(new StaticMap.StaticMapDescriptor(
                             hunts.get(i).getCenterPosition(),
                             hunts.get(i).getRadius(), mapWidth, mapHeight));
@@ -177,16 +179,54 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
         return hunts.size();
     }
 
-    // inner class to hold a reference to each item of RecyclerView
+    /**
+     * Inner class to hold a reference to each item of
+     * {@link android.support.v7.widget.RecyclerView}.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        /**
+         * The {@link android.content.Context} where the item is displayed.
+         */
         public Context context;
+
+        /**
+         * The {@link android.widget.TextView} that shows the title of the hunt.
+         */
         public TextView textViewTitle;
+
+        /**
+         * The {@link android.widget.TextView} that shows the total distance of the hunt.
+         */
         public TextView textViewTotalDistance;
+
+        /**
+         * The {@link android.widget.TextView} that shows the distance unit of the total distance.
+         */
         public TextView textViewDistanceUnit;
+
+        /**
+         * The {@link android.widget.RatingBar} that shows the rating of the hunt.
+         */
         public RatingBar ratingBar;
+
+        /**
+         * The {@link android.widget.TextView} that shows the description of the hunt.
+         */
         public TextView textViewDescription;
+
+        /**
+         * The {@link android.widget.Button} that starts the hunt.
+         */
         public Button startHuntButton;
-        public ImageView imgMapPreview;
+
+        /**
+         * The {@link android.widget.ImageView} that shows the map preview of the hunt.
+         */
+        public ImageView mapPreview;
+
+        /**
+         * The {@link android.widget.ProgressBar} that is shown until the map preview loads.
+         */
         public ProgressBar progressBar;
 
         public ViewHolder(View itemView) {
@@ -204,7 +244,7 @@ public class HuntListAdapter extends RecyclerView.Adapter<HuntListAdapter.ViewHo
             ratingBar = (RatingBar) itemView.findViewById(R.id.item_hunt_list_rating);
             textViewDescription = (TextView) itemView.findViewById(R.id.item_hunt_list_description);
             startHuntButton = (Button) itemView.findViewById(R.id.item_hunt_list_start_hunt_button);
-            imgMapPreview = (ImageView) itemView.findViewById(R.id.item_hunt_list_map_preview);
+            mapPreview = (ImageView) itemView.findViewById(R.id.item_hunt_list_map_preview);
             progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         }
 

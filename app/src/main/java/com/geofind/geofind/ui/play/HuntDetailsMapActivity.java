@@ -7,23 +7,21 @@ import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.geofind.geofind.geoutils.MapManager;
 import com.geofind.geofind.R;
+import com.geofind.geofind.geoutils.MapManager;
+import com.geofind.geofind.playutils.BaseGameActivity;
 import com.geofind.geofind.structures.Hunt;
 import com.geofind.geofind.ui.settings.SettingsActivity;
 import com.google.android.gms.maps.MapFragment;
-import com.geofind.geofind.playutils.BaseGameActivity;
 
-
+/**
+ * An {@link android.app.Activity} that shows an overview of the
+ * {@link com.geofind.geofind.structures.Hunt}.
+ */
 public class HuntDetailsMapActivity extends BaseGameActivity {
 
     /**
-     * Control dynamic map
-     */
-    private MapManager mapManager;
-
-    /**
-     * the displayed hunt
+     * The displayed {@link com.geofind.geofind.structures.Hunt}
      */
     Hunt hunt;
 
@@ -53,7 +51,8 @@ public class HuntDetailsMapActivity extends BaseGameActivity {
                     MapFragment mapFragment =
                             (MapFragment) getFragmentManager().
                                     findFragmentById(R.id.hunt_details_map_preview);
-                    mapManager = new MapManager(this, mapFragment, false);
+
+                    MapManager mapManager = new MapManager(this, mapFragment, false);
                     mapManager.showMyLocationButton(true);
                     mapManager.drawCircle(hunt.getCenterPosition(), hunt.getRadius());
                 }

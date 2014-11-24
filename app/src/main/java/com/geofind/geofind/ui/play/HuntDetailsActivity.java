@@ -35,11 +35,6 @@ public class HuntDetailsActivity extends BaseGameActivity {
     private Hunt hunt;
 
     /**
-     * Is the hunt finished?.
-     */
-    private Boolean isFinished;
-
-    /**
      * The location finder used to determine user's current location.
      */
     LocationFinder locationFinder;
@@ -106,7 +101,7 @@ public class HuntDetailsActivity extends BaseGameActivity {
                             mapHeight = mapView.getHeight();
                             mapWidth = mapView.getWidth();
 
-                            // should be called when imgMapPreview exists
+                            // should be called when mapPreview exists
                             new StaticMap(mapView, progressBar).execute(
                                     new StaticMap.StaticMapDescriptor(
                                             hunt.getCenterPosition(), hunt.getRadius(),
@@ -199,12 +194,6 @@ public class HuntDetailsActivity extends BaseGameActivity {
         }
     }
 
-//    @Override
-//    protected void onStop() {
-//        locationFinder.stopLocation();
-//        super.onStart();
-//    }
-
     @Override
     protected void onDestroy() {
         locationFinder.stopLocation();
@@ -256,8 +245,6 @@ public class HuntDetailsActivity extends BaseGameActivity {
     }
 
     private void updateLocationDisplay() {
-
-
         final String distanceUnit = getCurrentDistanceUnit();
         final DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
