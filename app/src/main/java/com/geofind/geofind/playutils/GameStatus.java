@@ -251,7 +251,9 @@ public class GameStatus {
 //
 //    }
 
-    public GameStatus clone() {
+    @Override
+    public GameStatus clone() throws CloneNotSupportedException {
+        super.clone();
         GameStatus gameStatus = new GameStatus();
         for (String id : _activeHunts.keySet()) {
             gameStatus._activeHunts.put(id, _activeHunts.get(id));

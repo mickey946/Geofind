@@ -33,11 +33,12 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
     ViewPager viewPager;
 
     /**
-     * The {@link com.geofind.geofind.ui.widget.slidingtablayout.SlidingTabLayout.SlidingTabLayout} that will display the tabs.
+     * The {@link com.geofind.geofind.ui.widget.slidingtablayout.SlidingTabLayout.SlidingTabLayout}
+     * that will display the tabs.
      */
     SlidingTabLayout slidingTabLayout;
-    private SnapshotManager snapshotManager;
 
+    private SnapshotManager snapshotManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +51,9 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
 
         snapshotManager = new SnapshotManager(this, getGameHelper().getApiClient());
 
-
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the activity.
         huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this, snapshotManager);
-
-
-
-
     }
 
     @Override
@@ -129,16 +125,7 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
 
     @Override
     public void onSignInSucceeded() {
-        Log.d("Load", "sign in start");
-        snapshotManager.loadSnapshot(
-                new SnapshotManager.ExecFinished() {
-                    @Override
-                    public void onFinish() {
-                        Log.d("Load", "on finish snapshot load");
-//                        huntListPagerAdapter.finishUpdate(viewPager);
-                    }
-                }
 
-        );
+
     }
 }

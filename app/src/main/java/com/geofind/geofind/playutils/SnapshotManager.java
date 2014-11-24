@@ -1,6 +1,5 @@
 package com.geofind.geofind.playutils;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -16,7 +15,6 @@ import com.google.android.gms.games.snapshot.SnapshotMetadata;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -25,134 +23,97 @@ import java.util.concurrent.ExecutionException;
  */
 public class SnapshotManager {
 
-    // Request code used to invoke sign in user interactions.
-    private static final int RC_SIGN_IN = 9001;
-    // Request code for listing saved games
-    private static final int RC_LIST_SAVED_GAMES = 9002;
-    // Request code for selecting a snapshot
-    private static final int RC_SELECT_SNAPSHOT = 9003;
     // Request code for saving the game to a snapshot.
     private static final int RC_SAVE_SNAPSHOT = 9004;
     private static final int RC_LOAD_SNAPSHOT = 9005;
     private static String TAG = "SnapshotManager";
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient googleApiClient;
     private GameStatus gameStatus;
     private String currentSaveName = "snapshotTemp";
     private Context context;
-    private ProgressDialog mLoadingDialog = null;
     private AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult> task;
 
-    public SnapshotManager(Context context, GoogleApiClient client) {
+    public SnapshotManager(final Context context, GoogleApiClient googleApiClient1) {
         this.context = context;
-        mGoogleApiClient = client;
+        this.googleApiClient = googleApiClient1;
         gameStatus = ((GeofindApp) context.getApplicationContext()).getGameStatus();
-    }
 
-    public void loadSnapshot(final ExecFinished callback) {
-//        if (mLoadingDialog == null) {
-//            mLoadingDialog = new ProgressDialog(context);
-//            mLoadingDialog.setMessage("Loading");
-//        }
-//        mLoadingDialog.show();
-        Log.d("Load","assign async task");
-        //Start an asynchronous task to read this snapshot and load it.
+        Log.d(TAG, "Assigning and executing AsyncTask for loading snapshots");
         task = new AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult>() {
             @Override
             protected Snapshots.LoadSnapshotsResult doInBackground(Void... params) {
 
-                Log.i(TAG, "Listing snapshots");
+                Log.d(TAG, "Waiting for googleApiClient to sign in");
+                googleApiClient.blockingConnect();
 
-
-                Snapshots.LoadSnapshotsResult snapshotResults = Games.Snapshots.load(mGoogleApiClient, true).await();
+                Log.d(TAG, "Loading snapshots");
+                Snapshots.LoadSnapshotsResult snapshotResults =
+                        Games.Snapshots.load(googleApiClient, true).await();
 
                 if (snapshotResults.getStatus().isSuccess()) {
-                    ArrayList<SnapshotMetadata> items = new ArrayList<SnapshotMetadata>();
-                    Log.i(TAG, "loaded " + snapshotResults.getSnapshots().getCount() + " snapshots");
-                    for (SnapshotMetadata m : snapshotResults.getSnapshots()) {
-                        //loadFromSnapshot(m.freeze());
-                        // This is a hack to clear saved games
-//                        Games.Snapshots.delete(mGoogleApiClient,m);
-                        gameStatus.addToSaveHunts(m.freeze());
+                    Log.d(TAG, "Loaded " + snapshotResults.getSnapshots().getCount() + " snapshots");
+
+                    for (SnapshotMetadata snapshotMetadata : snapshotResults.getSnapshots()) {
+
+                        /**
+                         * For debug only, deletes all the snapshots of the current user:
+                         * ### Games.Snapshots.delete(googleApiClient, snapshotMetadata); ###
+                         *
+                         * When in use, comment out the line below. When done, bring the line back.
+                         */
+                        gameStatus.addToSaveHunts(snapshotMetadata.freeze());
                     }
 
                     snapshotResults.getSnapshots().release();
                 }
 
-                return  snapshotResults;
+                return snapshotResults;
             }
 
             @Override
             protected void onPostExecute(Snapshots.LoadSnapshotsResult snapshotResults) {
-
-//                        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-//                            mLoadingDialog.dismiss();
-//                            mLoadingDialog = null;
-//                        }
                 int status = snapshotResults.getStatus().getStatusCode();
 
-                // Note that showing a toast is done here for debugging. Your application should
-                // resolve the error appropriately to your app.
                 if (status == GamesStatusCodes.STATUS_SNAPSHOT_NOT_FOUND) {
-                    Log.i(TAG, "Error: Snapshot not found");
-                    Toast.makeText(context, "Error: Snapshot not found",
-                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error: Snapshot not found");
                 } else if (status
                         == GamesStatusCodes.STATUS_SNAPSHOT_CONTENTS_UNAVAILABLE) {
-                    Log.i(TAG, "Error: Snapshot contents unavailable");
-                    Toast.makeText(context, "Error: Snapshot contents unavailable",
-                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error: Snapshot contents unavailable");
+
                 } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_FOLDER_UNAVAILABLE) {
-                    Log.i(TAG, "Error: Snapshot folder unavailable");
-                    Toast.makeText(context, "Error: Snapshot folder unavail able.",
-                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error: Snapshot folder unavailable");
+
                 }
-
-                callback.onFinish();
-
-
             }
-        };
-
-
-        Log.d("Load","execute async task");
-        task.execute();
+        }.execute();
     }
 
-    public void waitforfinish(){
-        Log.d("Load", "task is null " + (task == null));
-        if (task!=null) {
-            try {
-                task.get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+    public void waitForFinish() {
+        try {
+            task.get();
+            Log.d(TAG, "Snapshot list loading is finished");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-
     }
 
     /**
      * Loads a Snapshot from the user's synchronized storage.
      */
     public void loadFromSnapshot(final SnapshotMetadata snapshotMetadata, final Callable onFinish) {
-//        if (mLoadingDialog == null) {
-//            mLoadingDialog = new ProgressDialog(context);
-//            mLoadingDialog.setMessage("loading");
-//        }
-//
-//        mLoadingDialog.show();
 
         AsyncTask<Void, Void, Integer> task = new AsyncTask<Void, Void, Integer>() {
             @Override
             protected Integer doInBackground(Void... params) {
                 Snapshots.OpenSnapshotResult result;
                 if (snapshotMetadata != null && snapshotMetadata.getUniqueName() != null) {
-                    Log.i(TAG, "Opening snapshot by metadata: " + snapshotMetadata);
-                    result = Games.Snapshots.open(mGoogleApiClient, snapshotMetadata).await();
+                    Log.d(TAG, "Opening snapshot by metadata: " + snapshotMetadata);
+                    result = Games.Snapshots.open(googleApiClient, snapshotMetadata).await();
                 } else {
-                    Log.i(TAG, "Opening snapshot by name: " + currentSaveName);
-                    result = Games.Snapshots.open(mGoogleApiClient, currentSaveName, true).await();
+                    Log.d(TAG, "Opening snapshot by name: " + currentSaveName);
+                    result = Games.Snapshots.open(googleApiClient, currentSaveName, true).await();
                 }
 
                 int status = result.getStatus().getStatusCode();
@@ -169,7 +130,7 @@ public class SnapshotManager {
                     if (snapshot != null) {
                         status = GamesStatusCodes.STATUS_OK;
                     } else {
-                        Log.w(TAG, "Conflict was not resolved automatically");
+                        Log.d(TAG, "Conflict was not resolved automatically");
                     }
                 } else {
                     Log.e(TAG, "Error while loading: " + status);
@@ -186,20 +147,12 @@ public class SnapshotManager {
             protected void onPostExecute(Integer status) {
                 Log.i(TAG, "Snapshot loaded: " + status);
 
-                // Note that showing a toast is done here for debugging. Your application should
-                // resolve the error appropriately to your app.
                 if (status == GamesStatusCodes.STATUS_SNAPSHOT_NOT_FOUND) {
-                    Log.i(TAG, "Error: Snapshot not found");
-                    Toast.makeText(context, "Error: Snapshot not found",
-                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error: Snapshot not found");
                 } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_CONTENTS_UNAVAILABLE) {
-                    Log.i(TAG, "Error: Snapshot contents unavailable");
-                    Toast.makeText(context, "Error: Snapshot contents unavailable",
-                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error: Snapshot contents unavailable");
                 } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_FOLDER_UNAVAILABLE) {
-                    Log.i(TAG, "Error: Snapshot folder unavailable");
-                    Toast.makeText(context, "Error: Snapshot folder unavailable.",
-                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error: Snapshot folder unavailable");
                 }
 
                 try {
@@ -207,13 +160,6 @@ public class SnapshotManager {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-//                if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-//                    mLoadingDialog.dismiss();
-//                    mLoadingDialog = null;
-//                }
-//                hideAlertBar();
-//                updateUi();
             }
         };
 
@@ -221,7 +167,7 @@ public class SnapshotManager {
     }
 
     public void saveSnapshot(final String HuntID) {
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+        new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 Snapshots.OpenSnapshotResult openResult;
@@ -230,37 +176,19 @@ public class SnapshotManager {
                 if (snapshotMetadata == null) {
                     Log.d(TAG, "snapshot null");
                     currentSaveName = "GeoFind-" + HuntID;
-                    openResult = Games.Snapshots.open(mGoogleApiClient, currentSaveName, true)
+                    openResult = Games.Snapshots.open(googleApiClient, currentSaveName, true)
                             .await();
                 } else {
                     Log.d(TAG, "continue snapshot");
-                    openResult = Games.Snapshots.open(mGoogleApiClient, snapshotMetadata)
+                    openResult = Games.Snapshots.open(googleApiClient, snapshotMetadata)
                             .await();
                 }
                 final Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openResult, 0);
-                if(toWrite != null)
+                if (toWrite != null)
                     writeSnapshot(toWrite, HuntID);
                 return null;
             }
-//
-//                    @Override
-//                    protected void onPostExecute(Snapshots.OpenSnapshotResult openSnapshotResult) {
-//
-//
-////                        new AsyncTask<Void, Void, Void>() {
-////                            @Override
-////                            protected Void doInBackground(Void... params) {
-////
-////
-////
-////                                return null;
-////                            }
-////                        }.execute();
-//
-//
-//                    }
-        };
-        task.execute();
+        }.execute();
     }
 
     /**
@@ -305,7 +233,7 @@ public class SnapshotManager {
             }
 
             Snapshots.OpenSnapshotResult resolveResult = Games.Snapshots.resolveConflict(
-                    mGoogleApiClient, result.getConflictId(), mResolvedSnapshot)
+                    googleApiClient, result.getConflictId(), mResolvedSnapshot)
                     .await();
 
             if (retryCount < 10) {
@@ -336,13 +264,13 @@ public class SnapshotManager {
                 .setDescription(gameStatus.isFinished(HuntID) ? "Finished" : "OnGoing")
                 .build();
 
-        Games.Snapshots.commitAndClose(mGoogleApiClient, snapshot, metadataChange)
+        Games.Snapshots.commitAndClose(googleApiClient, snapshot, metadataChange)
                 .setResultCallback(new ResultCallback<Snapshots.CommitSnapshotResult>() {
-            @Override
-            public void onResult(Snapshots.CommitSnapshotResult commitSnapshotResult) {
-                Log.d(TAG, snapshot.toString());
-            }
-        });
+                    @Override
+                    public void onResult(Snapshots.CommitSnapshotResult commitSnapshotResult) {
+                        Log.d(TAG, snapshot.toString());
+                    }
+                });
     }
 
 

@@ -92,9 +92,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                snapshotManager.waitforfinish();
-
-                Log.d("Load asyncTask", "snapshotManager finished");
+                snapshotManager.waitForFinish();
 
                 GameStatus gameStatus = ((GeofindApp) (context.getApplicationContext())).
                         getGameStatus();
