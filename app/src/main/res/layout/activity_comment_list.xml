@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context="com.geofind.geofind.CommentListActivity">
+    tools:context="com.geofind.geofind.ui.play.CommentListActivity">
 
     <ProgressBar
         android:id="@+id/progress_bar"

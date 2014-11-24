@@ -55,75 +55,75 @@
         <meta-data android:name="unityplayer.ForwardNativeEventsToDalvik" android:value="true" />
 
         <activity
-            android:name=".MainScreenActivity"
+            android:name=".ui.MainScreenActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".HuntListActivity"
+            android:name=".ui.play.HuntListActivity"
             android:label="@string/title_activity_hunt_list"
-            android:parentActivityName=".MainScreenActivity"
+            android:parentActivityName=".ui.MainScreenActivity"
             android:theme="@style/AppTheme.ActionBarNoShadow">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.MainScreenActivity" />
+                android:value=".ui.MainScreenActivity" />
         </activity>
         <activity
-            android:name=".HuntDetailsActivity"
+            android:name=".ui.play.HuntDetailsActivity"
             android:label="@string/title_activity_hunt_details"
-            android:parentActivityName=".HuntListActivity">
+            android:parentActivityName=".ui.play.HuntListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.HuntListActivity" />
+                android:value=".ui.play.HuntListActivity" />
         </activity>
         <activity
-            android:name=".HuntActivity"
+            android:name=".ui.play.HuntActivity"
             android:theme="@style/AppTheme.ActionBarOverlay">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.HuntDetailsActivity" />
+                android:value=".ui.play.HuntDetailsActivity" />
         </activity>
         <activity
-            android:name=".HuntFinishActivity"
+            android:name=".ui.play.HuntFinishActivity"
             android:label="@string/title_activity_hunt_finish"
-            android:parentActivityName=".MainScreenActivity">
+            android:parentActivityName=".ui.MainScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.MainScreenActivity" />
+                android:value=".ui.MainScreenActivity" />
         </activity>
         <activity
-            android:name=".CreateHuntActivity"
+            android:name=".ui.create.CreateHuntActivity"
             android:label="@string/title_activity_create_hunt"
-            android:parentActivityName=".MainScreenActivity">
+            android:parentActivityName=".ui.MainScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.MainScreenActivity" />
+                android:value=".ui.MainScreenActivity" />
         </activity>
         <activity
-            android:name=".HintListActivity"
+            android:name=".ui.create.HintListActivity"
             android:label="@string/title_activity_hint_list"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:parentActivityName=".CreateHuntActivity">
+            android:parentActivityName=".ui.create.CreateHuntActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.MainScreenActivity" />
+                android:value=".ui.MainScreenActivity" />
         </activity>
         <activity
-            android:name=".CreateHintActivity"
+            android:name=".ui.create.CreateHintActivity"
             android:label="@string/title_activity_create_hint">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.HintListActivity" />
+                android:value=".ui.create.HintListActivity" />
         </activity>
         <activity
-            android:name=".PickPointActivity"
+            android:name=".ui.create.PickPointActivity"
             android:label="@string/title_activity_pick_point">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.CreateHintActivity" />
+                android:value=".ui.create.CreateHintActivity" />
         </activity>
 
         <activity
-            android:name=".GooglePlusSignInActivity"
+            android:name=".ui.GooglePlusSignInActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -132,25 +132,25 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".HuntDetailsMapActivity"
+            android:name=".ui.play.HuntDetailsMapActivity"
             android:label="@string/title_activity_hunt_details_map"
-            android:parentActivityName=".HuntDetailsActivity">
+            android:parentActivityName=".ui.play.HuntDetailsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.geofind.geofind.HuntDetailsActivity" />
+                android:value=".ui.play.HuntDetailsActivity" />
         </activity>
         <activity
-            android:name="com.geofind.geofind.ContentViewActivity"
+            android:name=".ui.common.ContentViewActivity"
             android:label="@string/title_activity_content_view" />
         <activity
-            android:name="com.geofind.geofind.CommentListActivity"
+            android:name=".ui.play.CommentListActivity"
             android:label="@string/title_activity_comment_list" />
         <activity
-            android:name="com.geofind.geofind.LicenceActivity"
+            android:name=".ui.settings.LicenceActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/title_activity_licence">
             <intent-filter>
@@ -160,10 +160,9 @@
         </activity>
 
         <service
-            android:name="com.geofind.geofind.ReceiveTransitionsIntentService"
+            android:name=".geoutils.ReceiveTransitionsIntentService"
             android:label="@string/app_name"
             android:exported="false" />
     </application>
-
 
 </manifest>
