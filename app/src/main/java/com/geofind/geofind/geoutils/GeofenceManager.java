@@ -38,71 +38,111 @@ public class GeofenceManager implements
         LocationClient.OnRemoveGeofencesResultListener {
 
     /*
-         * Define a request code to send to Google Play services
-         * This code is returned in Activity.onActivityResult
-         */
+     * Define a request code to send to Google Play services
+     * This code is returned in Activity.onActivityResult
+     */
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-    private static final String TAG = "GeoFence";
 
-    // Geofence list
+    private static final String TAG = GeofenceManager.class.getName();
+
+    /**
+     * The list of active {@link com.google.android.gms.location.Geofence}
+     */
     List<Geofence> mCurrentGeofence;
 
-    // Host activity
-    private Activity _activity;
+    /**
+     * Host activity
+     */
+    private Activity activity;
 
-    // Holds the location client
-    private LocationClient mLocationClient;
+    /**
+     * Holds the {@link com.google.android.gms.location.LocationClient} that enables the geofencing
+     * mechanism
+     */
+    private LocationClient locationClient;
 
-    // Geofonce request type
-    private REQUEST_TYPE mRequestType;
+    /**
+     * Geofonce request type which can be Add,Remove or Remove Intent (for cleaning)
+     */
+    private REQUEST_TYPE requestType;
 
-    // the intent that will be called when point approached
-    private PendingIntent mTransitionPendingIntent;
+    /**
+     * the {@link android.app.PendingIntent} that will be called when point approached
+     */
+    private PendingIntent transitionPendingIntent;
 
-    // Flag that indicates if a request is underway.
-    private boolean mInProgress;
+    /**
+     * Flag that indicates if a request is underway.
+     */
+    private boolean inProgress;
 
-    // Storage of geofence data
+    /**
+     * The {@link com.geofind.geofind.geoutils.GeofenceManager.SimpleGeofence} used to store
+     * the geofence data when the activity is hidden
+     */
     private SimpleGeofenceStore simpleGeofenceStore;
-
-    // Active point index
-    private int _pointIndex;
-
-    private String _activeID;
-
-    private boolean _geofenceCreateFinished;
-
-    private boolean _pointCanceled;
-
-    // List of point IDs to be canceled
-    private List<String> _deletePoint;
-
-    //Call back to inform the UI of canceling
-    private GeoUtils.IndexCallback _cancelCallback;
-
-    private boolean _cleanUp;
-
-    private float _lastAccuracy;
 
 
     /**
-     * Contstructor and initializer
+     * Active point index
+     */
+    private int pointIndex;
+
+    /**
+     * The ID of the currently set geofence
+     */
+    private String activeID;
+
+    /**
+     * The request to create geofence has been completed
+     */
+    private boolean geofenceCreateFinished;
+
+    /**
+     * Is the geofence removed because of cleanup? if not assumed canceling
+     */
+    private boolean pointCanceled;
+
+    /**
+     * The {@link java.util.List} that represents the Geofence IDs for the points to be removed.
+     */
+    private List<String> deletePoint;
+
+    /**
+     * The {@link com.geofind.geofind.geoutils.GeoUtils.IndexCallback} to be called if the geofence
+     * for the current point have been successfully removed.
+     */
+    private GeoUtils.IndexCallback cancelCallback;
+
+    /**
+     * finish working with geofence clean all active requests.
+     */
+    private boolean cleanUp;
+
+    /**
+     * The accuracy of the location that we get for the last time
+     */
+    private float lastAccuracy;
+
+
+    /**
+     * Constructor and initializer
      *
      * @param activity the hosting activity
      */
     public GeofenceManager(Activity activity) {
-        this._activity = activity;
+        this.activity = activity;
         simpleGeofenceStore = new SimpleGeofenceStore(activity);
         mCurrentGeofence = new ArrayList<Geofence>();
-        _pointIndex = -1;
-        _lastAccuracy = -1;
-        mInProgress = false;
-        _cancelCallback = null;
-        _pointCanceled = false;
-        _geofenceCreateFinished = true;
-        _cleanUp = false;
-        ReceiveTransitionsIntentService.set_manager(this);
+        pointIndex = -1;
+        lastAccuracy = -1;
+        inProgress = false;
+        cancelCallback = null;
+        pointCanceled = false;
+        geofenceCreateFinished = true;
+        cleanUp = false;
+        ReceiveTransitionsIntentService.setManager(this);
         addGeofences();
     }
 
@@ -117,22 +157,15 @@ public class GeofenceManager implements
 
         addGeofences();
         final String ID = composeID(point);
-        _activeID = ID;
+        activeID = ID;
 
-//        if (getLocationClient().getLastLocation()!=null) {
-//            if(!mInProgress) {
-//                _lastAccuracy = getLocationClient().getLastLocation().getAccuracy();
-//            }
-//        }
-
-        if (_lastAccuracy > 0) {
-
-            radius = Math.max(radius, _lastAccuracy);
+        if (lastAccuracy > 0) {
+            radius = Math.max(radius, lastAccuracy);
         }
 
         Log.d(TAG, "create geofence " + ID + "with radius " + radius + "at" + pointIndex);
-        _pointIndex = pointIndex;
-        _geofenceCreateFinished = false;
+        this.pointIndex = pointIndex;
+        geofenceCreateFinished = false;
         SimpleGeofence simpleGeofence = new SimpleGeofence(
                 ID,
                 point.getLatitude(),
@@ -147,17 +180,24 @@ public class GeofenceManager implements
 
     }
 
-    LocationClient getLocationClient() {
-        if (mLocationClient == null) {
-            mLocationClient = new LocationClient(_activity, this, this);
+    /**
+     * Internal accessor for location client to prevent multiple creation
+     * @return the current instance
+     */
+    private LocationClient getLocationClient() {
+        if (locationClient == null) {
+            locationClient = new LocationClient(activity, this, this);
         }
-        return mLocationClient;
+        return locationClient;
     }
 
+    /**
+     * resuming geofence when returning from background
+     */
     public void resumeGeofence() {
-        if (!_geofenceCreateFinished) {
+        if (!geofenceCreateFinished) {
             Log.d(TAG, "resuming geofence");
-            mCurrentGeofence.add(simpleGeofenceStore.getGeofence(_activeID).toGeofence());
+            mCurrentGeofence.add(simpleGeofenceStore.getGeofence(activeID).toGeofence());
             if (!getLocationClient().isConnected())
                 getLocationClient().connect();
         }
@@ -170,7 +210,7 @@ public class GeofenceManager implements
      * @param cancelCallback
      */
     public void setCancelCallback(GeoUtils.IndexCallback cancelCallback) {
-        this._cancelCallback = cancelCallback;
+        this.cancelCallback = cancelCallback;
     }
 
     /*
@@ -186,19 +226,19 @@ public class GeofenceManager implements
      */
     private PendingIntent getTransitionPendingIntent() {
         // Create an explicit Intent
-        Intent intent = new Intent(_activity,
+        Intent intent = new Intent(activity,
                 ReceiveTransitionsIntentService.class);
 
-        intent.putExtra("UseID", ReceiveTransitionsIntentService.get_currentUse());
+        intent.putExtra("UseID", ReceiveTransitionsIntentService.getCurrentUse());
 
-        intent.putExtra(_activity.
-                getString(R.string.PointIndexExtra), _pointIndex);
+        intent.putExtra(activity.
+                getString(R.string.PointIndexExtra), pointIndex);
 
         /*
          * Return the PendingIntent
          */
         return PendingIntent.getService(
-                _activity,
+                activity,
                 0,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -211,65 +251,57 @@ public class GeofenceManager implements
 
     public void removeGeofences(String geoID) {
         // Record the type of removal request
-        mRequestType = REQUEST_TYPE.REMOVE_POINT;
+        requestType = REQUEST_TYPE.REMOVE_POINT;
         /*
          * Test for Google Play services after setting the request type.
          * If Google Play services isn't present, the request can be
          * restarted.
          */
-        if (!GooglePlayUtils.servicesConnected(_activity)) {
+        if (!GooglePlayUtils.servicesConnected(activity)) {
             return;
         }
         // Store the PendingIntent
-        _deletePoint = new ArrayList<String>();
-        _deletePoint.add(geoID);
-        /*
-         * Create a new location client object. Since the current
-         * activity class implements ConnectionCallbacks and
-         * OnConnectionFailedListener, pass the current activity object
-         * as the listener for both parameters
-         */
-        //mLocationClient = new LocationClient(_activity, this, this);
+        deletePoint = new ArrayList<String>();
+        deletePoint.add(geoID);
+
         // If a request is not already underway
-        if (!mInProgress) {
+        if (!inProgress) {
             Log.d(TAG, "remove request");
             // Indicate that a request is underway
-            mInProgress = true;
+            inProgress = true;
             // Request a connection from the client to Location Services
             getLocationClient().connect();
         } else {
             Log.d(TAG, "Skip remove request in progress");
-            /*
-             * A request is already underway. You can handle
-             * this situation by disconnecting the client,
-             * re-setting the flag, and then re-trying the
-             * request.
-             */
         }
     }
 
+    /**
+     * Remove the geofencing for the giving point
+     * @param point the point to be removed
+     */
     public void removeGeofences(Point point) {
-        _pointCanceled = true;
+        pointCanceled = true;
         removeGeofences(composeID(point));
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         // Start with the request flag set to false
-        mInProgress = false;
-        _lastAccuracy = getLocationClient().getLastLocation().getAccuracy();
-        switch (mRequestType) {
+        inProgress = false;
+        lastAccuracy = getLocationClient().getLastLocation().getAccuracy();
+        switch (requestType) {
             case ADD:
-                mTransitionPendingIntent = getTransitionPendingIntent();
+                transitionPendingIntent = getTransitionPendingIntent();
                 getLocationClient().addGeofences(mCurrentGeofence,
-                        mTransitionPendingIntent, this);
+                        transitionPendingIntent, this);
                 break;
             case REMOVE_POINT:
                 getLocationClient().removeGeofences(
-                        _deletePoint, this);
+                        deletePoint, this);
                 break;
             case REMOVE_INTENT:
-                getLocationClient().removeGeofences(mTransitionPendingIntent, new LocationClient.OnRemoveGeofencesResultListener() {
+                getLocationClient().removeGeofences(transitionPendingIntent, new LocationClient.OnRemoveGeofencesResultListener() {
                     @Override
                     public void onRemoveGeofencesByRequestIdsResult(int i, String[] strings) {
 
@@ -289,15 +321,13 @@ public class GeofenceManager implements
      */
     public void addGeofences() {
 
-        mRequestType = REQUEST_TYPE.ADD;
-        if (!GooglePlayUtils.servicesConnected(_activity))
+        requestType = REQUEST_TYPE.ADD;
+        if (!GooglePlayUtils.servicesConnected(activity))
             return;
 
-        // mLocationClient = new LocationClient(_activity, this, this);
-
-        if (!mInProgress) {
+        if (!inProgress) {
             Log.d(TAG, "Add geofence STARTING progress");
-            mInProgress = true;
+            inProgress = true;
             getLocationClient().connect();
         } else {
             Log.d(TAG, "Add geofence in progress");
@@ -308,8 +338,8 @@ public class GeofenceManager implements
 
     @Override
     public void onDisconnected() {
-        mInProgress = false;
-        mLocationClient = null;
+        inProgress = false;
+        locationClient = null;
     }
 
     @Override
@@ -320,40 +350,35 @@ public class GeofenceManager implements
              * You can send out a broadcast intent or update the UI.
              * geofences into the Intent's extended data.
              */
-            _geofenceCreateFinished = true;
+            geofenceCreateFinished = true;
             Log.d(TAG, "Location geofence added succssfully");
         } else {
             // If adding the geofences failed
-            /*
-             * Report errors here.
-             * You can log the error using Log.e() or update
-             * the UI.
-             */
 
             if (LocationStatusCodes.GEOFENCE_NOT_AVAILABLE == statusCode) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(_activity);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-                builder.setMessage(_activity.getString(R.string.location_disabled_error))
-                        .setTitle(_activity.getString(R.string.location_services_disabled))
-                        .setPositiveButton(_activity.getString(R.string.location_settings),
+                builder.setMessage(activity.getString(R.string.location_disabled_error))
+                        .setTitle(activity.getString(R.string.location_services_disabled))
+                        .setPositiveButton(activity.getString(R.string.location_settings),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface d, int id) {
-                                        _activity.startActivity(new Intent(
+                                        activity.startActivity(new Intent(
                                                 Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                                         d.dismiss();
                                     }
                                 })
-                        .setNegativeButton(_activity.getString(R.string.location_missing_canceled),
+                        .setNegativeButton(activity.getString(R.string.location_missing_canceled),
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        _activity.finish();
+                                        activity.finish();
                                     }
                                 })
                         .setOnCancelListener(new DialogInterface.OnCancelListener() {
                             @Override
                             public void onCancel(DialogInterface dialog) {
-                                _activity.finish();
+                                activity.finish();
                             }
                         });
                 builder.create().show();
@@ -362,7 +387,7 @@ public class GeofenceManager implements
             Log.d(TAG, "Location geofence added with error: " + statusCode);
         }
 
-        mInProgress = false;
+        inProgress = false;
         getLocationClient().disconnect();
 
 
@@ -370,12 +395,12 @@ public class GeofenceManager implements
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        mInProgress = false;
+        inProgress = false;
 
         if (connectionResult.hasResolution()) {
             try {
                 connectionResult.startResolutionForResult(
-                        _activity, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                        activity, CONNECTION_FAILURE_RESOLUTION_REQUEST);
             } catch (IntentSender.SendIntentException e) {
                 e.printStackTrace();
             }
@@ -385,7 +410,7 @@ public class GeofenceManager implements
             // Get the error dialog from Google Play services
             Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
                     errorCode,
-                    _activity,
+                    activity,
                     CONNECTION_FAILURE_RESOLUTION_REQUEST);
             // If Google Play services can provide an error dialog
             if (errorDialog != null) {
@@ -394,7 +419,7 @@ public class GeofenceManager implements
                         ErrorDialogFragment.newInstance(errorDialog);
                 // Show the error dialog in the DialogFragment
                 errorFragment.show(
-                        _activity.getFragmentManager(),
+                        activity.getFragmentManager(),
                         "Geofence Detection");
             }
 
@@ -407,24 +432,24 @@ public class GeofenceManager implements
     @Override
     public void onRemoveGeofencesByRequestIdsResult(int statusCode, String[] strings) {
 
-        mInProgress = false;
+        inProgress = false;
         getLocationClient().disconnect();
         if (statusCode == LocationStatusCodes.SUCCESS) {
-            Log.d(TAG, "removed #" + _pointIndex + " by id (" + strings.length + ") " + strings[0]);
+            Log.d(TAG, "removed #" + pointIndex + " by id (" + strings.length + ") " + strings[0]);
             simpleGeofenceStore.clearGeofence(strings[0]);
-            if (_cancelCallback != null && _pointCanceled) {
-                _pointCanceled = false; // reset for next time
+            if (cancelCallback != null && pointCanceled) {
+                pointCanceled = false; // reset for next time
                 try {
-                    _cancelCallback.executeCallback(_pointIndex);
+                    cancelCallback.executeCallback(pointIndex);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (!_pointCanceled && !_cleanUp) {
-                Intent intent1 = new Intent(_activity.getString(R.string.GeofenceResultIntent));
-                intent1.putExtra(_activity.getString(R.string.PointIdIntentExtra), strings[0]);
-                intent1.putExtra(_activity.getString(R.string.PointIndexExtra),
-                        _pointIndex);
-                LocalBroadcastManager.getInstance(_activity)
+            } else if (!pointCanceled && !cleanUp) {
+                Intent intent1 = new Intent(activity.getString(R.string.GeofenceResultIntent));
+                intent1.putExtra(activity.getString(R.string.PointIdIntentExtra), strings[0]);
+                intent1.putExtra(activity.getString(R.string.PointIndexExtra),
+                        pointIndex);
+                LocalBroadcastManager.getInstance(activity)
                         .sendBroadcast(intent1);
             }
             /**
@@ -445,12 +470,12 @@ public class GeofenceManager implements
     @Override
     public void onRemoveGeofencesByPendingIntentResult(int statusCode, PendingIntent requestIntent) {
 
-        mInProgress = false;
+        inProgress = false;
         getLocationClient().disconnect();
         if (statusCode == LocationStatusCodes.SUCCESS) {
-            if (_cancelCallback != null && _pointCanceled) {
+            if (cancelCallback != null && pointCanceled) {
                 try {
-                    _cancelCallback.executeCallback(_pointIndex);
+                    cancelCallback.executeCallback(pointIndex);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -468,34 +493,8 @@ public class GeofenceManager implements
     }
 
     public void destroy() {
-        _cleanUp = true;
+        cleanUp = true;
         ReceiveTransitionsIntentService.clearList();
-//        mRequestType = REQUEST_TYPE.REMOVE_INTENT;
-//            /*
-//         * Test for Google Play services after setting the request type.
-//         * If Google Play services isn't present, the request can be
-//         * restarted.
-//         */
-//        if (!GooglePlayUtils.servicesConnected(_activity)) {
-//            return;
-//        }
-//        //mLocationClient = new LocationClient(_activity, this, this);
-//        // If a request is not already underway
-//        if (!mInProgress) {
-//            Log.d(TAG,"remove intent");
-//            // Indicate that a request is underway
-//            mInProgress = true;
-//            // Request a connection from the client to Location Services
-//            getLocationClient().connect();
-//        } else {
-//            Log.d(TAG,"Skip remove request in progress");
-//            /*
-//             * A request is already underway. You can handle
-//             * this situation by disconnecting the client,
-//             * re-setting the flag, and then re-trying the
-//             * request.
-//             */
-//        }
     }
 
 

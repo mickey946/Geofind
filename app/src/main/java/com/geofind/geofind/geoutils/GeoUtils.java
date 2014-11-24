@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Created by Ilia Marin on 16/10/2014.
- * <p/>
+ *
  * This file contains general usage geographical calculation function
  */
 public abstract class GeoUtils {
@@ -151,6 +151,10 @@ public abstract class GeoUtils {
         return len;
     }
 
+    /**
+     * calculates the distance from currentLocation to given point
+     * @return the distance in meters
+     */
     public static float calcDistance(Location currentLocation, Point p) {
         return currentLocation.distanceTo(p.toLocation());
     }

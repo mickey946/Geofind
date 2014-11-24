@@ -14,6 +14,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
  */
 public abstract class GooglePlayUtils {
 
+    private static final String TAG = GooglePlayUtils.class.getName();
+
     /*
     * Define a request code to send to Google Play services
     * This code is returned in Activity.onActivityResult
@@ -21,6 +23,11 @@ public abstract class GooglePlayUtils {
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
+    /**
+     * Checks if the google play services is connected and if not displays error to the user
+     * @param activity
+     * @return
+     */
     public static boolean servicesConnected(Activity activity) {
         // Check that Google Play services is available
         int resultCode =
@@ -29,7 +36,7 @@ public abstract class GooglePlayUtils {
         // If Google Play services is available
         if (ConnectionResult.SUCCESS == resultCode) {
             // In debug mode, log the status
-            Log.d("Geofence Detection",
+            Log.d(TAG,
                     "Google Play services is available.");
             // Continue
             return true;
@@ -42,6 +49,11 @@ public abstract class GooglePlayUtils {
         }
     }
 
+    /**
+     * Display the error fragment
+     * @param activity the host activity
+     * @param errorCode the error cose
+     */
     private static void DisplayErrorFragment(Activity activity, int errorCode) {
         // Get the error dialog from Google Play services
         Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
@@ -63,7 +75,9 @@ public abstract class GooglePlayUtils {
         }
     }
 
-    // Define a DialogFragment that displays the error dialog
+    /**
+     * Define a DialogFragment that displays the error dialog
+     */
     public static class ErrorDialogFragment extends DialogFragment {
         // Global field to contain the error dialog
         private Dialog mDialog;

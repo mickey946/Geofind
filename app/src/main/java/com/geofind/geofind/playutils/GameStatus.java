@@ -1,6 +1,5 @@
 package com.geofind.geofind.playutils;
 
-import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -13,25 +12,89 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * This class hold the status of the game and synchronized with google play saved games
+ *
  * Created by Ilia Marin on 14/11/2014.
  */
 public class GameStatus {
 
+    private static final String TAG = GameStatus.class.getName();
 
+    /**
+     * JSON fields constants
+     */
+    private final String SAVEGAME_TITLE = "huntTitle";
+    private final String SAVEGAME_ID = "huntID";
+    private final String SAVEGAME_START_TIME = "huntStartTime";
+    private final String SAVEGAME_FINISH_TIME = "huntFinishTime";
+    private final String SAVEGAME_HUNT_POSITION = "huntPosition";
+    private final String SAVEGAME_REVEALED_POINTS = "revealedPoints";
+    private final String SAVEGAME_IS_FINISHED = "isFinished";
+
+    /**
+     * The Json format version
+     */
+    private final String SERIAL_VERSION = "0.1";
+
+
+    /**
+     * The played hunt in current session
+     */
+    private Map<String, HuntStatus> activeHunts;
+
+    /**
+     * The loaded hunts from google plus
+     */
+    private Map<String, SnapshotMetadata> savedHunts;
+
+    /**
+     * This class holds the status of specific hunt
+     */
     public class HuntStatus {
 
+        /**
+         * The title of the hunt
+         */
         private String huntTitle;
+
+        /**
+         * The ID of the hunt
+         */
         private String huntID;
+
+        /**
+         * The time frame of the hunt
+         */
         private long huntStartTime, huntFinishTime;
+
+        /**
+         * The current position of the play (the next point to find)
+         */
         private int huntPosition;
+
+        /**
+         * The list of the revealed point indices
+         */
         private ArrayList<Integer> revealedPoints;
+
+        /**
+         * Specifies if the hunt is finished
+         */
         private boolean isFinished;
 
-        private SnapshotMetadata _metaData;
+        /**
+         * The snapshot of the hunt
+         */
+        private SnapshotMetadata metadata;
+
+        /**
+         * Create new hunt game
+         * @param huntTitle the title of the hunt
+         * @param huntID the ParseID of the hunt
+         */
         public HuntStatus(String huntTitle, String huntID) {
             this.huntID = huntID;
             this.huntTitle = huntTitle;
@@ -39,60 +102,83 @@ public class GameStatus {
             huntStartTime = SystemClock.elapsedRealtime();
             revealedPoints = new ArrayList<Integer>();
             isFinished = false;
-            _metaData = null;
+            metadata = null;
         }
 
+        /**
+         * Loads a saved hunt from google plus
+         * @param jsonObject the json the describes the hunt
+         * @param snapshotMetadata the snapshot of the hunt
+         * @throws JSONException
+         */
         public HuntStatus(JSONObject jsonObject, SnapshotMetadata snapshotMetadata) throws JSONException {
-            _metaData = snapshotMetadata;
-            Log.d("GS",jsonObject.toString());
-            huntTitle = jsonObject.getString("huntTitle");
-            huntID = jsonObject.getString("huntID");
-            huntStartTime = jsonObject.getLong("huntStartTime");
-            huntFinishTime = jsonObject.getLong("huntFinishTime");
-            huntPosition = jsonObject.getInt("huntPosition");
+            metadata = snapshotMetadata;
+            Log.d(TAG,jsonObject.toString());
+            huntTitle = jsonObject.getString(SAVEGAME_TITLE);
+            huntID = jsonObject.getString(SAVEGAME_ID);
+            huntStartTime = jsonObject.getLong(SAVEGAME_START_TIME);
+            huntFinishTime = jsonObject.getLong(SAVEGAME_FINISH_TIME);
+            huntPosition = jsonObject.getInt(SAVEGAME_HUNT_POSITION);
 
-            JSONArray rev = new JSONArray(jsonObject.getString("revealedPoints")); // jsonObject.getJSONArray("revealedPoints");
+            JSONArray rev = new JSONArray(jsonObject.getString(SAVEGAME_REVEALED_POINTS)); // jsonObject.getJSONArray("revealedPoints");
             revealedPoints = new ArrayList<Integer>();
             for (int i = 0; i < rev.length(); i++) {
                 revealedPoints.add(rev.getInt(i));
             }
-            isFinished = false;
+            isFinished = jsonObject.getBoolean(SAVEGAME_IS_FINISHED);
         }
 
-
+        /**
+         * Convert the hunt status to json
+         */
         public JSONObject toJsonObject() throws JSONException {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("huntTitle", huntTitle);
-            jsonObject.put("huntID", huntID);
-            jsonObject.put("huntStartTime", huntStartTime);
-            jsonObject.put("huntFinishTime",huntFinishTime);
-            jsonObject.put("isFinished",isFinished);
-            jsonObject.put("huntPosition", huntPosition);
-            jsonObject.put("revealedPoints", revealedPoints);
+            jsonObject.put(SAVEGAME_TITLE, huntTitle);
+            jsonObject.put(SAVEGAME_ID, huntID);
+            jsonObject.put(SAVEGAME_START_TIME, huntStartTime);
+            jsonObject.put(SAVEGAME_FINISH_TIME,huntFinishTime);
+            jsonObject.put(SAVEGAME_IS_FINISHED,isFinished);
+            jsonObject.put(SAVEGAME_HUNT_POSITION, huntPosition);
+            jsonObject.put(SAVEGAME_REVEALED_POINTS, revealedPoints);
             return jsonObject;
         }
 
+        /**
+         * update the status of the current hunt
+         * @param revealed specified if the last point had been revealed or solved
+         */
         public void updateStatus(boolean revealed) {
             if (revealed)
                 revealedPoints.add(huntPosition);
             huntPosition++;
         }
 
+        /**
+         * Marks the hunt as finished
+         */
         public void markFinish(){
             isFinished=true;
             huntFinishTime = SystemClock.elapsedRealtime();
         }
 
+        /**
+         *
+         * @return the last played position
+         */
         public int getHuntPosition() {
             return huntPosition;
         }
 
+        /**
+         *
+         * @return the list of the revealed points indices.
+         */
         public ArrayList<Integer> getRevealedPoints() {
             return revealedPoints;
         }
 
         public SnapshotMetadata getMetaData() {
-            return _metaData;
+            return metadata;
         }
 
         public long getHuntStartTime() {
@@ -100,64 +186,65 @@ public class GameStatus {
         }
     }
 
-    private Map<String, HuntStatus> _activeHunts;
-    private final String SERIAL_VERSION = "0.1";
-    private Map<String, SnapshotMetadata> _savedHunts;
 
     public GameStatus() {
-        _activeHunts = new HashMap<String, HuntStatus>();
-        _savedHunts = new HashMap<String, SnapshotMetadata>();
+        activeHunts = new HashMap<String, HuntStatus>();
+        savedHunts = new HashMap<String, SnapshotMetadata>();
     }
 
-    public GameStatus(byte[] data) {
-        if (data == null) return;
-        loadJson(new String(data));
-    }
-
-    public GameStatus(String json) {
-        if (json == null) return;
-        loadJson(json);
-    }
-
-    public GameStatus(SharedPreferences sp, String key) {
-        loadJson(sp.getString(key, ""));
-    }
-
+    /**
+     * add a new played hunt
+     * @param HuntTitle the title of the hunt
+     * @param HuntID the ID of the hunt
+     * @return true if the new hunt was successfully registered
+     */
     public boolean startGame(String HuntTitle, String HuntID) {
-        if (_activeHunts.containsKey(HuntID)) {
+        if (activeHunts.containsKey(HuntID)) {
             return false;
         } else {
-            _activeHunts.put(HuntID, new HuntStatus(HuntTitle, HuntID));
+            activeHunts.put(HuntID, new HuntStatus(HuntTitle, HuntID));
             return true;
         }
 
 
     }
 
-
+    /**
+     * Returns true if the hunt with {@param huntID} is finished
+     */
     public boolean isFinished(String huntID) {
-        if (_activeHunts.containsKey(huntID)){
-            return  _activeHunts.get(huntID).isFinished;
+        if (activeHunts.containsKey(huntID)){
+            return  activeHunts.get(huntID).isFinished;
         }
         return false;
     }
 
+    /**
+     * Updates the status of the hunt
+     * @param HuntId the id of the hunt to be updated
+     * @param revealed marks if this point is revealed or solved
+     * @param isFinished is this the last point of the hunt
+     * @return true if hunt successfully updated
+     */
     public boolean updateGame(String HuntId, boolean revealed, boolean isFinished) {
-        if (_activeHunts.containsKey(HuntId)) {
-            _activeHunts.get(HuntId).updateStatus(revealed);
+        if (activeHunts.containsKey(HuntId)) {
+            activeHunts.get(HuntId).updateStatus(revealed);
             if (isFinished)
-                _activeHunts.get(HuntId).markFinish();
+                activeHunts.get(HuntId).markFinish();
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Loads saved hunt from json
+     */
     public void loadHunt(byte[] data, SnapshotMetadata metadata) {
         try {
             JSONObject jsonObject = new JSONObject(new String(data)).getJSONObject("Hunt");
             String id = jsonObject.getString("huntID");
-            _activeHunts.put(id, new HuntStatus(jsonObject, metadata));
+            activeHunts.put(id, new HuntStatus(jsonObject, metadata));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -165,49 +252,14 @@ public class GameStatus {
 
 
     /**
-     * Replaces this SaveGame's content with the content loaded from the given JSON string.
+     * Convert the hunt specified by {@param HuntID} to byte array for saving
+     * @return the converted byte array
      */
-    public void loadJson(String json) {
-        _activeHunts.clear();
-        if (json == null || json.trim().equals("")) return;
-
-        try {
-            JSONObject obj = new JSONObject(json);
-            String format = obj.getString("version");
-            if (!format.equals(SERIAL_VERSION)) {
-                throw new RuntimeException("Unexpected format version" + format);
-            }
-
-
-            JSONObject hunts = obj.getJSONObject("hunts");
-            Iterator<?> iter = hunts.keys();
-
-            while (iter.hasNext()) {
-                String levelName = (String) iter.next();
-                _activeHunts.put(levelName, new HuntStatus(hunts.getJSONObject(levelName), null));
-            }
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-            //Log.e(TAG, "Save data has a syntax error: " + json, ex);
-
-            // Initializing with empty stars if the game file is corrupt.
-            // NOTE: In your game, you want to try recovering from the snapshot payload.
-            _activeHunts.clear();
-        } catch (NumberFormatException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Save data has an invalid number in it: " + json, ex);
-        }
-    }
-
-    public byte[] toBytes() {
-        return toString().getBytes();
-    }
-
     public byte[] HuntToBytes(String HuntID) {
         JSONObject currentHunt = new JSONObject();
         try {
-            if (_activeHunts.containsKey(HuntID))
-                currentHunt.put("Hunt", _activeHunts.get(HuntID).toJsonObject());
+            if (activeHunts.containsKey(HuntID))
+                currentHunt.put("Hunt", activeHunts.get(HuntID).toJsonObject());
             else {
                 Log.e("GameStatus", "HuntID not found on save");
             }
@@ -226,8 +278,8 @@ public class GameStatus {
     public String toString() {
         try {
             JSONObject hunts = new JSONObject();
-            for (String levelName : _activeHunts.keySet()) {
-                hunts.put(levelName, _activeHunts.get(levelName).toJsonObject());
+            for (String levelName : activeHunts.keySet()) {
+                hunts.put(levelName, activeHunts.get(levelName).toJsonObject());
 
             }
 
@@ -241,36 +293,36 @@ public class GameStatus {
         }
     }
 
-    //
-//    public GameStatus unionWith(GameStatus gameStatus){
-//        GameStatus current = clone();
-//
-//        for (String HuntId: gameStatus._activeHunts.keySet()){
-//
-//        }
-//
-//    }
-
+    /**
+     * Creates a clone of the game status
+     */
     @Override
     public GameStatus clone() throws CloneNotSupportedException {
         super.clone();
         GameStatus gameStatus = new GameStatus();
-        for (String id : _activeHunts.keySet()) {
-            gameStatus._activeHunts.put(id, _activeHunts.get(id));
+        for (String id : activeHunts.keySet()) {
+            gameStatus.activeHunts.put(id, activeHunts.get(id));
         }
 
         return gameStatus;
     }
 
+    /**
+     * Register loaded hunt
+     * @param metadata the metadata od the hunt
+     */
     public void addToSaveHunts(SnapshotMetadata metadata){
-        _savedHunts.put(metadata.getUniqueName().substring(8), metadata);
+        savedHunts.put(metadata.getUniqueName().substring(8), metadata);
 
         Log.d("GameStatus","adding " + metadata.getUniqueName() + ":" + metadata.getDescription());
     }
 
+    /**
+     * @return the list of the onGoing hunts
+     */
     public Collection<String> getOnGoing(){
         ArrayList<String> hunts = new ArrayList<String>();
-        for (Map.Entry<String,SnapshotMetadata> entry : _savedHunts.entrySet()){
+        for (Map.Entry<String,SnapshotMetadata> entry : savedHunts.entrySet()){
             if (entry.getValue().getDescription().equalsIgnoreCase("OnGoing")){
                 hunts.add(entry.getKey());
             }
@@ -278,9 +330,12 @@ public class GameStatus {
         return  hunts;
     }
 
+    /**
+     * @return the lost of the finished hunts
+     */
     public Collection<String> getFinished(){
         ArrayList<String> hunts = new ArrayList<String>();
-        for (Map.Entry<String,SnapshotMetadata> entry : _savedHunts.entrySet()){
+        for (Map.Entry<String,SnapshotMetadata> entry : savedHunts.entrySet()){
             if (entry.getValue().getDescription().equalsIgnoreCase("Finished")){
                 hunts.add(entry.getKey());
             }
@@ -288,25 +343,47 @@ public class GameStatus {
         return  hunts;
     }
 
+    /**
+     * @return the IDs of all the known to the player hunts
+     */
     public Collection<String> getPlayed(){
-        return _savedHunts.keySet();
+        return savedHunts.keySet();
     }
 
+    /**
+     * @param huntId the Id of the hunt
+     * @return the snapshot associated with this hunt.
+     */
     public SnapshotMetadata getSnapshotMetadataById(String huntId) {
-        return _savedHunts.get(huntId);
+        return savedHunts.get(huntId);
     }
 
+    /**
+     * @param huntId the Id of the hunt
+     * @return the list of indices of the revealed points .
+     */
     public ArrayList<Integer> getHuntRevealedPoints(String huntId) {
-        return _activeHunts.get(huntId).getRevealedPoints();
+        return activeHunts.get(huntId).getRevealedPoints();
     }
 
+    /**
+     * @param huntId the Id of the hunt
+     * @return The current position of the play (the next point to find)
+     */
     public int getHuntPosition(String huntId) {
-        return _activeHunts.get(huntId).getHuntPosition();
+        return activeHunts.get(huntId).getHuntPosition();
     }
+
+    /**
+     * If the hunt is finish then returns the played time for this hunt,
+     * otherwise returns -1
+     * @param huntId the Id of the hunt
+     * @return the time in ms
+     */
     public long getHuntPlayedTime(String huntId){
-        if (_activeHunts.get(huntId).isFinished)
+        if (activeHunts.get(huntId).isFinished)
         {
-            return _activeHunts.get(huntId).huntFinishTime - _activeHunts.get(huntId).huntStartTime;
+            return activeHunts.get(huntId).huntFinishTime - activeHunts.get(huntId).huntStartTime;
         }
         return -1;
     }

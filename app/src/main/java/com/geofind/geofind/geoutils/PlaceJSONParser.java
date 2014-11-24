@@ -1,7 +1,7 @@
 package com.geofind.geofind.geoutils;
 
 /**
- * Created by Ilia Marin on 09/10/2014.
+ * Taken from http://wptrafficanalyzer.in/blog/selecting-google-place-from-autocompletetextview-and-marking-in-google-map-android-api-v2/
  */
 
 import org.json.JSONArray;
@@ -14,8 +14,10 @@ import java.util.List;
 
 public class PlaceJSONParser {
 
-    /** Receives a JSONObject and returns a list */
-    public List<HashMap<String,String>> parse(JSONObject jObject){
+    /**
+     * Receives a JSONObject and returns a list
+     */
+    public List<HashMap<String, String>> parse(JSONObject jObject) {
 
         JSONArray jPlaces = null;
         try {
@@ -30,16 +32,16 @@ public class PlaceJSONParser {
         return getPlaces(jPlaces);
     }
 
-    private List<HashMap<String, String>> getPlaces(JSONArray jPlaces){
+    private List<HashMap<String, String>> getPlaces(JSONArray jPlaces) {
         int placesCount = jPlaces.length();
-        List<HashMap<String, String>> placesList = new ArrayList<HashMap<String,String>>();
+        List<HashMap<String, String>> placesList = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> place = null;
 
         /** Taking each place, parses and adds to list object */
-        for(int i=0; i<placesCount;i++){
+        for (int i = 0; i < placesCount; i++) {
             try {
                 /** Call getPlace with place JSON object to parse the place */
-                place = getPlace((JSONObject)jPlaces.get(i));
+                place = getPlace((JSONObject) jPlaces.get(i));
                 placesList.add(place);
 
             } catch (JSONException e) {
@@ -49,14 +51,16 @@ public class PlaceJSONParser {
         return placesList;
     }
 
-    /** Parsing the Place JSON object */
-    private HashMap<String, String> getPlace(JSONObject jPlace){
+    /**
+     * Parsing the Place JSON object
+     */
+    private HashMap<String, String> getPlace(JSONObject jPlace) {
 
         HashMap<String, String> place = new HashMap<String, String>();
 
-        String id="";
-        String reference="";
-        String description="";
+        String id = "";
+        String reference = "";
+        String description = "";
 
         try {
             description = jPlace.getString("description");
@@ -64,8 +68,8 @@ public class PlaceJSONParser {
             reference = jPlace.getString("reference");
 
             place.put("description", description);
-            place.put("_id",id);
-            place.put("reference",reference);
+            place.put("_id", id);
+            place.put("reference", reference);
 
         } catch (JSONException e) {
             e.printStackTrace();

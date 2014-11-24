@@ -1,7 +1,7 @@
 package com.geofind.geofind.geoutils;
 
 /**
- * Created by Ilia Marin on 09/10/2014.
+ * Taken from http://wptrafficanalyzer.in/blog/selecting-google-place-from-autocompletetextview-and-marking-in-google-map-android-api-v2/
  */
 
 import org.json.JSONException;

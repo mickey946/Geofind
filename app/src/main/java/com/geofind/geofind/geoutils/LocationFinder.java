@@ -22,39 +22,71 @@ import java.util.concurrent.Callable;
 
 
 /**
+ * This class connects to location client and retrieves the fused location
  * Created by Ilia Marin on 30/10/2014.
  */
 public class LocationFinder implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
         LocationListener {
+
     private final static int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+    private static final String TAG = LocationFinder.class.getName();
+
+    /**
+     * Define an object that holds accuracy and frequency parameters
+     */
+    LocationRequest locationRequest;
+
+    /**
+     * The found {@link android.location.Location}
+     */
     private Location currentLocation;
-    //Define an object that holds accuracy and frequency parameters
-    LocationRequest mLocationRequest;
+
+    /**
+     * The requested activity
+     */
     private Activity context;
+
+    /**
+     * The {@link com.google.android.gms.location.LocationClient} is the interface to get the
+     * location
+     */
     private LocationClient locationClient;
-    // Flag that indicates if a request is underway.
+
+    /**
+     * The {@link java.util.concurrent.Callable} (callback) to be called when the location found
+     */
     private Callable<Void> locationFound;
-    // is it a single request or continues
-    private boolean _requireUpdates;
-    private boolean _requireLocationEnabled;
+
+    /**
+     * is it a single request or continues
+     */
+    private boolean requireUpdates;
+
+    /**
+     * The host activity requires (as opposed to optional) the location
+     */
+    private boolean requireLocationEnabled;
 
     public LocationFinder(Activity context, Callable<Void> locationFound) {
-        Log.d("LocationFinder", "c-tor");
         locationClient = new LocationClient(context, this, this);
         this.context = context;
         currentLocation = null;
         this.locationFound = locationFound;
 
-        _requireLocationEnabled = true;
-        _requireUpdates = false;
+        requireLocationEnabled = true;
+        requireUpdates = false;
 
     }
 
-    public void set_requireLocationEnabled(boolean requireLocationEnabled) {
-        this._requireLocationEnabled = requireLocationEnabled;
+    /**
+     * Sets if the host activity requires (as opposed to optional) the location
+     */
+    public void setRequireLocationEnabled(boolean requireLocationEnabled) {
+        this.requireLocationEnabled = requireLocationEnabled;
     }
 
     /**
@@ -65,15 +97,15 @@ public class LocationFinder implements
      */
     public void startPeriodicUpdates(long updateInterval, long fastestInterval) {
         // Create the LocationRequest object
-        mLocationRequest = LocationRequest.create();
+        locationRequest = LocationRequest.create();
         // Use high accuracy
-        mLocationRequest.setPriority(
+        locationRequest.setPriority(
                 LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        mLocationRequest.setInterval(updateInterval);
-        mLocationRequest.setFastestInterval(fastestInterval);
+        locationRequest.setInterval(updateInterval);
+        locationRequest.setFastestInterval(fastestInterval);
 
-        _requireUpdates = true;
+        requireUpdates = true;
         startLocation();
 
     }
@@ -82,8 +114,8 @@ public class LocationFinder implements
      * stop the update requests
      */
     public void stopPeriodicUpdates() {
-        if (_requireUpdates) {
-            _requireUpdates = false;
+        if (requireUpdates) {
+            requireUpdates = false;
             if (locationClient.isConnected()) {
                 locationClient.removeLocationUpdates(this);
             }
@@ -125,13 +157,13 @@ public class LocationFinder implements
     public void onConnected(Bundle dataBundle) {
 
         currentLocation = locationClient.getLastLocation();
-        Log.d("LocationFinder", "onConnect");
+        Log.d(TAG, "onConnect");
 
         if (currentLocation == null) {
             updateLocation();
-            Log.d("LocationFinder", "No location oncreate");
+            Log.d(TAG, "No location oncreate");
 
-            if (_requireLocationEnabled) {
+            if (requireLocationEnabled) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 
@@ -154,8 +186,8 @@ public class LocationFinder implements
             }
         }
 
-        if (_requireUpdates) {
-            locationClient.requestLocationUpdates(mLocationRequest, this);
+        if (requireUpdates) {
+            locationClient.requestLocationUpdates(locationRequest, this);
         }
 
         try {
@@ -185,7 +217,7 @@ public class LocationFinder implements
      */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d("LocationFinder", "connect failed");
+        Log.d(TAG, "connect failed");
         /*
          * Google Play services can resolve some errors it detects.
          * If the error has a resolution, try sending an Intent to
@@ -216,6 +248,10 @@ public class LocationFinder implements
         }
     }
 
+    /**
+     * Called when the location changed
+     * @param location current location
+     */
     @Override
     public void onLocationChanged(Location location) {
         Log.d("LocationFinder", "Location changed");
@@ -228,6 +264,9 @@ public class LocationFinder implements
         }
     }
 
+    /**
+     * force the the android to sample a new location
+     */
     public void updateLocation() {
         if (locationClient.isConnected())
             locationClient.requestLocationUpdates(

@@ -16,56 +16,79 @@ import java.util.List;
  */
 public class ReceiveTransitionsIntentService extends IntentService {
 
-    private static GeofenceManager _manager;
-    private static int _currentUse = 0;
-    static HashSet<String> _seenHashes = new HashSet<String>();
+     private static String TAG = ReceiveTransitionsIntentService.class.getName();
+
+    /**
+     *  The Ids of the points that already arrived
+     */
+    private static HashSet<String> seenHashes = new HashSet<String>();
+
+    /**
+     * The geofence that initialized this request
+     */
+    private static GeofenceManager manager;
+
+    /**
+     * The instance of this class for prevent recreation
+     */
+    private static int currentUse = 0;
+
 
     /**
      * Set service identifier
      */
     public ReceiveTransitionsIntentService() {
         super("ReceiveTransitionsIntentService");
-        //_seenHashes = new HashSet<String>();
-        //    _manager = null;
     }
 
-    public static void set_manager(GeofenceManager manager) {
-        _manager = manager;
-        _currentUse++;
+    /**
+     * Assign the geofene manager to the class
+     */
+    public static void setManager(GeofenceManager manager) {
+        ReceiveTransitionsIntentService.manager = manager;
+        currentUse++;
     }
 
+    /**
+     * Reset the seen points
+     */
     public static void clearList() {
-        _seenHashes.clear();
-        _currentUse++;
+        seenHashes.clear();
+        currentUse++;
     }
 
-    public static int get_currentUse() {
-        return _currentUse;
+    /**
+     * @return the current instance number
+     */
+    public static int getCurrentUse() {
+        return currentUse;
     }
 
+    /**
+     * Called when arrived to point
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
         if (LocationClient.hasError(intent)) {
             int errorCode = LocationClient.getErrorCode(intent);
-            Log.e("ReceiveTransitionsIntentService",
-                    "Location Services error: " +
-                            Integer.toString(errorCode));
-            //TODO send some error to application
-
-
+            Log.e(TAG,"Location Services error: " + Integer.toString(errorCode));
         } else {
 
 
             int transientType =
                     LocationClient.getGeofenceTransition(intent);
+
+            // Check the transient status
             if (transientType == Geofence.GEOFENCE_TRANSITION_ENTER ||
                     transientType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+
                 List<Geofence> triggerList =
                         LocationClient.getTriggeringGeofences(intent); //Added LocationClient
 
+                // debug id
                 int serviceIdNum = intent.getIntExtra("UseID", -1);
-                Log.d("Geofence Service", "curId = " + _currentUse + " rec = " + serviceIdNum);
-                if (_currentUse > 1) {
+                Log.d(TAG, "curId = " + currentUse + " rec = " + serviceIdNum);
+                if (currentUse > 1) {
                     //  return;
                 }
 
@@ -74,31 +97,22 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 for (int i = 0; i < triggerIds.length; i++) {
                     triggerIds[i] = triggerList.get(i).getRequestId();
                 }
-                /*
-                 * At this point, you can store the IDs for further use
-                 * display them, or display the details associated with
-                 * them.
-                 */
 
-                if (_seenHashes.contains(triggerIds[0])) {
-                    Log.d("Geofence Service", "skipping " + transientType);
+                // Skip seen points (for double calling)
+                if (seenHashes.contains(triggerIds[0])) {
+                    Log.d(TAG, "skipping " + transientType);
                     return;
                 }
 
-                _seenHashes.add(triggerIds[0]);
+                seenHashes.add(triggerIds[0]);
 
-                Log.d("Geofence Service", "calling manager for type" + transientType);
-                if (_manager != null) {
-                    Log.d("Geofence Service", "removing trigger: " + triggerIds[0]);
-                    _manager.removeGeofences(triggerIds[0]);
+                // remove the geofence for the current point
+                Log.d(TAG, "calling manager for type" + transientType);
+                if (manager != null) {
+                    Log.d(TAG, "removing trigger: " + triggerIds[0]);
+                    manager.removeGeofences(triggerIds[0]);
                 }
 
-//                Intent intent1 = new Intent(getString(R.string.GeofenceResultIntent));
-//                intent1.putExtra(getString(R.string.PointIdIntentExtra), triggerIds[0]);
-//                intent1.putExtra(getString(R.string.PointIndexExtra),
-//                        intent.getIntExtra(getString(R.string.PointIndexExtra),-1));
-//                LocalBroadcastManager.getInstance(this)
-//                        .sendBroadcast(intent1);
             }
         }
     }

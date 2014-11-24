@@ -25,9 +25,20 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
     /**
      * The google maps api address
      */
-    private final static String base_address = "https://maps.googleapis.com/maps/api/staticmap?";
+    private static final String BASE_ADDRESS = "https://maps.googleapis.com/maps/api/staticmap?";
+    /**
+     * The resolution of the image
+     */
     private static final int RESOLUTION = 20;
+
+    /**
+     * The semi-red color of filing
+     */
     private static final String CIRCLE_FILL_COLOR = "0xAA000033";
+
+    /**
+     * no border, opacity is full
+     */
     private static final String CIRCLE_BORDER_COLOR = "0xFFFFFF00";
 
     /**
@@ -43,6 +54,40 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
     public StaticMap(ImageView view, ProgressBar progressBar) {
         _view = view;
         this.progressBar = progressBar;
+    }
+
+    /**
+     * Taken from https://github.com/googlemaps/android-maps-utils/blob/master/library/src/com/google/maps/android/PolyUtil.java
+     * Encodes a sequence of LatLngs into an encoded path string.
+     */
+    private static String encode(final List<LatLng> path) {
+        long lastLat = 0;
+        long lastLng = 0;
+        final StringBuffer result = new StringBuffer();
+        for (final LatLng point : path) {
+            long lat = Math.round(point.latitude * 1e5);
+            long lng = Math.round(point.longitude * 1e5);
+            long dLat = lat - lastLat;
+            long dLng = lng - lastLng;
+            encode(dLat, result);
+            encode(dLng, result);
+            lastLat = lat;
+            lastLng = lng;
+        }
+        return result.toString();
+    }
+    /**
+     * Taken from https://github.com/googlemaps/android-maps-utils/blob/master/library/src/com/google/maps/android/PolyUtil.java
+     * Encodes a number into an encoded path string.
+     */
+
+    private static void encode(long v, StringBuffer result) {
+        v = v < 0 ? ~(v << 1) : v << 1;
+        while (v >= 0x20) {
+            result.append(Character.toChars((int) ((0x20 | (v & 0x1f)) + 63)));
+            v >>= 5;
+        }
+        result.append(Character.toChars((int) (v + 63)));
     }
 
     @Override
@@ -88,9 +133,8 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
      */
     protected String composeAddress(StaticMapDescriptor desc) {
 
-
         // compose url of the map
-        String address = base_address + "size=" + desc.width + "x" + desc.height;
+        String address = BASE_ADDRESS + "size=" + desc.width + "x" + desc.height;
 
         switch (desc.mapElement) {
             case None:
@@ -101,7 +145,6 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
 
                 address += "&center=" + desc.center.latitude + "," + desc.center.longitude + "&" +
                         "zoom=" + zoom;
-
 
                 // Append the circle encoding
                 address += "&path=fillcolor:" + CIRCLE_FILL_COLOR +
@@ -123,13 +166,25 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
      * Description of the static map
      */
     public static class StaticMapDescriptor {
-        public static enum MapElement {None, Circle, Marker}
+        /**
+         * the center of the map
+         */
+        private LatLng center;
 
-        private LatLng center; // the center of the map
-        private float radius; // the radius of the circle in meters
-        private int width, height; // the resolution of the output image
+        /**
+         * the radius of the circle in meters
+         */
+        private float radius;
+
+        /**
+         * the resolution of the output image
+         */
+        private int width, height;
+
+        /**
+         * the map element
+         */
         private MapElement mapElement;
-
 
         public StaticMapDescriptor(int width, int height) {
             this.mapElement = MapElement.None;
@@ -137,6 +192,9 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
             this.height = height;
         }
 
+        /**
+         * Constructs a map with a circle
+         */
         public StaticMapDescriptor(LatLng center, float radius, int width, int height) {
             this.mapElement = MapElement.Circle;
             this.center = center;
@@ -145,6 +203,9 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
             this.radius = radius / 1000; // Meters to KiloMeters
         }
 
+        /**
+         * Constructs a map with a marker
+         */
         public StaticMapDescriptor(LatLng point, int width, int height) {
             this.mapElement = MapElement.Marker;
             this.center = point;
@@ -152,36 +213,13 @@ public class StaticMap extends AsyncTask<StaticMap.StaticMapDescriptor, Void, Bi
             this.height = height;
         }
 
-    }
-
-    /**
-     * Taken from https://github.com/googlemaps/android-maps-utils/blob/master/library/src/com/google/maps/android/PolyUtil.java
-     * Encodes a sequence of LatLngs into an encoded path string.
-     */
-    private static String encode(final List<LatLng> path) {
-        long lastLat = 0;
-        long lastLng = 0;
-        final StringBuffer result = new StringBuffer();
-        for (final LatLng point : path) {
-            long lat = Math.round(point.latitude * 1e5);
-            long lng = Math.round(point.longitude * 1e5);
-            long dLat = lat - lastLat;
-            long dLng = lng - lastLng;
-            encode(dLat, result);
-            encode(dLng, result);
-            lastLat = lat;
-            lastLng = lng;
+        /**
+         * Elements that can be drawn on a static map
+         */
+        public static enum MapElement {
+            None, Circle, Marker
         }
-        return result.toString();
-    }
 
-    private static void encode(long v, StringBuffer result) {
-        v = v < 0 ? ~(v << 1) : v << 1;
-        while (v >= 0x20) {
-            result.append(Character.toChars((int) ((0x20 | (v & 0x1f)) + 63)));
-            v >>= 5;
-        }
-        result.append(Character.toChars((int) (v + 63)));
     }
 
 }
