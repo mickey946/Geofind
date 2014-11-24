@@ -26,14 +26,32 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 
-
+/**
+ * An {@link android.app.Activity} that is used to create a
+ * {@link com.geofind.geofind.structures.Hunt}.
+ */
 public class CreateHuntActivity extends BaseGameActivity {
 
+    /**
+     * A {@link android.preference.Preference} name for dismissing the info card.
+     */
     private static final String PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS =
             "PREF_CREATE_HUNT_TITLE_DESCRIPTION_DISMISS";
 
+    /**
+     * The tag used for logging.
+     */
+    private static final String TAG = CreateHuntActivity.class.getSimpleName();
+
+    /**
+     * The {@link android.content.SharedPreferences} of the activity.
+     */
     private SharedPreferences sharedPreferences;
 
+    /**
+     * The {@link java.util.ArrayList} of {@link com.geofind.geofind.structures.Hint}s of the
+     * {@link com.geofind.geofind.structures.Hunt}.
+     */
     ArrayList<Hint> hints;
 
     @Override
@@ -90,6 +108,10 @@ public class CreateHuntActivity extends BaseGameActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Open the {@link com.geofind.geofind.ui.create.HintListActivity}.
+     * @param view The current view.
+     */
     public void openHintCreation(View view) {
         Intent intent = new Intent(this, HintListActivity.class);
         // put existing hints (if any)
@@ -107,7 +129,9 @@ public class CreateHuntActivity extends BaseGameActivity {
             if (resultCode == RESULT_OK) { // The user created a list of hints
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
-                    hints = (ArrayList<Hint>) bundle.getSerializable(getString(R.string.intent_hints_extra));
+                    //noinspection unchecked
+                    hints = (ArrayList<Hint>) bundle.getSerializable(
+                            getString(R.string.intent_hints_extra));
                     if (hints != null) {
                         TextView createHintsText = (TextView)
                                 findViewById(R.id.create_hunt_add_points_description_text);
@@ -153,6 +177,12 @@ public class CreateHuntActivity extends BaseGameActivity {
         editor.apply();
     }
 
+    /**
+     * Check if the input is invalid.
+     * @param huntTitle The hunt title.
+     * @param huntDescription The hunt description.
+     * @return True if the input is invalid. False otherwise.
+     */
     public boolean isInputInvalid(String huntTitle, String huntDescription) {
         return hints == null || huntTitle.trim().equals("") || huntDescription.trim().equals("");
     }
@@ -197,6 +227,8 @@ public class CreateHuntActivity extends BaseGameActivity {
 
     /**
      * Submit the Hunt and save it in the database.
+     * @param huntTitle The hunt title.
+     * @param huntDescription The hunt description.
      */
     public void submitHunt(String huntTitle, String huntDescription) {
         String creatorID = Plus.PeopleApi.getCurrentPerson(getApiClient()).getId();
@@ -209,11 +241,13 @@ public class CreateHuntActivity extends BaseGameActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    Toast.makeText(getApplicationContext(), "Hunt was successfully created!",
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.create_hunt_submit_successful),
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Log.v("HUNT was not saved.", "Parse Exception: " + e.getMessage());
-                    Toast.makeText(getApplicationContext(), "Hunt was NOT created, please try again.",
+                    Log.v(TAG, "Hunt was not saved, Parse Exception: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.create_hunt_sumbit_failure),
                             Toast.LENGTH_LONG).show();
                 }
 
@@ -233,11 +267,9 @@ public class CreateHuntActivity extends BaseGameActivity {
 
     @Override
     public void onSignInFailed() {
-
     }
 
     @Override
     public void onSignInSucceeded() {
-
     }
 }
