@@ -37,7 +37,9 @@ public class SnapshotManager {
         this.context = context;
         this.googleApiClient = googleApiClient1;
         gameStatus = ((GeofindApp) context.getApplicationContext()).getGameStatus();
+    }
 
+    public void loadSnapshotList() {
         Log.d(TAG, "Assigning and executing AsyncTask for loading snapshots");
         task = new AsyncTask<Void, Void, Snapshots.LoadSnapshotsResult>() {
             @Override

@@ -171,5 +171,6 @@
     <string name="item_hint_play_video">Play Video</string>
     <string name="item_hint_play_sound">Play Sound</string>
     <string name="main_screen_sign_in_dialog">You must sign in to create Hunts.</string>
+    <string name="hunt_list_error">Could not load Hunt list. Please try again later.</string>
 
 </resources>

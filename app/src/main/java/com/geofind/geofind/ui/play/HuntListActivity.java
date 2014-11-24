@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -53,23 +52,10 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the activity.
-        huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this, snapshotManager);
-    }
+        huntListPagerAdapter = new HuntListPagerAdapter(getSupportFragmentManager(), this,
+                snapshotManager);
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("HuntListActivity","OnResume");
-        huntListPagerAdapter.notifyDataSetChanged();
         viewPager = (ViewPager) findViewById(R.id.pagerHuntList);
-        viewPager.setAdapter(huntListPagerAdapter);
-        //huntListPagerAdapter.startUpdate(viewPager);
 
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         slidingTabLayout.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
@@ -77,6 +63,18 @@ public class HuntListActivity extends BaseGameActivity implements ActionBar.TabL
         Resources resources = getResources();
         slidingTabLayout.setSelectedIndicatorColors(resources.getColor(R.color.tab_selected_strip));
         slidingTabLayout.setDistributeEvenly(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Load or reload the snapshot list
+        snapshotManager.loadSnapshotList();
+
+        // Update the UI
+        huntListPagerAdapter.notifyDataSetChanged();
+        viewPager.setAdapter(huntListPagerAdapter);
         slidingTabLayout.setViewPager(viewPager);
     }
 

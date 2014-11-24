@@ -135,7 +135,7 @@ public class HuntListPagerAdapter extends FragmentStatePagerAdapter {
                             }
 
                         } else {
-                            Toast.makeText(context, "Could NOT load Hunt list. Please try again.",
+                            Toast.makeText(context, context.getString(R.string.hunt_list_error),
                                     Toast.LENGTH_LONG).show();
                             System.out.println(e.getMessage());
                         }
