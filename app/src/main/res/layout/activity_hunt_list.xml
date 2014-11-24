@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    tools:context="com.geofind.geofind.HuntListActivity"
+    tools:context="com.geofind.geofind.ui.play.HuntListActivity"
     android:orientation="vertical">
 
-    <com.geofind.geofind.widget.SlidingTabLayout.SlidingTabLayout
+    <com.geofind.geofind.ui.widget.slidingtablayout.SlidingTabLayout.SlidingTabLayout
         android:background="@color/colorPrimary"
         android:id="@+id/sliding_tabs"
         android:layout_width="match_parent"

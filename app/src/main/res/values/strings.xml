@@ -171,5 +171,11 @@
     <string name="item_hint_play_video">Play Video</string>
     <string name="item_hint_play_sound">Play Sound</string>
     <string name="main_screen_sign_in_dialog">You must sign in to create Hunts.</string>
+    <string name="hunt_list_error">Could not load Hunt list. Please try again later.</string>
+    <string name="hunt_finish_incomplete_review_error">Cannot submit an incomplete review.</string>
+    <string name="hunt_finish_review_submit_successful">Your review was submitted successfully!</string>
+    <string name="hunt_finish_review_submit_failure">Error submitting review.</string>
+    <string name="create_hunt_submit_successful">Hunt was successfully created!</string>
+    <string name="create_hunt_sumbit_failure">Hunt was not created, please try again.</string>
 
 </resources>

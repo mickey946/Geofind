@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.geofind.geofind.HuntFinishActivity"
+    tools:context="com.geofind.geofind.ui.play.HuntFinishActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!--<item-->

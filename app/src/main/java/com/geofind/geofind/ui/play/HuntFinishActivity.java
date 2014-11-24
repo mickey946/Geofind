@@ -1,0 +1,274 @@
+package com.geofind.geofind.ui.play;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.geofind.geofind.R;
+import com.geofind.geofind.playutils.BaseGameActivity;
+import com.geofind.geofind.structures.Comment;
+import com.geofind.geofind.structures.Hunt;
+import com.geofind.geofind.ui.MainScreenActivity;
+import com.geofind.geofind.ui.settings.SettingsActivity;
+import com.melnykov.fab.FloatingActionButton;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+/**
+ * An {@link android.app.Activity} that shows statistics of a game play.
+ */
+public class HuntFinishActivity extends BaseGameActivity {
+
+    /**
+     * The {@link com.geofind.geofind.structures.Hunt} that was finished.
+     */
+    private Hunt hunt;
+
+    /**
+     * The {@link com.melnykov.fab.FloatingActionButton} that is used for finishing the game.
+     */
+    FloatingActionButton fab;
+
+    /**
+     * The name of the class.
+     */
+    private static final String TAG = HuntFinishActivity.class.getSimpleName();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_hunt_finish);
+
+        Intent intent = getIntent();
+        hunt = (Hunt) intent.getSerializableExtra(getString(R.string.intent_hunt_extra));
+        if (hunt != null) {
+            setTitle(hunt.getTitle());
+
+            TextView totalPointsTextView = (TextView) findViewById(R.id.hunt_finish_total_points);
+            TextView solvedPointsTextView = (TextView) findViewById(R.id.hunt_finish_solved_points);
+            TextView totalTimeTextView = (TextView) findViewById(R.id.hunt_finish_total_time);
+
+            totalPointsTextView.setText(
+                    Integer.toString(intent.getIntExtra(getResources()
+                            .getString(R.string.hunt_finish_total_points), 0)));
+            solvedPointsTextView.setText(
+                    Integer.toString(intent.getIntExtra(getResources()
+                            .getString(R.string.hunt_finish_solved_points), 0)));
+            Date date = new Date(intent.getLongExtra(getResources()
+                    .getString(R.string.hunt_finish_total_time), 0));
+            DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+            String dateFormatted = formatter.format(date);
+            totalTimeTextView.setText(dateFormatted);
+        }
+    }
+
+    /**
+     * Set up the review card view so that when of it's elements is in focus - hide the floating
+     * action button. When done, show the button again.
+     */
+    private void setupReviewCard() {
+        // show the review card
+        View reviewCard = findViewById(R.id.hunt_finish_review_card_view);
+        reviewCard.setVisibility(View.VISIBLE);
+
+        // get the floating action button
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        // hide the floating action button when reviewing the hunt
+        EditText reviewTitleEditText = (EditText) findViewById(R.id.hunt_finish_review_title);
+        reviewTitleEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
+            }
+        });
+
+        EditText reviewEditText = (EditText) findViewById(R.id.hunt_finish_review);
+        reviewEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    fab.hide();
+                } else {
+                    fab.show();
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.hunt_finish, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        Intent intent;
+        switch (id) {
+            case R.id.action_settings:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Close all the activities in the current stack and go back to the main menu.
+     *
+     * @param view The current view.
+     */
+    public void goToMainScreen(View view) {
+        Intent intent = new Intent(this, MainScreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    public void submitReview(View view) {
+        RatingBar commentRatingRatingBar = (RatingBar) findViewById(R.id.hunt_finish_review_rating);
+        EditText commentTitleTextView = (EditText) findViewById(R.id.hunt_finish_review_title);
+        EditText commentReviewTextView = (EditText) findViewById(R.id.hunt_finish_review);
+
+        if ((commentTitleTextView.getText().toString().isEmpty()) |
+                (commentReviewTextView.getText().toString().isEmpty())) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.hunt_finish_incomplete_review_error),
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        final Comment comment = new Comment(commentTitleTextView.getText().toString(),
+                commentReviewTextView.getText().toString(), commentRatingRatingBar.getRating(),
+                getGameHelper().getApiClient());
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Hunt.PARSE_CLASS_NAME);
+        query.getInBackground(hunt.getParseID(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    parseObject.add(Hunt.PARSE_COMMENTS_FIELD, comment.toParseObject());
+                    parseObject.increment(Hunt.PARSE_NUM_OF_RATERS_FIELD);
+                    parseObject.increment(Hunt.PARSE_TOTAL_RATING_FIELD, comment.getRating());
+                    parseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Toast.makeText(getApplicationContext(),
+                                        getString(R.string.hunt_finish_review_submit_successful),
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.v(TAG, "Review was not saved, Parse Exception: " + e.getMessage());
+                                Toast.makeText(getApplicationContext(),
+                                        getString(R.string.hunt_finish_review_submit_failure),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    Log.v(TAG, "Review was not saved, Parse Exception: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.hunt_finish_review_submit_failure),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        // remove the review layout
+        View reviewLayout = findViewById(R.id.hunt_finish_review_layout);
+        reviewLayout.setVisibility(View.INVISIBLE);
+
+        // show thanks for review
+        View reviewThanks = findViewById(R.id.hunt_finish_review_thanks);
+        reviewThanks.setVisibility(View.VISIBLE);
+
+        // show the finish button
+        fab.show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (hunt == null) {
+            return;
+        }
+
+        // hunt total distance
+        final String distanceUnit = getCurrentDistanceUnit();
+        Float totalDistance = hunt.getTotalDistance();
+
+        // set distance units
+        TextView totalDistanceUnitTextView = (TextView)
+                findViewById(R.id.hunt_details_total_distance_unit);
+
+        // km or miles
+        if (distanceUnit.equals(
+                getString(R.string.preferences_distance_units_kilometers))) {
+            totalDistance *= Hunt.METERS_TO_KILOMETERS;
+            totalDistanceUnitTextView.setText(getText(R.string.item_hunt_list_distance_unit_km));
+        } else {
+            totalDistance *= Hunt.METERS_TO_MILES;
+            totalDistanceUnitTextView.setText(getText(R.string.item_hunt_list_distance_unit_miles));
+        }
+
+        // set the formatted numbers
+        TextView totalDistanceTextView = (TextView)
+                findViewById(R.id.hunt_details_total_distance);
+        final DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(Hunt.DIGIT_PRECISION);
+        totalDistanceTextView.setText(decimalFormat.format(totalDistance));
+    }
+
+    /**
+     * Get the current distance unit that is saved in the settings file.
+     *
+     * @return A string representing the distance unit.
+     */
+    private String getCurrentDistanceUnit() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getString(
+                this.getString(R.string.pref_key_distance_units),
+                this.getString(R.string.preferences_distance_units_kilometers));
+    }
+
+    @Override
+    public void onSignInFailed() {
+
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+        // user is signed in, can review the hunt
+        setupReviewCard();
+    }
+}
