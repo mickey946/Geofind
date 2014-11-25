@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
@@ -289,7 +290,10 @@ public class GeofenceManager implements
     public void onConnected(Bundle bundle) {
         // Start with the request flag set to false
         inProgress = false;
-        lastAccuracy = getLocationClient().getLastLocation().getAccuracy();
+        Location location = getLocationClient().getLastLocation();
+        if (location != null) {
+            lastAccuracy = location.getAccuracy();
+        }
         switch (requestType) {
             case ADD:
                 transitionPendingIntent = getTransitionPendingIntent();
