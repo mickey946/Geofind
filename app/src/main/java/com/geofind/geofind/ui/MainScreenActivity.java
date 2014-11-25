@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -111,13 +112,26 @@ public class MainScreenActivity extends BaseGameActivity {
         valueAnimator = ValueAnimator.ofFloat(from, to);
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float value = (Float) animation.getAnimatedValue();
-                matrix.reset();
-                matrix.postScale(scaleFactor, scaleFactor);
-                matrix.postTranslate(value, 0);
+            public void onAnimationUpdate(final ValueAnimator animation) {
+                new AsyncTask<Void, Void, Void>() {
 
-                background.setImageMatrix(matrix);
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        float value = (Float) animation.getAnimatedValue();
+                        matrix.reset();
+                        matrix.postScale(scaleFactor, scaleFactor);
+                        matrix.postTranslate(value, 0);
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        background.setImageMatrix(matrix);
+                    }
+                }.execute();
+
             }
         });
 
@@ -267,6 +281,7 @@ public class MainScreenActivity extends BaseGameActivity {
 
     /**
      * Open the {@link com.google.android.gms.games.achievement.Achievements} activity.
+     *
      * @param view The current view.
      */
     public void openAchievements(View view) {
