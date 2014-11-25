@@ -54,6 +54,7 @@
                 style="@style/main_bottom_button"
                 android:drawableTop="@drawable/ic_games_controller_white"
                 android:onClick="openAchievements"
+                android:enabled="false"
                 android:text="@string/main_screen_google_play_games" />
 
             <Button

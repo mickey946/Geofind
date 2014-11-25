@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 public class SnapshotManager {
 
 
-    private static String TAG = SnapshotManager.class.getName();
+    private static String TAG = SnapshotManager.class.getSimpleName();
 
     /**
      * Request code for saving the game to a snapshot.
@@ -76,28 +76,38 @@ public class SnapshotManager {
             @Override
             protected Snapshots.LoadSnapshotsResult doInBackground(Void... params) {
 
-                Log.d(TAG, "Waiting for googleApiClient to sign in");
+                Log.v(TAG, "Waiting for googleApiClient to sign in");
                 googleApiClient.blockingConnect();
 
-                Log.d(TAG, "Loading snapshots");
-                Snapshots.LoadSnapshotsResult snapshotResults =
-                        Games.Snapshots.load(googleApiClient, true).await();
+                boolean isConnected = googleApiClient.isConnected();
+                Log.v(TAG, "Is googleApiClient connected? " + isConnected);
 
-                if (snapshotResults.getStatus().isSuccess()) {
-                    Log.d(TAG, "Loaded " + snapshotResults.getSnapshots().getCount() + " snapshots");
+                Log.v(TAG, "Loading snapshots");
+                Snapshots.LoadSnapshotsResult snapshotResults = null;
+                if (isConnected) {
+                    snapshotResults = Games.Snapshots.load(googleApiClient, true).await();
+                    Log.v(TAG, "Load snapshot result finished.");
+                } else {
+                    Log.v(TAG, "googleApiClient is disconnected, not loading snapshots.");
+                }
 
-                    for (SnapshotMetadata snapshotMetadata : snapshotResults.getSnapshots()) {
+                if (snapshotResults != null) {
+                    if (snapshotResults.getStatus().isSuccess()) {
+                        Log.v(TAG, "Loaded " + snapshotResults.getSnapshots().getCount() + " snapshots");
 
-                        /**
-                         * For debug only, deletes all the snapshots of the current user:
-                         * ### Games.Snapshots.delete(googleApiClient, snapshotMetadata); ###
-                         *
-                         * When in use, comment out the line below. When done, bring the line back.
-                         */
-                        gameStatus.addToSaveHunts(snapshotMetadata.freeze());
+                        for (SnapshotMetadata snapshotMetadata : snapshotResults.getSnapshots()) {
+
+                            /**
+                             * For debug only, deletes all the snapshots of the current user:
+                             * ### Games.Snapshots.delete(googleApiClient, snapshotMetadata); ###
+                             *
+                             * When in use, comment out the line below. When done, bring the line back.
+                             */
+                            gameStatus.addToSaveHunts(snapshotMetadata.freeze());
+                        }
+
+                        snapshotResults.getSnapshots().release();
                     }
-
-                    snapshotResults.getSnapshots().release();
                 }
 
                 return snapshotResults;
@@ -105,17 +115,19 @@ public class SnapshotManager {
 
             @Override
             protected void onPostExecute(Snapshots.LoadSnapshotsResult snapshotResults) {
-                int status = snapshotResults.getStatus().getStatusCode();
+                if (snapshotResults != null) {
+                    int status = snapshotResults.getStatus().getStatusCode();
 
-                if (status == GamesStatusCodes.STATUS_SNAPSHOT_NOT_FOUND) {
-                    Log.e(TAG, "Error: Snapshot not found");
-                } else if (status
-                        == GamesStatusCodes.STATUS_SNAPSHOT_CONTENTS_UNAVAILABLE) {
-                    Log.e(TAG, "Error: Snapshot contents unavailable");
+                    if (status == GamesStatusCodes.STATUS_SNAPSHOT_NOT_FOUND) {
+                        Log.e(TAG, "Error: Snapshot not found");
+                    } else if (status
+                            == GamesStatusCodes.STATUS_SNAPSHOT_CONTENTS_UNAVAILABLE) {
+                        Log.e(TAG, "Error: Snapshot contents unavailable");
 
-                } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_FOLDER_UNAVAILABLE) {
-                    Log.e(TAG, "Error: Snapshot folder unavailable");
+                    } else if (status == GamesStatusCodes.STATUS_SNAPSHOT_FOLDER_UNAVAILABLE) {
+                        Log.e(TAG, "Error: Snapshot folder unavailable");
 
+                    }
                 }
             }
         }.execute();
