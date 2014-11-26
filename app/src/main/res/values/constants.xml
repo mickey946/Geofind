@@ -47,8 +47,6 @@
     <integer name="google_play_max_auto_sing_in">1</integer>
 
     <!--constants for parse-->
-    <string name="parse_app_id">ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa</string>
-    <string name="parse_client_key">bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv</string>
     <string name="parse_objectID_field_name">objectId</string>
 
 </resources>
