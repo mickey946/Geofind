@@ -1,5 +1,15 @@
 <resources>
+    <!--Google Maps API-->
     <string name="google_maps_key" templateMergeStrategy="preserve">
         AIzaSyBvR2kQHRNoXswE1JgZMFEZVlI7q2J9EIM
     </string>
+
+    <!--Parse.com-->
+    <string name="parse_app_id" templateMergeStrategy="preserve">
+        ppNAtO5d8BRdJBSHCQSf5FxZd5DeW8SXGqp4iiIa
+    </string>
+    <string name="parse_client_key" templateMergeStrategy="preserve">
+        bhUWym4hA8P5HNkOThqDMMnn9zZTMvh27IO9yBVv
+    </string>
+
 </resources>

@@ -33,6 +33,11 @@
 }
 
 -keepattributes SourceFile,LineNumberTable
+-keep class com.geofind.** { *; }
+-dontskipnonpubliclibraryclasses
+-keepclasseswithmembernames class com.geofind.** { *;}
+
+-keepattributes SourceFile,LineNumberTable
 -keep class com.parse.*{ *; }
 -dontwarn com.parse.**
 -keepclasseswithmembernames class * {
