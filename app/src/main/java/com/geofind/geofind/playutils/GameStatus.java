@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class GameStatus {
 
-    private static final String TAG = GameStatus.class.getName();
+    private static final String TAG = GameStatus.class.getSimpleName();
 
     /**
      * JSON fields constants
@@ -148,8 +148,10 @@ public class GameStatus {
          * @param revealed specified if the last point had been revealed or solved
          */
         public void updateStatus(boolean revealed) {
-            if (revealed)
+            Log.d(TAG, "Updating local game status of " + huntTitle + " in position " + huntPosition);
+            if (revealed) {
                 revealedPoints.add(huntPosition);
+            }
             huntPosition++;
         }
 
@@ -245,6 +247,7 @@ public class GameStatus {
             JSONObject jsonObject = new JSONObject(new String(data)).getJSONObject("Hunt");
             String id = jsonObject.getString("huntID");
             activeHunts.put(id, new HuntStatus(jsonObject, metadata));
+            Log.d(TAG, "Loading hunt " + jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -261,7 +264,7 @@ public class GameStatus {
             if (activeHunts.containsKey(HuntID))
                 currentHunt.put("Hunt", activeHunts.get(HuntID).toJsonObject());
             else {
-                Log.e("GameStatus", "HuntID not found on save");
+                Log.e(TAG, "HuntID not found on save");
             }
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -323,7 +326,7 @@ public class GameStatus {
     public Collection<String> getOnGoing(){
         ArrayList<String> hunts = new ArrayList<String>();
         for (Map.Entry<String,SnapshotMetadata> entry : savedHunts.entrySet()){
-            if (entry.getValue().getDescription().equalsIgnoreCase("OnGoing")){
+            if (entry.getValue().getDescription().startsWith("OnGoing")){
                 hunts.add(entry.getKey());
             }
         }
@@ -336,7 +339,7 @@ public class GameStatus {
     public Collection<String> getFinished(){
         ArrayList<String> hunts = new ArrayList<String>();
         for (Map.Entry<String,SnapshotMetadata> entry : savedHunts.entrySet()){
-            if (entry.getValue().getDescription().equalsIgnoreCase("Finished")){
+            if (entry.getValue().getDescription().startsWith("Finished")){
                 hunts.add(entry.getKey());
             }
         }

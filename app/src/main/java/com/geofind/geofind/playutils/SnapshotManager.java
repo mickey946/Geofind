@@ -3,7 +3,6 @@ package com.geofind.geofind.playutils;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.geofind.geofind.GeofindApp;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -157,7 +156,7 @@ public class SnapshotManager {
             protected Integer doInBackground(Void... params) {
                 Snapshots.OpenSnapshotResult result;
                 if (snapshotMetadata != null && snapshotMetadata.getUniqueName() != null) {
-                    Log.d(TAG, "Opening snapshot by metadata: " + snapshotMetadata);
+                    Log.d(TAG, "Opening snapshot by metadata: " + snapshotMetadata.getTitle());
                     result = Games.Snapshots.open(googleApiClient, snapshotMetadata).await();
                 } else {
                     Log.d(TAG, "Opening snapshot by name: " + currentSaveName);
@@ -235,8 +234,11 @@ public class SnapshotManager {
                             .await();
                 }
                 final Snapshot toWrite = processSnapshotOpenResult(RC_SAVE_SNAPSHOT, openResult, 0);
-                if (toWrite != null)
+                if (toWrite != null) {
                     writeSnapshot(toWrite, HuntID);
+                } else {
+                    Log.d(TAG, "Snapshot to write is null");
+                }
                 return null;
             }
         }.execute();
@@ -286,7 +288,6 @@ public class SnapshotManager {
             } else {
                 String message = "Could not resolve snapshot conflicts";
                 Log.e(TAG, message);
-                Toast.makeText(context, message, Toast.LENGTH_LONG);
             }
         }
         // Fail, return null.
@@ -299,9 +300,8 @@ public class SnapshotManager {
      */
     private void writeSnapshot(final Snapshot snapshot, String HuntID) {
         // Set the data payload for the snapshot.
-
-
         snapshot.getSnapshotContents().writeBytes(gameStatus.HuntToBytes(HuntID));
+
         // Save the snapshot.
         SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
                 .setDescription(gameStatus.isFinished(HuntID) ? "Finished" : "OnGoing")
@@ -311,7 +311,8 @@ public class SnapshotManager {
                 .setResultCallback(new ResultCallback<Snapshots.CommitSnapshotResult>() {
                     @Override
                     public void onResult(Snapshots.CommitSnapshotResult commitSnapshotResult) {
-                        Log.d(TAG, snapshot.toString());
+                        Log.d(TAG, "Wrote snapshot " + snapshot.getMetadata().getTitle()
+                        + " with status " + commitSnapshotResult.getStatus());
                     }
                 });
     }

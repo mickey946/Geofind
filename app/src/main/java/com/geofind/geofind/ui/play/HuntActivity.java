@@ -722,6 +722,7 @@ public class HuntActivity extends BaseGameActivity {
                 hunt.getParseID(), revealed, isFinished);
 
         if (isSignedIn()) {
+            Log.d(TAG, "Saving snapshot of " + hunt.getTitle());
             snapshotManager.saveSnapshot(hunt.getParseID());
         }
     }
