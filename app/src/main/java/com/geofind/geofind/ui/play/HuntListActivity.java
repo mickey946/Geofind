@@ -54,6 +54,7 @@ public class HuntListActivity extends BaseGameActivity {
         // show the back button on the action bar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setElevation(0);
 
         snapshotManager = new SnapshotManager(this, getGameHelper().getApiClient());
 
