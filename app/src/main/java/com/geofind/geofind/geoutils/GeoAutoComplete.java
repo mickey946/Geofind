@@ -158,7 +158,7 @@ public class GeoAutoComplete {
      */
     private String getPlaceDetailsUrl(String ref) {
         // Obtain browser key from https://code.google.com/apis/console
-        String key = "key=" + GeofindApp.BROWSER_API_KEY;
+        String key = "key=" + GeofindApp.SERVER_API_KEY;
 
         // reference of place
         String reference = "reference=" + ref;
@@ -187,7 +187,7 @@ public class GeoAutoComplete {
     private String getAutocompleteUrl(String place) {
 
         // Obtain browser key from https://code.google.com/apis/console
-        String key = "key=" + GeofindApp.BROWSER_API_KEY;
+        String key = "key=" + GeofindApp.SERVER_API_KEY;
 
         // place to be be searched
         String input = "input=" + escape(place);
