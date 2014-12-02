@@ -117,7 +117,7 @@
     </style>
 
     <style name="card_view">
-        <item name="android:paddingTop">@dimen/item_hunt_list_vertical_margin</item>
+        <item name="android:paddingBottom">@dimen/item_hunt_list_vertical_margin</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
