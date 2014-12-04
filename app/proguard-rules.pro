@@ -32,6 +32,11 @@
     public static final ** CREATOR;
 }
 
+-keep class android.support.v7.internal.** { *; }
+-keep interface android.support.v7.internal.** { *; }
+-keep class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
+
 -keepattributes SourceFile,LineNumberTable
 -keep class com.geofind.** { *; }
 -dontskipnonpubliclibraryclasses
