@@ -150,7 +150,7 @@ public class GeoAutoComplete {
         String key = "key=" + GeofindApp.SERVER_API_KEY;
 
         // place to be be searched
-        String input = null; 
+        String input = null;
         try {
             input = "input=" + URLEncoder.encode(place, "utf8");
         } catch (UnsupportedEncodingException e) {

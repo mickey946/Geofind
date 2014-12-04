@@ -57,22 +57,16 @@ public class PlaceJSONParser {
     private HashMap<String, String> getPlace(JSONObject jPlace) {
 
         HashMap<String, String> place = new HashMap<String, String>();
-//
-//        String id = "";
-//        String reference = "";
+
         String description = "";
         String place_id = "";
 
         try {
             description = jPlace.getString("description");
-//            id = jPlace.getString("id");
-//            reference = jPlace.getString("reference");
             place_id = jPlace.getString("place_id");
 
 
             place.put("description", description);
-//            place.put("_id", id);
-//            place.put("reference", reference);
             place.put("place_id",place_id);
 
         } catch (JSONException e) {
