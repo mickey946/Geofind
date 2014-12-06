@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.geofind.geofind">
 
-    <uses-sdk tools:node="replace" />
+    <!--<uses-sdk tools:node="replace" />-->
 
     <!-- For reading pictures, audio, video -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -39,11 +39,6 @@
         <meta-data
             android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/app_id" />
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
-        <!--google play services settings-->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

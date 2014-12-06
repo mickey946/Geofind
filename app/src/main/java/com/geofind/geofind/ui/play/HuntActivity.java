@@ -37,6 +37,7 @@ import com.geofind.geofind.structures.Point;
 import com.geofind.geofind.ui.create.HintPagerAdapter;
 import com.geofind.geofind.ui.settings.SettingsActivity;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.snapshot.SnapshotMetadata;
 import com.google.android.gms.maps.MapFragment;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
@@ -156,10 +157,6 @@ public class HuntActivity extends BaseGameActivity {
         setupFloatingActionButton();
 
         setupSounds();
-
-        setupHunt();
-
-        setupMap();
 
         // stabilize the layout
         View layout = findViewById(R.id.main_content);
@@ -300,16 +297,11 @@ public class HuntActivity extends BaseGameActivity {
 
                         Log.v(TAG, "Parse Hint List fetching success");
 
+                        setupMap();
+
                         for (ParseObject remoteHint : remoteHints) {
                             Hint hint = new Hint(remoteHint);
                             hints.add(hint);
-
-                            if (hint.getState() != Hint.State.UNREVEALED) {
-                                mapManager.setMarker(hint.getLocation().toLatLng(),
-                                        getString(R.string.hunt_activity_hint_number_title)
-                                                + hints.size(),
-                                        hint.getState());
-                            }
                         }
 
                         if (!isSignedIn()) { // set up the game without restoring data
@@ -317,8 +309,15 @@ public class HuntActivity extends BaseGameActivity {
                             return;
                         }
 
-                        snapshotManager.loadFromSnapshot(gameStatus.getSnapshotMetadataById(
-                                hunt.getParseID()), new Callable() {
+                        SnapshotMetadata currentMetadata = gameStatus.getSnapshotMetadataById(
+                                hunt.getParseID());
+                        if (currentMetadata == null) { // the hunt is opened for the first time
+                            snapshotManager.saveSnapshot(hunt.getParseID());
+                            setupGame();
+                            return;
+                        }
+
+                        snapshotManager.loadFromSnapshot(currentMetadata, new Callable() {
                             @Override
                             public Object call() throws Exception {
                                 // recover solved and revealed points
@@ -722,6 +721,7 @@ public class HuntActivity extends BaseGameActivity {
                 hunt.getParseID(), revealed, isFinished);
 
         if (isSignedIn()) {
+            Log.d(TAG, "Saving snapshot of " + hunt.getTitle());
             snapshotManager.saveSnapshot(hunt.getParseID());
         }
     }
@@ -745,13 +745,15 @@ public class HuntActivity extends BaseGameActivity {
 
     @Override
     public void onSignInFailed() {
-        Log.d("HuntActivity", "SignInFailed");
+        Log.d(TAG, "SignInFailed");
+        setupHunt();
     }
 
     @Override
     public void onSignInSucceeded() {
-        Log.d("HuntActivity", "SignInSuccess");
+        Log.d(TAG, "SignInSuccess");
         snapshotManager = new SnapshotManager(this, getGameHelper().getApiClient());
-        snapshotManager.saveSnapshot(hunt.getParseID());
+//        snapshotManager.saveSnapshot(hunt.getParseID());
+        setupHunt();
     }
 }

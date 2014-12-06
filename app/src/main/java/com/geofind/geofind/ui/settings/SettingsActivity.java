@@ -1,5 +1,6 @@
 package com.geofind.geofind.ui.settings;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,10 +42,11 @@ public class SettingsActivity extends BaseGameActivity {
         // set and show the settings fragments
         if (savedInstanceState == null) {
             settingsFragment = new SettingsFragment();
-            settingsFragment.setGameHelper(getGameHelper());
             getFragmentManager().beginTransaction()
                     .add(R.id.container, settingsFragment)
                     .commit();
+        } else {
+            settingsFragment = (SettingsFragment) getFragmentManager().findFragmentById(R.id.container);
         }
     }
 
@@ -111,6 +113,8 @@ public class SettingsActivity extends BaseGameActivity {
          */
         private GameHelper gameHelper;
 
+        private SettingsActivity parent;
+
         public SettingsFragment() {
         }
 
@@ -171,6 +175,8 @@ public class SettingsActivity extends BaseGameActivity {
                         }
                     };
 
+            gameHelper = parent.getGameHelper();
+
             if (gameHelper.isSignedIn()) {
                 setButtonToSignOut();
             } else { // user is disconnected
@@ -213,6 +219,13 @@ public class SettingsActivity extends BaseGameActivity {
                 tracker.enableExceptionReporting(
                         sharedPreferences.getBoolean(key, false));
             }
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            parent = (SettingsActivity) activity;
+
         }
     }
 }

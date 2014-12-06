@@ -140,54 +140,57 @@ public class MapManager {
             dialog.show();
         }
         if (map == null) {
-            map = mapFragment.getMap();
-            if (map == null) {
-                Log.e(TAG,"Creating map failure");
-            }
-            markerMap = new HashMap<Marker, Integer>();
+            if (mapFragment != null) {
+                map = mapFragment.getMap();
+                if (map == null) {
+                    Log.e(TAG, "Creating map failure");
+                }
+                markerMap = new HashMap<Marker, Integer>();
 
-            mapHeight = 0;
-            mapWidth = 0;
+                mapHeight = 0;
+                mapWidth = 0;
 
-            // update the zoom parameters when the view is created
-            ViewTreeObserver vto = mapFragment.getView().getViewTreeObserver();
-            if (vto.isAlive()) {
-                vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        mapFragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        mapWidth = mapFragment.getView().getWidth();
-                        mapHeight = mapFragment.getView().getHeight();
-                        if (zoomUpdate != null) {
-                            try {
-                                zoomUpdate.call();
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                // update the zoom parameters when the view is created
+                ViewTreeObserver vto = mapFragment.getView().getViewTreeObserver();
+                if (vto.isAlive()) {
+                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mapFragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            mapWidth = mapFragment.getView().getWidth();
+                            mapHeight = mapFragment.getView().getHeight();
+                            if (zoomUpdate != null) {
+                                try {
+                                    zoomUpdate.call();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
+
                         }
-
-                    }
-                });
+                    });
+                }
             }
+            locationFinder = new LocationFinder(activity, new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    Log.d(TAG, "LocationFinder updated");
+                    if (focusOnCurrent)
+                        onLocationChanged(locationFinder.getCurrentLocation());
+                    return null;
+                }
+            });
+            locationFinder.startLocation();
+            map.setMyLocationEnabled(true);
+            offsetX = 0;
+            offsetY = 0;
+            zoomLevel = DEFAULT_ZOOM;
+            if (focusOnCurrent)
+                focusOnCurrentLocation();
+
+        } else {
+            Log.v(TAG, "Map fragment is null");
         }
-        locationFinder = new LocationFinder(activity, new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                Log.d(TAG, "LocationFinder updated");
-                if (focusOnCurrent)
-                    onLocationChanged(locationFinder.getCurrentLocation());
-                return null;
-            }
-        });
-        locationFinder.startLocation();
-        map.setMyLocationEnabled(true);
-        offsetX = 0;
-        offsetY = 0;
-        zoomLevel = DEFAULT_ZOOM;
-        if (focusOnCurrent)
-            focusOnCurrentLocation();
-
-
     }
 
     /**

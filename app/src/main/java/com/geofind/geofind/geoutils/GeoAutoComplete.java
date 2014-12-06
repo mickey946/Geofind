@@ -18,8 +18,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,48 +59,6 @@ public class GeoAutoComplete {
         this.context = context;
         this.searchView = searchView;
         initAutoCompleteLocation();
-    }
-
-    /**
-     * Convert HTML escape characters
-     */
-    private static String escape(String s) {
-        StringBuilder builder = new StringBuilder();
-        for (char c : s.toCharArray()) {
-            if (c == ' ') {
-                builder.append("&nbsp;");
-                continue;
-            }
-            switch (c) {
-                case '<':
-                    builder.append("&lt;");
-                    break;
-                case '>':
-                    builder.append("&gt;");
-                    break;
-                case '&':
-                    builder.append("&amp;");
-                    break;
-                case '"':
-                    builder.append("&quot;");
-                    break;
-                case '\n':
-                    builder.append("<br>");
-                    break;
-                // We need Tab support here, because we print StackTraces as HTML
-                case '\t':
-                    builder.append("&nbsp; &nbsp; &nbsp;");
-                    break;
-                default:
-                    if (c < 128) {
-                        builder.append(c);
-                    } else {
-                        builder.append("&#").append((int) c).append(";");
-                    }
-            }
-        }
-
-        return builder.toString();
     }
 
     /**
@@ -153,15 +113,15 @@ public class GeoAutoComplete {
     /**
      * Compose the URL to request to coordinates of the user-selected place
      *
-     * @param ref the address of the place
+     * @param place_id the address of the place
      * @return the url to download the coordinates
      */
-    private String getPlaceDetailsUrl(String ref) {
+    private String getPlaceDetailsUrl(String place_id) {
         // Obtain browser key from https://code.google.com/apis/console
-        String key = "key=" + GeofindApp.BROWSER_API_KEY;
+        String key = "key=" + GeofindApp.SERVER_API_KEY;
 
         // reference of place
-        String reference = "reference=" + ref;
+        String reference = "placeid=" + place_id;
 
         // Sensor enabled
         String sensor = "sensor=false";
@@ -187,19 +147,21 @@ public class GeoAutoComplete {
     private String getAutocompleteUrl(String place) {
 
         // Obtain browser key from https://code.google.com/apis/console
-        String key = "key=" + GeofindApp.BROWSER_API_KEY;
+        String key = "key=" + GeofindApp.SERVER_API_KEY;
 
         // place to be be searched
-        String input = "input=" + escape(place);
+        String input = null;
+        try {
+            input = "input=" + URLEncoder.encode(place, "utf8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         // place type to be searched
         String types = "types=geocode";
 
-        // Sensor enabled
-        String sensor = "sensor=false";
-
         // Building the parameters to the web service
-        String parameters = input + "&" + types + "&" + sensor + "&" + key;
+        String parameters = input + "&" + types + "&" + key;
 
         // Output format
         String output = "json";
@@ -371,7 +333,7 @@ public class GeoAutoComplete {
             switch (parseType) {
                 case PLACES:
                     final String key = context.getString(R.string.auto_complete_json_description);
-                    final String value = context.getString(R.string.auto_complete_json_reference);
+                    final String value = context.getString(R.string.auto_complete_json_place_id);
                     String[] from = new String[]{key};
                     int[] to = new int[]{android.R.id.text1};
 
