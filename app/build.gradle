@@ -3,7 +3,7 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.0"
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "com.geofind.geofind"
@@ -14,7 +14,7 @@ android {
     }
     buildTypes {
         release {
-            runProguard true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -27,7 +27,6 @@ dependencies {
     compile 'com.android.support:cardview-v7:21.+' // this will load the CardView
     compile 'com.android.support:recyclerview-v7:+' // this will load the RecyclerView
     compile 'com.google.android.gms:play-services:+' // this will load Google Play Services
-//    compile project(':libraries:BaseGameUtils')
 
 
     // jar libraries
